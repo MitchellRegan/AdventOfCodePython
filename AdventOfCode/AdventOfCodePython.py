@@ -4,6 +4,8 @@ def y2020():
     #from Year2020 import Day2
     #from Year2020 import Day3
     #from Year2020 import Day4
+    #from Year2020 import Day5
+    from Year2020 import Day6
 
 
 def y2021():
@@ -23,7 +25,7 @@ def y2021():
     #from Year2021 import Day13
     #from Year2021 import Day14
     #from Year2021 import Day15
-    from Year2021 import Day16
+    #from Year2021 import Day16
     #from Year2021 import Day17
     #from Year2021 import Day25
 

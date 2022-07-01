@@ -44,6 +44,12 @@
     <Compile Include="Year2020\Day2.py" />
     <Compile Include="Year2020\Day3.py" />
     <Compile Include="Year2020\Day4.py" />
+    <Compile Include="Year2020\Day5.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Year2020\Day6.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2020\__init__.py">
       <SubType>Code</SubType>
     </Compile>
@@ -94,10 +100,15 @@
     <Folder Include="Year2017\" />
     <Folder Include="Year2016\" />
     <Folder Include="Year2015\" />
+    <Folder Include="Year2020\dataFiles\" />
     <Folder Include="Year2021\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Year2020\dataFiles\day4_Input.txt" />
+    <Content Include="Year2020\dataFiles\day4_Input_Test.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
