@@ -25,6 +25,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AdventOfCodePython.py" />
+    <Compile Include="Year2020\Day1.py" />
+    <Compile Include="Year2020\Day2.py" />
+    <Compile Include="Year2020\Day3.py" />
+    <Compile Include="Year2020\Day4.py" />
+    <Compile Include="Year2020\__init__py.py" />
     <Compile Include="Year2021\Day1.py" />
     <Compile Include="Year2021\Day10.py">
       <SubType>Code</SubType>
@@ -41,9 +46,7 @@
     <Compile Include="Year2021\Day14.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Year2021\Day15.py">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Year2021\Day15.py" />
     <Compile Include="Year2021\Day2.py" />
     <Compile Include="Year2021\Day3.py" />
     <Compile Include="Year2021\Day4.py" />
