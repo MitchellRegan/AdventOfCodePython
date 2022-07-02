@@ -7,6 +7,44 @@ data = [['acc',8],['nop',139],['nop',383],['jmp',628],['acc',-6],['acc',29],['ac
 #data = [['nop',0],['acc',1],['jmp',4],['acc',3],['jmp',-3],['acc',-99],['acc',1],['jmp',-4],['acc',6]]
 
 
+def runInstructions(d_):
+    # List to track which instruction index has been seen already
+    seenInd = []
+
+    # Tracking the index of the current instruction index and the accumulator
+    curInd = 0
+    acc = 0
+
+    # Looping until we find that a duplicate instruction is called
+    while True:
+        # If the current index has already been called, we know to break the loop
+        if curInd in seenInd:
+            acc = -1
+            break
+        else:
+            seenInd.append(curInd)
+
+        # If the current index reaches the end of the list, the instructions have finished
+        if curInd == len(d_):
+            break
+
+        # Making sure the index is valid
+        if curInd < 0:
+            acc = -1
+            break
+
+        # Calling the instruction at the current index
+        if d_[curInd][0] == 'nop':
+            curInd += 1
+        elif d_[curInd][0] == 'acc':
+            acc += d_[curInd][1]
+            curInd += 1
+        elif d_[curInd][0] == 'jmp':
+            curInd += d_[curInd][1]
+
+    return acc
+
+
 def solution1():
     # List to track which instruction index has been seen already
     seenInd = []
@@ -41,7 +79,30 @@ def solution1():
 
 
 def solution2():
-    print("Year 2020, Day 8 solution part 2:")
+    # Iterating through each instruction in the list
+    for i in range(0, len(data)):
+        # If the instruction is NOP, we try swapping it to JMP
+        if data[i][0] == 'nop':
+            cpy = data[:]
+            cpy[i] = ['jmp', cpy[i][1]]
+            # Running the instructions with the change
+            acc = runInstructions(cpy)
+            # If the result isn't -1 (fail), we return the accumulator value
+            if acc != -1:
+                print("Year 2020, Day 8 solution part 2:", acc)
+                return
+        # If the instruction is JMP, we try swapping it to NOP
+        elif data[i][0] == 'jmp':
+            cpy = data[:]
+            cpy[i] = ['nop', cpy[i][1]]
+            # Running the instructions with the change
+            acc = runInstructions(cpy)
+            # If the result isn't -1 (fail), we return the accumulator value
+            if acc != -1:
+                print("Year 2020, Day 8 solution part 2:", acc)
+                return
+
+    print("Year 2020, Day 8 solution part 2: FAILED")
 
 
 solution1()
