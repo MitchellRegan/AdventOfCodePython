@@ -53,6 +53,9 @@
     <Compile Include="Year2020\Day7.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2020\Day8.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2020\__init__.py">
       <SubType>Code</SubType>
     </Compile>
