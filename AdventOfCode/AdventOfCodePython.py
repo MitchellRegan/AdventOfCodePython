@@ -8,7 +8,10 @@ def y2020():
     #from Year2020 import Day6
     #from Year2020 import Day7
     #from Year2020 import Day8
-    from Year2020 import Day9
+    #from Year2020 import Day9
+    #from Year2020 import Day10
+    #from Year2020 import Day11
+    from Year2020 import Day12
 
 
 def y2021():
