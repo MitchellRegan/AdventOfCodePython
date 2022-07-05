@@ -50,6 +50,12 @@
     <Compile Include="Year2020\Day12.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2020\Day13.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Year2020\Day14.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2020\Day2.py" />
     <Compile Include="Year2020\Day3.py" />
     <Compile Include="Year2020\Day4.py" />
