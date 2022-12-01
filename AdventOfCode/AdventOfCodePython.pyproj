@@ -125,8 +125,15 @@
     <Compile Include="Year2021\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2022\Day1.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Year2022\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Year2022\" />
     <Folder Include="Year2020\" />
     <Folder Include="Year2019\" />
     <Folder Include="Year2018\" />
@@ -135,6 +142,8 @@
     <Folder Include="Year2015\" />
     <Folder Include="Year2020\dataFiles\" />
     <Folder Include="Year2021\" />
+    <Folder Include="Year2022\InputTestFiles\" />
+    <Folder Include="Year2022\InputRealFiles\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.6" />
@@ -142,6 +151,12 @@
   <ItemGroup>
     <Content Include="Year2020\dataFiles\day4_Input.txt" />
     <Content Include="Year2020\dataFiles\day4_Input_Test.txt" />
+    <Content Include="Year2022\InputRealFiles\d1_real.txt">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Year2022\InputTestFiles\d1_test.txt">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
