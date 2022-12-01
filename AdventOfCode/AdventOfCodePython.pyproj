@@ -40,6 +40,9 @@
     <Compile Include="Year2019\Day1.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2019\Day2.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2019\__init__.py">
       <SubType>Code</SubType>
     </Compile>

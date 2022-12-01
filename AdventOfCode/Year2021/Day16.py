@@ -64,33 +64,47 @@ def solution1():
     # Converting the string to binary
     for c in data:
         str += hexToBin(c)
-
-    # Getting the packet version from the first 3 bits
     print(str)
-    version = str[:3]
-    versionVal = binToDec(version)
-    id = '' + str[3] + str[4] + str[5]
-    idVal = binToDec(id)
-    str = str[6:]
-    print("Version:", version, "=", versionVal)
-    print("ID:", id, "=", idVal)
-    print("Remainder:", str)
 
-    # If the ID is 4, it's a literal
-    if idVal == 4:
-        print(" - Literal:")
-        binary = ''
-        lCount = 0
-        while True:
-            binary = str[(5*lCount)+1] + str[(5*lCount)+2] + str[(5*lCount)+3] + str[(5*lCount)+4]
-            if str[5*lCount] == '0':
-                break
-            else:
-                lCount += 1
-        print(" - -", binToDec(binary))
-    # Otherwise it's an operator
-    else:
-        print(" - Operation")
+    while len(str) > 0:
+        # Getting the packet version from the first 3 bits
+        version = str[:3]
+        versionVal = binToDec(version)
+
+        # Getting the packet ID from the next 3 bits
+        print(str)
+        id = '' + str[3] + str[4] + str[5]
+        idVal = binToDec(id)
+        str = str[6:]
+
+        print("Version:", version, "=", versionVal)
+        print("ID:", id, "=", idVal)
+        print("Remainder:", str)
+
+        # If the ID is 4, it's a literal
+        if idVal == 4:
+            print(" - Literal:")
+            binary = ''
+            lCount = 0
+            while True:
+                print(" - -", str)
+                # if the first bit of this segment is a 0, that means it's the end of the packet
+                if str[0] is '0':
+                    print(" - - - End of packet. Segment:", str[0] + str[1] + str[2] + str[3] + str[4])
+                    binary += str[1] + str[2] + str[3] + str[4]
+                    str = str[5:]
+                    print(" - - - Removing 3 trailing 0's")
+                    str = str[3:]
+                    break
+                # If the first bit of this segment is a 1, that means the following 4 bits should be used for the binary literal
+                else:
+                    print(" - - - Leading 1. Segment:", str[0] + str[1] + str[2] + str[3] + str[4])
+                    binary += str[1] + str[2] + str[3] + str[4]
+                    str = str[5:]
+            print(" - - Binary:", binary, "=", binToDec(binary))
+        # Otherwise it's an operator
+        else:
+            print(" - Operation")
 
     print("Year 2021, Day 16 solution part 1:", str)
 
