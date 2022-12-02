@@ -47,7 +47,8 @@ def y2021():
 
 def y2022():
     print("\n\n===================== Year 2022 =====================")
-    from Year2022 import Day1
+    #from Year2022 import Day1
+    from Year2022 import Day2
 
 
 #y2019()
