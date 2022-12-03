@@ -43,6 +43,9 @@
     <Compile Include="Year2019\Day2.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2019\Day3.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2019\__init__.py">
       <SubType>Code</SubType>
     </Compile>
@@ -131,11 +134,16 @@
     <Compile Include="Year2022\Day2.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2022\Day3.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2022\__init__.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Year2019\InputRealFiles\" />
+    <Folder Include="Year2019\InputTestFiles\" />
     <Folder Include="Year2022\" />
     <Folder Include="Year2020\" />
     <Folder Include="Year2019\" />
@@ -152,6 +160,12 @@
     <InterpreterReference Include="Global|PythonCore|3.6" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Year2019\InputRealFiles\d3_real.txt">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Year2019\InputTestFiles\d3_test.txt">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Year2020\dataFiles\day4_Input.txt" />
     <Content Include="Year2020\dataFiles\day4_Input_Test.txt" />
     <Content Include="Year2022\InputRealFiles\d1_real.txt">
@@ -160,10 +174,16 @@
     <Content Include="Year2022\InputRealFiles\d2_real.txt">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Year2022\InputRealFiles\d3_real.txt">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Year2022\InputTestFiles\d1_test.txt">
       <SubType>Code</SubType>
     </Content>
     <Content Include="Year2022\InputTestFiles\d2_test.txt">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Year2022\InputTestFiles\d3_test.txt">
       <SubType>Code</SubType>
     </Content>
   </ItemGroup>
