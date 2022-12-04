@@ -1,8 +1,8 @@
 #https://adventofcode.com/2019/day/3
 #https://adventofcode.com/2019/day/3#part2
 
-inFile = "C:\\Users\\Mitch\\source\\repos\\AdventOfCodePython\\AdventOfCode\\Year2019\\InputTestFiles\\d3_test.txt"
-#inFile = "C:\\Users\\Mitch\\source\\repos\\AdventOfCodePython\\AdventOfCode\\Year2019\\InputRealFiles\\d3_real.txt"
+#inFile = "C:\\Users\\Mitch\\source\\repos\\AdventOfCodePython\\AdventOfCode\\Year2019\\InputTestFiles\\d3_test.txt"
+inFile = "C:\\Users\\Mitch\\source\\repos\\AdventOfCodePython\\AdventOfCode\\Year2019\\InputRealFiles\\d3_real.txt"
 
 
 def printInput(coords):
@@ -34,25 +34,63 @@ def printInput(coords):
 
     # Initializing a blank grid with the rows and columns needed
     grid = []
-    for r in range(T-B):
-        row = ['.'] * (R-L)
+    for r in range(abs(T) + abs(B) + 2):
+        row = ['.'] * (abs(L) + abs(R) + 2)
         grid.append(row)
 
-    print("Rows:", len(grid), "Cols:", len(grid[0]))
+    crossings = []
 
+    #Mapping out all of the coordinates for the first line
     for a in range(0, len(coords[0])-1):
-        xs = [coords[0][a][0], coords[0][a+1][0]]
-        ys = [coords[0][a][1], coords[0][a+1][1]]
-        print(xs)
-        print(ys)
-        print(xs[1], L, ys[1], B)
-        grid[ys[1]+B-1][xs[1]+L-1] = 'A'
+        xs = [coords[0][a][0] + abs(L), coords[0][a+1][0] + abs(L)]
+        ys = [coords[0][a][1] + abs(B)+1, coords[0][a+1][1] + abs(B)+1]
 
-    for row in range(len(grid)-1, -1, -1):
-        for col in range(0, len(grid[r])):
-            print(grid[row][col], end=" ")
-        print()
-    return 0
+        #If the x coordinates are the same, we draw a vertical line
+        if xs[0] == xs[1]:
+            for yval in range(min(ys), max(ys)):
+                grid[yval][xs[0]] = '|'
+        #If the y coordinates are the same, we draw a horizontal line
+        if ys[0] == ys[1]:
+            for xval in range(min(xs), max(xs)):
+                grid[ys[0]][xval] = '-'
+                
+        grid[ys[1]][xs[1]] = '+'
+        grid[ys[0]][xs[0]] = '+'
+
+    #Mapping out all of the coordinates for the second line
+    for a in range(0, len(coords[1])-1):
+        xs = [coords[1][a][0] + abs(L), coords[1][a+1][0] + abs(L)]
+        ys = [coords[1][a][1] + abs(B)+1, coords[1][a+1][1] + abs(B)+1]
+
+        #If the x coordinates are the same, we draw a vertical line
+        if xs[0] == xs[1]:
+            for yval in range(min(ys), max(ys)):
+                if grid[yval][xs[0]] == '.':
+                    grid[yval][xs[0]] = 'I'
+                elif grid[yval][xs[0]] == '|' or grid[yval][xs[0]] == '-':
+                    grid[yval][xs[0]] = 'X'
+                    crossings.append((xs[0] - abs(L), yval - abs(B)-1))
+        #If the y coordinates are the same, we draw a horizontal line
+        if ys[0] == ys[1]:
+            for xval in range(min(xs), max(xs)):
+                if grid[ys[0]][xval] == '.':
+                    grid[ys[0]][xval] = '='
+                elif grid[ys[0]][xval] == '|' or grid[ys[0]][xval] == '-':
+                    grid[ys[0]][xval] = 'X'
+                    crossings.append((xval - abs(L), ys[0] - abs(B)-1))
+                    
+        grid[ys[0]][xs[0]] = '#'
+        grid[ys[1]][xs[1]] = '#'
+
+    #Setting the starting point to O
+    grid[abs(B)+1][abs(L)] = 'O'
+
+
+    dists = []
+    for c in crossings:
+        dists.append((abs(c[0]) + abs(c[1])))
+
+    return min(dists)
 
 
 def solution1():
@@ -93,41 +131,9 @@ def solution1():
             # Adding this wire's coordinate points to the list of all wires
             wires.append(wirePoints)
 
-    #Finding all intersections between the wires
-    intersections = []
-    for a in range(0, len(wires[0])-1):
-        for b in range(0, len(wires[1])-1):
-            wireA_x = [wires[0][a][0], wires[0][a+1][0]]
-            wireA_y = [wires[0][a][1], wires[0][a+1][1]]
-            wireB_x = [wires[1][b][0], wires[1][b+1][0]]
-            wireB_y = [wires[1][b][1], wires[1][b+1][1]]
-
-            #if line a is vertical and line b is horizontal
-            if (wireA_x[0] == wireA_x[1]) and (wireB_y[0] == wireB_y[1]):
-                #checking if the coordinates intersect
-                if wireA_x[0] >= min(wireB_x) and wireA_x[0] <= max(wireB_x) and wireB_y[0] >= min(wireA_y) and wireB_y[0] <= max(wireA_y):
-                    if (wireA_x[0], wireB_y[0]) not in intersections:
-                        intersections.append((wireA_x[0], wireB_y[0]))
-
-            #if line a is horizontal and line b is vertical
-            elif (wireA_y[0] == wireA_y[1]) and (wireB_x[0] == wireB_x[1]):
-                #checking if the coordinates intersect
-                if wireB_x[0] >= min(wireA_x) and wireB_x[0] <= max(wireA_x) and wireA_y[0] >= min(wireB_y) and wireA_y[0] <= max(wireB_y):
-                    if (wireB_x[0], wireA_y[0]) not in intersections:
-                        intersections.append((wireB_x[0], wireA_y[0]))
-
-    #Finding the shortest manhattan distance from the origin
-    intersections.pop(0)
-    shortestDist = float('inf')
-    for i in intersections:
-        dist = abs(i[0]) + abs(i[1])
-        #print("Intersection", i, "Manhattan distance:", dist)
-        if dist < shortestDist:
-            shortestDist = dist
-
-    # it is NOT 1285
-    printInput(wires)
-    return shortestDist
+    # it is NOT 1285. correct answer is 870
+    
+    return printInput(wires)
 
 
 def solution2():
