@@ -2,7 +2,9 @@ def y2019():
     print("===================== Year 2019 =====================")
     #from Year2019 import Day1
     #from Year2019 import Day2
-    from Year2019 import Day3
+    #from Year2019 import Day3
+    from Year2019 import Day4
+    #from year2019 import Day5
     x=0
 
 
@@ -54,11 +56,13 @@ def y2022():
     #from Year2022 import Day1
     #from Year2022 import Day2
     #from Year2022 import Day3
-    from Year2022 import Day4
+    #from Year2022 import Day4
+    #from Year2022 import Day5
+    from Year2022 import Day6
     x=0
 
 
-y2019()
+#y2019()
 #y2020()
 #y2021()
 y2022()
