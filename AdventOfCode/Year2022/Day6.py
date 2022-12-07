@@ -1,5 +1,5 @@
-#https://adventofcode.com/2022/day/5
-#https://adventofcode.com/2022/day/5#part2
+#https://adventofcode.com/2022/day/6
+#https://adventofcode.com/2022/day/6#part2
 
 #inFile = "C:\\Users\\Mitch\\source\\repos\\AdventOfCodePython\\AdventOfCode\\Year2022\\InputTestFiles\\d6_test.txt"
 inFile = "C:\\Users\\Mitch\\source\\repos\\AdventOfCodePython\\AdventOfCode\\Year2022\\InputRealFiles\\d6_real.txt"

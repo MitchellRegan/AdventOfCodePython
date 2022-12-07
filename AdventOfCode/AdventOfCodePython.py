@@ -58,7 +58,9 @@ def y2022():
     #from Year2022 import Day3
     #from Year2022 import Day4
     #from Year2022 import Day5
-    from Year2022 import Day6
+    #from Year2022 import Day6
+    #from Year2022 import Day7
+    from Year2022 import Day8
     x=0
 
 
