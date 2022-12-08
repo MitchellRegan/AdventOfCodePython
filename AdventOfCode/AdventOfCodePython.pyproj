@@ -155,6 +155,9 @@
     <Compile Include="Year2022\Day8.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2022\Day9.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2022\__init__.py">
       <SubType>Code</SubType>
     </Compile>
@@ -210,6 +213,9 @@
     <Content Include="Year2022\InputRealFiles\d8_real.txt">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Year2022\InputRealFiles\d9_real.txt">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Year2022\InputTestFiles\d1_test.txt">
       <SubType>Code</SubType>
     </Content>
@@ -232,6 +238,9 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="Year2022\InputTestFiles\d8_test.txt">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Year2022\InputTestFiles\d9_test.txt">
       <SubType>Code</SubType>
     </Content>
   </ItemGroup>
