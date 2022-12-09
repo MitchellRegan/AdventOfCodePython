@@ -34,6 +34,9 @@
     <Compile Include="Year2017\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2018\Day7.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2018\__init__.py">
       <SubType>Code</SubType>
     </Compile>
@@ -163,6 +166,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Year2018\InputRealFiles\" />
+    <Folder Include="Year2018\InputTestFiles\" />
     <Folder Include="Year2019\InputRealFiles\" />
     <Folder Include="Year2019\InputTestFiles\" />
     <Folder Include="Year2022\" />
@@ -181,6 +186,12 @@
     <InterpreterReference Include="Global|PythonCore|3.6" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Year2018\InputRealFiles\d7_real.txt">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Year2018\InputTestFiles\d7_test.txt">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Year2019\InputRealFiles\d3_real.txt">
       <SubType>Code</SubType>
     </Content>
