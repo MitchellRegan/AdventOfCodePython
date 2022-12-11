@@ -1,8 +1,10 @@
 #https://adventofcode.com/2022/day/5
 #https://adventofcode.com/2022/day/5#part2
 
-#inFile = "C:\\Users\\Mitch\\source\\repos\\AdventOfCodePython\\AdventOfCode\\Year2022\\InputTestFiles\\d5_test.txt"
-inFile = "C:\\Users\\Mitch\\source\\repos\\AdventOfCodePython\\AdventOfCode\\Year2022\\InputRealFiles\\d5_real.txt"
+import os
+inFileDir = os.path.dirname(__file__)
+#inFile = os.path.join(inFileDir, "InputTestFiles/d5_test.txt")
+inFile = os.path.join(inFileDir, "InputRealFiles/d5_real.txt")
 
 def solution1():
     readMode = 0

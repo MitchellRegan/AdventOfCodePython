@@ -14,6 +14,7 @@
     <RootNamespace>AdventOfCode</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
     <InterpreterId>Global|PythonCore|3.6</InterpreterId>
+    <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,6 +26,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AdventOfCodePython.py" />
+    <Compile Include="HelperFunctions\inputReaders.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="HelperFunctions\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2015\__init__.py">
       <SubType>Code</SubType>
     </Compile>
@@ -137,6 +144,9 @@
     <Compile Include="Year2022\Day1.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2022\Day10.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2022\Day2.py">
       <SubType>Code</SubType>
     </Compile>
@@ -166,6 +176,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="HelperFunctions\" />
     <Folder Include="Year2018\InputRealFiles\" />
     <Folder Include="Year2018\InputTestFiles\" />
     <Folder Include="Year2019\InputRealFiles\" />
@@ -200,6 +211,9 @@
     </Content>
     <Content Include="Year2020\dataFiles\day4_Input.txt" />
     <Content Include="Year2020\dataFiles\day4_Input_Test.txt" />
+    <Content Include="Year2022\InputRealFiles\d10_real.txt">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Year2022\InputRealFiles\d1_real.txt">
       <SubType>Code</SubType>
     </Content>
@@ -225,6 +239,9 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="Year2022\InputRealFiles\d9_real.txt">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Year2022\InputTestFiles\d10_test.txt">
       <SubType>Code</SubType>
     </Content>
     <Content Include="Year2022\InputTestFiles\d1_test.txt">
