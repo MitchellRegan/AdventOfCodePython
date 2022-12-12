@@ -23,14 +23,34 @@ def toDict1key1val(inFile_, keyIndex_=0, valIndex_=1, keyType_='s', valType_='s'
     - return: Dictionary where there's one value per key.
     '''
     dict = {}
-    with open(inFile, 'r') as f:
+    with open(inFile_, 'r') as f:
         for line in f:
+            #Delineating the line into "words"
             sline = line.split(' ')
+            #Getting the key of the key-value pair
             key = sline[keyIndex_]
             if key[-1] == '\n':
                 key.pop()
+            #Converting the key to the correct type
+            if keyType_ is "i":
+                key = int(key)
+            elif keyType_ is "f":
+                key = float(key)
+
+            #Getting the value of the key-value pair
             val = sline[valIndex_]
             if val[-1] == '\n':
                 val.pop()
+            #Converting the value to the correct type
+            if valType_ is "i":
+                val = int(val)
+            elif valType_ is "f":
+                val = float(val)
+
+            #Assinging all of the values to a list for their key
+            if key in dict.keys():
+                dict[key].append(val)
+            else:
+                dict[key] = [val]
 
     return dict

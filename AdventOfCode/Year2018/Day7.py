@@ -1,63 +1,122 @@
 #https://adventofcode.com/2018/day/7
 #https://adventofcode.com/2018/day/7#part2
 
-inFile = "C:\\Users\\Mitch\\source\\repos\\AdventOfCodePython\\AdventOfCode\\Year2018\\InputTestFiles\\d7_test.txt"
-#inFile = "C:\\Users\\Mitch\\source\\repos\\AdventOfCodePython\\AdventOfCode\\Year2018\\InputRealFiles\\d7_real.txt"
+from HelperFunctions import inputReaders as ir
+import os
+inFileDir = os.path.dirname(__file__)
+#inFile = os.path.join(inFileDir, "InputTestFiles/d7_test.txt")
+inFile = os.path.join(inFileDir, "InputRealFiles/d7_real.txt")
 
 def solution1():
-    allSteps = []
-    parentSteps = {}
     order = ""
+    #List to hold tasks that don't have any prerequisite tasks
+    q = []
+    #Getting the dictionary of tasks that DO have prerequisite tasks from the input file
+    dict = ir.toDict1key1val(inFile, 7, 1)
+    for k in dict.keys():
+        #print(k,":", dict[k])
+        #If any of the prerequisite tasks aren't keys (i.e. don't have prerequisites of their own) they're completed
+        for i in dict[k]:
+            if i not in dict.keys() and i not in q:
+                q.append(i)
 
-    #Looping through each line in the file
-    with open(inFile, 'r') as f:
-        for line in f:
-            s1 = line.split(' ')[1]
-            s2 = line.split(' ')[7]
-            
-            if s1 not in allSteps:
-                allSteps.append(s1)
-            if s2 not in allSteps:
-                allSteps.append(s2)
+    q.sort()
 
-            if s2 not in parentSteps.keys():
-                parentSteps[s2] = s1
-            else:
-                parentSteps[s2] += s1
+    #Looping through every completed task in the que to check them off of other tasks' prerequisites
+    while len(q) > 0:
+        #Completed task at the head of the que to check off
+        cur = q.pop(0)
+        #List of tasks that are completed this loop
+        newlyCompleted = []
 
-    #Finding all steps that have no prior requirement
-    for s in allSteps:
-        if s not in parentSteps.keys():
-            order += s
+        #If the current task is a prereque for one in the dictionary, we remove it
+        for k in dict.keys():
+            if cur in dict[k]:
+                dict[k].remove(cur)
+                #If there are no more prerequisites left, this task is complete
+                if len(dict[k]) == 0:
+                    newlyCompleted.append(k)
 
-    #If there's more than 1 starting step, we have to put them in order
-    order = ''.join(sorted(order))
-    si = 0
-    while len(allSteps) > 0:
-        #String to store all of the new steps that have become valid this loop
-        validSteps = []
-        #Looping through each step
-        for k in parentSteps.keys():
-            #If this step has a prerequisite step that is in the order string, we remove that prerequisite
-            if order[si] in parentSteps[k]:
-                parentSteps[k] = parentSteps[k].replace(order[si], '')
-                #if there are no more prerequisites, this step becomes valid
-                if parentSteps[k] == "":
-                    validSteps.append(k)
-                    parentSteps.pop(k)
+        #Removing the newly completed tasks from the dictionary to speed up future searches
+        for n in newlyCompleted:
+            dict.pop(n)
 
-        #after all of the loops are done, we pop the current step from the list of all steps
-        allSteps.remove(order[si])
-        si += 1
-        order += ''.join(sorted(validSteps))
+        #Adding the newly completed tasks to the que and sorting them in alphabetical order
+        q.extend(newlyCompleted)
+        q.sort()
+        order += cur
+        #print(cur)
+        #print(" - Newly completed:", newlyCompleted)
+        #print(" - Updated que:", q)
 
     return order
 
 
 def solution2():
-    
-    return 0
+    #Number of workers going in parallel
+    workers = 5
+    #Offset for the amount removed from character ascii values
+    asciiOffset = 4
 
+    #List to hold tasks that don't have any prerequisite tasks
+    q = []
+    #Dictionary to hold the time duration for each running task
+    taskTime = {}
+
+    #Getting the dictionary of tasks that DO have prerequisite tasks from the input file
+    dict = ir.toDict1key1val(inFile, 7, 1)
+    for k in dict.keys():
+        #If any of the prerequisite tasks aren't keys (i.e. don't have prerequisites of their own) they're completed
+        for i in dict[k]:
+            if i not in dict.keys() and i not in q:
+                #getting the duration that this task takes to complete
+                taskTime[i] = ord(i) - asciiOffset
+                q.append(i)
+
+    q.sort()
+
+    #Looping through every completed task in the que to check them off of other tasks' prerequisites
+    time = 0
+    while len(q) > 0:
+        time += 1
+        #Completed task at the head of the que to check off
+        cur = []
+
+        #print("Second", time)
+        for c in range(0, min(len(q), workers)):
+            #print(" - Worker", c+1, "doing task", q[c], "- time remaining:", taskTime[q[c]])
+            taskTime[q[c]] -= 1
+            if taskTime[q[c]] == 0:
+                cur.append(q[c])
+
+        for c in cur:
+            q.remove(c)
+        if len(cur) > 0:
+            cur.sort()
+            #List of tasks that are completed this loop
+            newlyCompleted = []
+        
+            #If the current task is a prereque for one in the dictionary, we remove it
+            for k in dict.keys():
+                for c in cur:
+                    if c in dict[k]:
+                        dict[k].remove(c)
+                        #If there are no more prerequisites left, this task is complete
+                        if len(dict[k]) == 0:
+                            newlyCompleted.append(k)
+                            taskTime[k] = ord(k) - asciiOffset
+
+            #Removing the newly completed tasks from the dictionary to speed up future searches
+            for n in newlyCompleted:
+                dict.pop(n)
+
+            #Adding the newly completed tasks to the que and sorting them in alphabetical order
+            newlyCompleted.sort()
+            q.extend(newlyCompleted)
+
+    return time
 
 print("Year 2018, Day 7 solution part 1:", solution1())
 print("Year 2018, Day 7 solution part 2:", solution2())
+#902 too low
+#1177 too high
