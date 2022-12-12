@@ -4,7 +4,7 @@ def to2DList(inFile_):
     - return: 2D list of chars.
     '''
     grid = []
-    with open(inFile, 'r') as f:
+    with open(inFile_, 'r') as f:
         for line in f:
             row = list(line)
             if row[-1] == '\n':

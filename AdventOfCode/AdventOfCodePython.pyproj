@@ -147,6 +147,12 @@
     <Compile Include="Year2022\Day10.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2022\Day11.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Year2022\Day12.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2022\Day2.py">
       <SubType>Code</SubType>
     </Compile>
@@ -214,6 +220,12 @@
     <Content Include="Year2022\InputRealFiles\d10_real.txt">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Year2022\InputRealFiles\d11_real.txt">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Year2022\InputRealFiles\d12_real.txt">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Year2022\InputRealFiles\d1_real.txt">
       <SubType>Code</SubType>
     </Content>
@@ -242,6 +254,12 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="Year2022\InputTestFiles\d10_test.txt">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Year2022\InputTestFiles\d11_test.txt">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Year2022\InputTestFiles\d12_test.txt">
       <SubType>Code</SubType>
     </Content>
     <Content Include="Year2022\InputTestFiles\d1_test.txt">
