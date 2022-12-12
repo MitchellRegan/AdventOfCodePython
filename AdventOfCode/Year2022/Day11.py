@@ -4,14 +4,13 @@
 import math
 import os
 inFileDir = os.path.dirname(__file__)
-inFile = os.path.join(inFileDir, "InputTestFiles/d11_test.txt")
-#inFile = os.path.join(inFileDir, "InputRealFiles/d11_real.txt")
+#inFile = os.path.join(inFileDir, "InputTestFiles/d11_test.txt")
+inFile = os.path.join(inFileDir, "InputRealFiles/d11_real.txt")
 
-def solution1():
+
+def getMonkeys():
     #Behavior of each monkey
     monkeys = {}
-    #The number of times each monkey has seen an item
-    itemsSeen = []
 
     lineVal = 0
     monkeyNum = -1
@@ -50,10 +49,18 @@ def solution1():
                     "false": falseCond
                     }
                 monkeys[monkeyNum] = monkey
-                itemsSeen.append(0)
             else:#blank line. reset
                 lineVal = -1
             lineVal += 1
+
+    return monkeys
+
+
+def solution1():
+    #Behavior of each monkey
+    monkeys = getMonkeys()
+    #The number of times each monkey has seen an item
+    itemsSeen = [0] * len(monkeys.keys())
 
 
     for r in range(0, 20):
@@ -117,54 +124,16 @@ def solution1():
 
 def solution2():
     #Behavior of each monkey
-    monkeys = {}
+    monkeys = getMonkeys()
     #The number of times each monkey has seen an item
-    itemsSeen = []
+    itemsSeen = [0] * len(monkeys.keys())
 
-    lineVal = 0
-    monkeyNum = -1
-    items = []
-    operation = []
-    div = 0
-    trueCond = -1
-    falseCond = -1
-    #Looping through each line in the file
-    with open(inFile, 'r') as f:
-        for line in f:
-            if lineVal == 0: #monkey number
-                monkeyNum = int(line[6:-2])
-            elif lineVal == 1: #starting items
-                items = line[18:-1]
-                items = items.split(", ")
-                for i in range(0, len(items)):
-                    items[i] = int(items[i])
-            elif lineVal == 2: #operation
-                o = line[13:-1]
-                operation = o.split(' ')
-                operation = operation[2:]
-            elif lineVal == 3: #divisor
-                div = int(line[21:-1])
-            elif lineVal == 4: #True condition
-                trueCond = int(line[29:-1])
-            elif lineVal == 5: #false condition
-                falseCond = int(line[30:-1])
+    #Getting the product of all monkey divisors to put a cap on the largest value that can be seen
+    bigDiv = 1
+    for m in monkeys.keys():
+        bigDiv *= monkeys[m]["divisor"]
 
-                #save monkey values
-                monkey = {
-                    "items": items,
-                    "operation": operation,
-                    "divisor": div,
-                    "true": trueCond,
-                    "false": falseCond
-                    }
-                monkeys[monkeyNum] = monkey
-                itemsSeen.append(0)
-            else:#blank line. reset
-                lineVal = -1
-            lineVal += 1
-
-
-    for r in range(0, 20):
+    for r in range(0, 10000):
         for m in range(0, len(monkeys.keys())):
             for j in range(0, len(monkeys[m]["items"])):
                 #Increasing the counter for how many items this monkey has seen
@@ -200,7 +169,8 @@ def solution2():
                 elif opSymb == '/':
                     result = opVal1 / opVal2
 
-                
+                # Preventing the result from getting larger than the product of all monkey divisors
+                result = result % bigDiv
 
                 #Passing the item to a new monkey
                 #print("Is evenly divisible by", monkeys[m]["divisor"])
@@ -216,30 +186,9 @@ def solution2():
                 #Removing the item from this monkey's item list
                 monkeys[m]["items"].pop(0)
 
-        print("--", r+1)
-        for u in range(0, len(monkeys.keys())):
-            print("Monkey", u, "seen", itemsSeen[u])
     itemsSeen.sort(reverse=True)
     return itemsSeen[0] * itemsSeen[1]
 
 
 print("Year 2022, Day 11 solution part 1:", solution1())
 print("Year 2022, Day 11 solution part 2:", solution2())
-
-
-a = 2000
-count = [0,0,0,0]
-starts = [79,98,54,65,75,74,79,60,97,74]
-
-for s in starts:
-    if s % 17 == 0 and s % 19 != 0:
-        count[0] += 1
-    if s % 13 == 0 and s % 17 != 0:
-        count[1] += 1
-    if s % 19 == 0 and s % 23 == 0:
-        count[2] += 1
-    if s % 13 != 0 and s % 23 != 0:
-        count[3] += 1
-
-
-print(count)
