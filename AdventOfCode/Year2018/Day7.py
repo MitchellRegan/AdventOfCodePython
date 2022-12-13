@@ -118,5 +118,3 @@ def solution2():
 
 print("Year 2018, Day 7 solution part 1:", solution1())
 print("Year 2018, Day 7 solution part 2:", solution2())
-#902 too low
-#1177 too high
