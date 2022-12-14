@@ -72,8 +72,8 @@ def solution2():
         if hasDbl:
             if len(dupeStrings[len(dupeStrings)-1]) > 2:
                 hasDbl = False
-            else:
-                print(dupeStrings)
+            #else:
+            #    print(dupeStrings)
             #If only one double was found, it must have only 2 values in it
             #if len(dupeStrings) == 1 and len(dupeStrings[0]) != 2:
             #    hasDbl = False
@@ -92,7 +92,7 @@ def solution2():
     return validPW
 
     
-#print("Year 2019, Day 4 solution part 1:", solution1())
+print("Year 2019, Day 4 solution part 1:", solution1())
 print("Year 2019, Day 4 solution part 2:", solution2())
 
 #283 too low
