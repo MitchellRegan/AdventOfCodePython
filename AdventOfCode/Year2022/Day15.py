@@ -137,13 +137,6 @@ def solution2():
 
         #Checking the range that each sensor
         for s in sensors:
-            #Checking the ranges in this column
-            xDiff = abs(s[0][0] - p)
-            if xDiff <= s[2]:
-                miny = s[0][1] - (s[2] - (xDiff))
-                maxy = s[0][1] + (s[2] - (xDiff))
-                colRanges.append((miny, maxy))
-
             yDiff = abs(s[0][1] - p)
             if yDiff < s[2]:
                 minx = s[0][0] - ((s[2] - yDiff))
@@ -151,11 +144,6 @@ def solution2():
                 rowRanges.append((minx, maxx))
                 #print("Row", p, "in range of scanner", s[0], ":distance", s[2], "covers", (minx,p), "to", (maxx,p), " with yDiff =", yDiff)
 
-        colRanges = combineRanges(colRanges)
-        if len(colRanges) > 1:
-            x = p * 4000000
-            y = (colRanges[1][0] + colRanges[0][1])//2
-            return x+y
         rowRanges = combineRanges(rowRanges)
         if len(rowRanges) > 1:
             x = (rowRanges[1][0] + rowRanges[0][1])//2
