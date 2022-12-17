@@ -46,13 +46,13 @@ def combineRanges(inputList, mergeAdjacent=False):
                 #Checking adjacent values if needed
                 if mergeAdjacent:
                     #If the left edge of i touches the right edge of j
-                if rangeList[i][1] == rangeList[j][0]-1:
-                    newMerges = [i,j, (rangeList[i][0], rangeList[j][1])]
-                    break
-                #If the left edge of j touches the right edge of i
-                if rangeList[j][1] == rangeList[i][0]-1:
-                    newMerges = [i,j, (rangeList[j][0], rangeList[i][1])]
-                    break
+                    if rangeList[i][1] == rangeList[j][0]-1:
+                        newMerges = [i,j, (rangeList[i][0], rangeList[j][1])]
+                        break
+                    #If the left edge of j touches the right edge of i
+                    if rangeList[j][1] == rangeList[i][0]-1:
+                        newMerges = [i,j, (rangeList[j][0], rangeList[i][1])]
+                        break
 
         #If there are ranges to merge together we do that
         if len(newMerges) > 0:
