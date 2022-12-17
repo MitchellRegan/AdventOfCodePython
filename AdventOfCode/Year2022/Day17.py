@@ -8,9 +8,9 @@ inFile = os.path.join(inFileDir, "InputRealFiles/d17_real.txt")
 
 airSymb = '-'
 rockSymb = 'O'
-floorSymb = '█'
+floorSymb = '#'
 part1Iterations = 2022
-part2Iterations = 99999 #1000000000000
+part2Iterations = 999 #1000000000000
 
 def spawnRock(rockID, rockGrid):
     #Finding the number of empty rows at the top of the grid
@@ -292,8 +292,11 @@ def solution1():
                 #        print(''.join(r))
                 #    return
 
+    with open(os.path.join(inFileDir, "day17p2_visualization.txt"), 'w') as o:
+        for r in range(0, len(grid)):
+            o.write(''.join(grid[r]) + '\n')
+
     for r in range(0, len(grid)):
-        #print(''.join(grid[r]))
         if floorSymb in grid[r]:
             maxHeight += len(grid) - r - 1
             break
@@ -315,6 +318,9 @@ def solution2():
                 else:
                     print("READING ERROR", line[c])
             
+    #Key: (grid height, wind index, shape index). Value: Grid's current state
+    memo = {}
+
     #Variable to track the height of the rock stack
     maxHeight = 0
 
@@ -401,6 +407,14 @@ def solution2():
                     maxHeight += len(grid) - max(rowsUsed) - 1
                     grid = grid[:max(rowsUsed)+1]
 
+                    #If this state has been seen before in our memoization, we make a note of it
+                    m = (len(grid), wi, i % 5)
+                    if m in memo.keys():
+                        print("Seen state", m)
+                        if grid == memo[m]:
+                            print("FOUND A MATCH")
+                            return
+
     for r in range(0, len(grid)):
         binStr = bin(grid[r])[2:].zfill(7)
         print(binStr)
@@ -414,7 +428,7 @@ import time
 startTime = time.time()
 print("Year 2022, Day 17 solution part 1:", solution1())
 endTime1 = time.time() - startTime
-print("Part 1 time: ", endTime1)
+print("Part 1 time: ", endTime1, "sec")
 ips = part1Iterations / endTime1
 completionTime = 1000000000000 / ips
 completionTime /= 60
@@ -425,7 +439,7 @@ print("Estimated completion time of full input: ", completionTime, "days")
 startTime = time.time()
 print("Year 2022, Day 17 solution part 2:", solution2())
 endTime2 = time.time() - startTime
-print("Part 2 time: ", endTime2)
+print("Part 2 time: ", endTime2, "sec")
 ips = part2Iterations / endTime2
 completionTime = 1000000000000 / ips
 completionTime /= 60
