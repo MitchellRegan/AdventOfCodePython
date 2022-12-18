@@ -81,7 +81,8 @@ def y2022():
     #from Year2022 import Day14
     #from Year2022 import Day15
     #from Year2022 import Day16
-    from Year2022 import Day17
+    #from Year2022 import Day17
+    from Year2022 import Day18
     return
 
 

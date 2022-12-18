@@ -13,14 +13,12 @@ def getInput():
     #Dictionary to store the valves that each valve is connected to
     valveEdges = {}
     #Name of the first valve where we start at
-    startValve = None
+    startValve = "AA"
 
     with open(inFile, 'r') as f:
         for line in f:
             line = line.split(' ')
             name = line[1]
-            if startValve is None:
-                startValve = name
             flow = int(line[4][5:-1])
             edges = line[9:]
             #Getting rid of the commas and newline chars at the end of each connected valve ID name
@@ -31,136 +29,124 @@ def getInput():
             valveFlows[name] = flow
             valveEdges[name] = edges
 
-    return [valveFlows, valveEdges, startValve]
-
-
-def makeDirectionalValveDict():
-    valveDict = {}
+    valveDists = {}
 
     #Looping through every valve option available
     for v in valveEdges.keys():
         #If this valve has a flow of 0, we don't care about it
-        if valveFlows[v] == 0:
+        if valveFlows[v] == 0 and v != startValve:
             continue
 
-        
-
-    return valveDict
-
-
-def bfs_findValves(startValve, steps, valveEdges, valveFlows):
-    found = {startValve:0}
-    q = [startValve]
-    valvesToRemove = [startValve]
-
-    while len(q) > 0:
-        curValve = q.pop(0)
-        for edge in valveEdges[curValve]:
-            #If the current valve hasn't already been seen, we add it to the que and store it's distance
-            if edge not in found.keys() and edge not in q:
-                q.append(edge)
-                found[edge] = found[curValve] + 1
-                #If the valve has zero flow, we mark it to be removed later
-                if valveFlows[edge] == 0:
-                    valvesToRemove.append(edge)
-
-    #Looping through and removing all valves that have a flow of zero, because they're worthless to us
-    for r in valvesToRemove:
-        found.pop(r)
-
-    return found
-
-
-def solution0():
-    #Getting the starting dictionaries for the flow for each valve, the connections for each valves, and which valve to start at
-    valveFlows, valveEdges, startValve = getInput()
-    #The total amount of pressure that has been released
-    currentPressure = 0
-    #The number of steps remaining to perform actions
-    remainingSteps = 30
-    #List to track all of the valves that are currently open. The last index is the valve we're currently at
-    openValves = [startValve]
-
-    #Loop until there are no more non-zero-flow pipes in range
-    while True:
-        print("Min", remainingSteps, "currently at valve", openValves[-1])
-        #Do a bfs search from the current valve (last in openValves) to all others that are within the step range and not in openValves
-        #availableValves = bfs_findValves(openValves[-1], remainingSteps, valveEdges, valveFlows, openValves)
-        availableValves = {startValve:0}
-        q = [startValve]
-        valvesToRemove = [startValve]
-
+        #Otherwise we do a bfs search to get its distance to every other non-zero valve
+        q = [v]
+        found = {v:0}
+        zeroValves = [v]
         while len(q) > 0:
-            curValve = q.pop(0)
-            for edge in valveEdges[curValve]:
-                #If the current valve hasn't already been seen, we add it to the que and store it's distance
-                if edge not in availableValves.keys() and edge not in q:
+            cur = q.pop(0)
+            #Getting every valve connected to this one
+            for edge in valveEdges[cur]:
+                if edge not in q and edge not in found:
                     q.append(edge)
-                    availableValves[edge] = availableValves[curValve] + 1
-                    #If the valve has zero flow, we mark it to be removed later
-                    if valveFlows[edge] == 0:
-                        valvesToRemove.append(edge)
-                    #If the valve has already been turned on, mark it to be removed
-                    elif edge in openValves:
-                        valvesToRemove.append(edge)
+                    found[edge] = found[cur] + 1
+                    if valveFlows[edge] == 0 and edge is not startValve:
+                        zeroValves.append(edge)
 
-        #Looping through and removing all valves that have a flow of zero, because they're worthless to us
-        for r in valvesToRemove:
-            availableValves.pop(r)
+        #Removing the distances to valves with zero flow
+        for z in zeroValves:
+            found.pop(z)
 
-        #If no valves remain, break loop
-        if len(availableValves.keys()) == 0:
-            break
+        # Adding 1 to each distance to compensate for the step for turning it on
+        for a in found.keys():
+            found[a] += 1
+            if (min(v,a), max(v,a)) not in valveDists.keys():
+                valveDists[(min(v,a), max(v,a))] = found[a]
+                #print("Dist from", min(v,a), "to", max(v,a), "=", found[a])
 
-        #weight each valve based on (remaining steps - steps to the valve - 1 to turn on) * valve flow
-            #This gets the amount of pressure the valve will release over the entire duration
-        bestFlow = 0
-        bestValve = None
-        for v in availableValves.keys():
-            weight = valveFlows[v] * (remainingSteps - availableValves[v] - 1)
-            print(" - Option", v, "- steps away:", availableValves[v], " flow:", valveFlows[v], " weight:", weight)
-            if weight > bestFlow:
-                bestFlow = weight
-                bestValve = v
-        
-        #If there is no best valve to go to, we're out of options so we break the loop
-        if bestValve is None:
-            break
-
-        print(" - - Traveling from to", bestValve, "with a flow of", valveFlows[bestValve], "and heuristic of", bestFlow)
-        #Otherwise we travel to the valve with the highest weight
-        openValves.append(bestValve)
-        #Remove (steps to valve + 1) from remaining steps
-        remainingSteps -= (availableValves[bestValve] + 1)
-        #Add the weight of the valve to the current amount of pressure relieved
-        currentPressure += weight
-
-    return currentPressure
+    return [valveFlows, valveEdges, startValve, valveDists]
 
 
-def solution1():
-    #Create a DIRECTIONAL dictionary outside of the functions to store the distance each valve is from any other valve
-        #Make a bfs function that does this
-        #Automatically exclude valves with flow of zero
-        #for each stored distance be sure to include the +1 for turning it on
-    #Make a DFS function to search all possible permutations
-        #Parameters:
-            #list of visited valves, starting with the first
-            #number of steps remaining
-        #Get a list of every other non-zero valve
-        #remove any that are already in the visited valves list
-        #Remove any that are more steps away than are available
-        #If none are available
-            #calculate the total 
-        #For any that remain, do a recursive call to get the most pressure it can relieve (store the largest one returned)
-        #return the largest value
-        return
+def solution1(visited=[], steps=30, pressure=0):
+    '''DFS function to search all possible permutations
+    - visited: List of visited valves, starting with the first
+    - steps: The number of steps remaining
+    '''
+    #Get a list of every other non-zero valve that are not already in the visited valves list
+    potential = []
+    for i in valveDists.keys():
+        #The edge also has to include the last valve in our visited list (i.e. where we're currently at)
+        if i[0] == visited[-1] and i[1] not in visited:
+            #Only adding it to the list of options if the distance is less than the number of steps remaining
+            if valveDists[i] < steps:
+                potential.append(i[1])
+        elif i[1] == visited[-1] and i[0] not in visited:
+            #Only adding it to the list of options if the distance is less than the number of steps remaining
+            if valveDists[i] < steps:
+                potential.append(i[0])
 
-def solution2():
-    return
+    #If none are available, calculate and return the total pressure
+    if len(potential) == 0:
+        #print("Path", visited, "has pressure", pressure, "With", steps, "steps remaining")
+        return pressure
 
-#Getting the starting dictionaries for the flow for each valve, the connections for each valves, and which valve to start at
-valveFlows, valveEdges, startValve = getInput()
-directionalValvDict = makeDirectionalValveDict()
-print("Year 2022, Day 16 solution part 1:", solution1())
-print("Year 2022, Day 16 solution part 2:", solution2())
+    #For any that remain, do a recursive call to get the most pressure it can relieve (store the largest one returned)
+    maxPressure = 0
+    for p in potential:
+        newVisited = [x for x in visited]
+        newVisited.append(p)
+        newSteps = steps - valveDists[(min(p, visited[-1]), max(p, visited[-1]))]
+        newPressure = pressure + (newSteps * valveFlows[p])
+        val = solution1(newVisited, newSteps, newPressure)
+        if val > maxPressure:
+            maxPressure = val
+    #return the largest pressure value found
+    return maxPressure
+
+
+def solution1(visited=[], steps=26, pressure=0):
+    #Get a list of every other non-zero valve that are not already in the visited valves list
+    potential1 = []
+    for i in valveDists.keys():
+        #The edge also has to include the last valve in our visited list (i.e. where we're currently at)
+        if i[0] == visited[0][-1] and i[1] not in visited[0] and i[1] not in visited[1]:
+            #Only adding it to the list of options if the distance is less than the number of steps remaining
+            if valveDists[i] < steps:
+                potential1.append(i[1])
+        elif i[1] == visited[0][-1] and i[0] not in visited[0] and i[0] not in visited[1]:
+            #Only adding it to the list of options if the distance is less than the number of steps remaining
+            if valveDists[i] < steps:
+                potential1.append(i[0])
+
+    potential2 = []
+    for i in valveDists.keys():
+        #The edge also has to include the last valve in our visited list (i.e. where we're currently at)
+        if i[0] == visited[1][-1] and i[1] not in visited[0] and i[1] not in visited[1]:
+            #Only adding it to the list of options if the distance is less than the number of steps remaining
+            if valveDists[i] < steps:
+                potential2.append(i[1])
+        elif i[1] == visited[1][-1] and i[0] not in visited[0] and i[0] not in visited[1]:
+            #Only adding it to the list of options if the distance is less than the number of steps remaining
+            if valveDists[i] < steps:
+                potential2.append(i[0])
+
+    #If none are available, calculate and return the total pressure
+    if len(potential) == 0:
+        #print("Path", visited, "has pressure", pressure, "With", steps, "steps remaining")
+        return pressure
+
+    #For any that remain, do a recursive call to get the most pressure it can relieve (store the largest one returned)
+    maxPressure = 0
+    for p in potential:
+        newVisited = [x for x in visited]
+        newVisited.append(p)
+        newSteps = steps - valveDists[(min(p, visited[-1]), max(p, visited[-1]))]
+        newPressure = pressure + (newSteps * valveFlows[p])
+        val = solution1(newVisited, newSteps, newPressure)
+        if val > maxPressure:
+            maxPressure = val
+    #return the largest pressure value found
+    return maxPressure
+
+#Getting the starting dictionaries for the flow for each valve, the connections for each valves, the distances from/to each non-zero valve, and which valve to start at
+valveFlows, valveEdges, startValve, valveDists = getInput()
+#print("Year 2022, Day 16 solution part 1:", solution1([startValve], 30))
+print("Year 2022, Day 16 solution part 2:", solution2([[startValue], [startValue]]))
