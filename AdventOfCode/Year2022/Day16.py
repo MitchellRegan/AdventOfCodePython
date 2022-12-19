@@ -3,8 +3,8 @@
 
 import os
 inFileDir = os.path.dirname(__file__)
-inFile = os.path.join(inFileDir, "InputTestFiles/d16_test.txt")
-#inFile = os.path.join(inFileDir, "InputRealFiles/d16_real.txt")
+#inFile = os.path.join(inFileDir, "InputTestFiles/d16_test.txt")
+inFile = os.path.join(inFileDir, "InputRealFiles/d16_real.txt")
 
 
 def getInput():
@@ -102,51 +102,75 @@ def solution1(visited=[], steps=30, pressure=0):
     return maxPressure
 
 
-def solution1(visited=[], steps=26, pressure=0):
+def solution2(visited=[[],[]], steps=[26, 26], pressure=0):
     #Get a list of every other non-zero valve that are not already in the visited valves list
     potential1 = []
+    potential2 = []
+
     for i in valveDists.keys():
+        #Checking for person 1
         #The edge also has to include the last valve in our visited list (i.e. where we're currently at)
         if i[0] == visited[0][-1] and i[1] not in visited[0] and i[1] not in visited[1]:
             #Only adding it to the list of options if the distance is less than the number of steps remaining
-            if valveDists[i] < steps:
+            if valveDists[i] < steps[0]:
                 potential1.append(i[1])
         elif i[1] == visited[0][-1] and i[0] not in visited[0] and i[0] not in visited[1]:
             #Only adding it to the list of options if the distance is less than the number of steps remaining
-            if valveDists[i] < steps:
+            if valveDists[i] < steps[0]:
                 potential1.append(i[0])
 
-    potential2 = []
-    for i in valveDists.keys():
+        #Checking for person 2
         #The edge also has to include the last valve in our visited list (i.e. where we're currently at)
         if i[0] == visited[1][-1] and i[1] not in visited[0] and i[1] not in visited[1]:
             #Only adding it to the list of options if the distance is less than the number of steps remaining
-            if valveDists[i] < steps:
+            if valveDists[i] < steps[1]:
                 potential2.append(i[1])
         elif i[1] == visited[1][-1] and i[0] not in visited[0] and i[0] not in visited[1]:
             #Only adding it to the list of options if the distance is less than the number of steps remaining
-            if valveDists[i] < steps:
+            if valveDists[i] < steps[1]:
                 potential2.append(i[0])
 
-    #If none are available, calculate and return the total pressure
-    if len(potential) == 0:
+    #print("Person 1")
+    #print(" - Visited:", visited[0])
+    #print(" - Steps remaining:", steps[0])
+    #print("Person 2")
+    #print(" - Visited:", visited[1])
+    #print(" - Steps remaining:", steps[1])
+
+    #If none are available for either person, calculate and return the total pressure
+    if len(potential1) == 0 and len(potential2) == 0:
         #print("Path", visited, "has pressure", pressure, "With", steps, "steps remaining")
         return pressure
 
     #For any that remain, do a recursive call to get the most pressure it can relieve (store the largest one returned)
     maxPressure = 0
-    for p in potential:
-        newVisited = [x for x in visited]
-        newVisited.append(p)
-        newSteps = steps - valveDists[(min(p, visited[-1]), max(p, visited[-1]))]
-        newPressure = pressure + (newSteps * valveFlows[p])
-        val = solution1(newVisited, newSteps, newPressure)
-        if val > maxPressure:
-            maxPressure = val
+
+    #If person 1 has equal or more steps than person 2, they go first
+    if steps[0] >= steps[1]:
+        for p in potential1:
+            newVisited = [x for x in visited[0]]
+            newVisited.append(p)
+            newSteps = steps[0] - valveDists[(min(p, visited[0][-1]), max(p, visited[0][-1]))]
+            newPressure = pressure + (newSteps * valveFlows[p])
+            val = solution2([newVisited, visited[1]], [newSteps, steps[1]], newPressure)
+            if val > maxPressure:
+                maxPressure = val
+    #If person 2 has more steps, they go first
+    else:
+        for p in potential2:
+            newVisited = [x for x in visited[1]]
+            newVisited.append(p)
+            newSteps = steps[1] - valveDists[(min(p, visited[1][-1]), max(p, visited[1][-1]))]
+            newPressure = pressure + (newSteps * valveFlows[p])
+            val = solution2([visited[0], newVisited], [steps[0], newSteps], newPressure)
+            if val > maxPressure:
+                maxPressure = val
+
     #return the largest pressure value found
     return maxPressure
 
 #Getting the starting dictionaries for the flow for each valve, the connections for each valves, the distances from/to each non-zero valve, and which valve to start at
 valveFlows, valveEdges, startValve, valveDists = getInput()
 #print("Year 2022, Day 16 solution part 1:", solution1([startValve], 30))
-print("Year 2022, Day 16 solution part 2:", solution2([[startValue], [startValue]]))
+print("Year 2022, Day 16 solution part 2:", solution2([[startValve], [startValve]]))
+#1213 too low
