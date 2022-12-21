@@ -10,7 +10,7 @@ airSymb = '-'
 rockSymb = 'O'
 floorSymb = '#'
 part1Iterations = 2022
-part2Iterations = 9999 #1000000000000
+part2Iterations = 5045500 #1000000000000
 
 def spawnRock(rockID, rockGrid):
     #Finding the number of empty rows at the top of the grid
@@ -410,10 +410,11 @@ def solution2():
                     #If this state has been seen before in our memoization, we make a note of it
                     m = (len(grid), wi, i % 5)
                     if m in memo.keys():
-                        print("Seen state", m)
-                        if grid == memo[m]:
-                            print("FOUND A MATCH")
+                        if grid == memo[m][1]:
+                            print("======= FOUND A MATCH AT ROCK", memo[m][0])
                             return
+                    else:
+                        memo[m] = (i, grid)
 
     for r in range(0, len(grid)):
         binStr = bin(grid[r])[2:].zfill(7)
