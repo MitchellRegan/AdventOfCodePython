@@ -26,15 +26,25 @@ def solution1():
     for i in range(0, len(og)):
         startIndex = nums.index(og[i])
         newIndex = nums[startIndex] + startIndex
-        while newIndex < 0:
-            newIndex += (len(og) -1)
-        newIndex = newIndex % len(og)
+
+        if newIndex < 0:
+            newIndex -= 1
+            while newIndex < 0:
+                newIndex += (len(og))
+
+        if newIndex >= len(og):
+            while newIndex >= len(og):
+                newIndex -= len(og)
+
+        #newIndex = newIndex % len(og)
 
         if newIndex == 0:
             nums.pop(startIndex)
-            nums.append(og[i])
+            #nums.append(og[i])
+            nums.insert(0, og[i])
         elif newIndex == len(og)-1:
             nums.pop(startIndex)
+            #nums.insert(0, og[i])
             nums.append(og[i])
         elif startIndex < newIndex:
             nums.pop(startIndex)
@@ -42,10 +52,6 @@ def solution1():
         elif startIndex > newIndex:
             nums.pop(startIndex)
             nums.insert(newIndex+1, og[i])
-
-        #print("Number", og[i], "at index", startIndex, "moved to", newIndex)
-        #print(nums)
-        #print(intendedSteps[i+1], "\n")
 
     n1000 = (1000 % len(og)) + nums.index(0)
     if n1000 >= len(og):
@@ -59,6 +65,9 @@ def solution1():
 
     print("1000th:", nums[n1000], "2000th:", nums[n2000], "3000th:", nums[n3000])
     #not -7625
+    #not -18805
+    #not 11148
+    #not 8925
     return nums[n1000] + nums[n2000] + nums[n3000]
 
 

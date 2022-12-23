@@ -148,8 +148,7 @@ def solution2():
     
         #For any options that remain, we look for the most optimal valve to go to
         #If person 1 and person 2 have the same number of steps, we figure out which goes first
-        if steps[0] == steps[1]:
-            #print("Step", (26 - steps[0]))
+        if steps[0] > 0 and steps[1] > 0:
             bestValve1 = None
             bestValve2 = None
             maxPressure = 0
@@ -172,14 +171,10 @@ def solution2():
             visited[1].append(bestValve2)
             steps[0] -= valveDists[(min(visited[0][-1], visited[0][-2]), max(visited[0][-1], visited[0][-2]))]
             steps[1] -= valveDists[(min(visited[1][-1], visited[1][-2]), max(visited[1][-1], visited[1][-2]))]
-            #print(" - - Person 1 ->", visited[0][-1], "that is", valveDists[(min(visited[0][-1], visited[0][-2]), max(visited[0][-1], visited[0][-2]))], "steps away")
-            #print(" - - Score:", maxPressure, "(", valveFlows[bestValve1], "*", steps[0], ")")
-            #print(" - - Person 2 ->", visited[1][-1], "that is", valveDists[(min(visited[1][-1], visited[1][-2]), max(visited[1][-1], visited[1][-2]))], "steps away")
-            #print(" - - Score:", maxPressure, "(", valveFlows[bestValve2], "*", steps[1], ")")
             pressure += maxPressure
         #If person 1 has more steps than person 2, they go first
-        elif steps[0] > steps[1]:
-            #print("Step", (26 - steps[0]))
+        elif steps[0] > 0 and steps[1] == 0:
+
             bestValve = None
             maxPressure = 0
             
@@ -187,12 +182,9 @@ def solution2():
                 #Getting the pressure that would be released (score) if p1 opened the valve
                 p1dist = valveDists[ ( min(visited[0][-1], p), max(visited[0][-1], p) ) ]
                 p1score = (steps[0] - p1dist) * valveFlows[p]
-                #Getting the pressure that would be released (score) if p2 opened the valve
-                p2dist = valveDists[(min(visited[1][-1], p), max(visited[1][-1], p))]
-                p2score = (steps[1] - p2dist) * valveFlows[p]
                 
 
-                if p1score >= maxPressure and p1score >= p2score:
+                if p1score >= maxPressure:
                     maxPressure = p1score
                     bestValve = p
                     
@@ -203,24 +195,18 @@ def solution2():
                 visited[0].append(bestValve)
                 pressure += maxPressure
                 steps[0] -= valveDists[(min(visited[0][-1], visited[0][-2]), max(visited[0][-1], visited[0][-2]))]
-                #print(" - - Person 1 ->", visited[0][-1], "that is", valveDists[(min(visited[0][-1], visited[0][-2]), max(visited[0][-1], visited[0][-2]))], "steps away")
-                #print(" - - Score:", maxPressure, "(", valveFlows[bestValve], "*", steps[0], ")")
         #If person 2 has more steps, they go first
         else:
-            #print("Step", (26 - steps[1]))
             bestValve = None
             maxPressure = 0
             
             #Finding the valve with the best score
             for p in potential2:
-                #Getting the pressure that would be released (score) if p1 opened the valve
-                p1dist = valveDists[(min(visited[0][-1], p), max(visited[0][-1], p))]
-                p1score = (steps[0] - p1dist) * valveFlows[p]
                 #Getting the pressure that would be released (score) if p2 opened the valve
                 p2dist = valveDists[(min(visited[1][-1], p), max(visited[1][-1], p))]
                 p2score = (steps[1] - p2dist) * valveFlows[p]
                 
-                if p2score >= maxPressure and p2score >= p1score:
+                if p2score >= maxPressure:
                     maxPressure = p2score
                     bestValve = p
                     
@@ -231,12 +217,8 @@ def solution2():
                 visited[1].append(bestValve)
                 pressure += maxPressure
                 steps[1] -= valveDists[(min(visited[1][-1], visited[1][-2]), max(visited[1][-1], visited[1][-2]))]
-                #print(" - - Person 2 ->", visited[1][-1], "that is", valveDists[(min(visited[1][-1], visited[1][-2]), max(visited[1][-1], visited[1][-2]))], "steps away")
-                #print(" - - Score:", maxPressure, "(", valveFlows[bestValve], "*", steps[1], ")")
 
-    #return the largest pressure value found
-    #print("Person 1 path:", visited[0])
-    #print("Person 2 path:", visited[1])
+
     return pressure
 
 
@@ -247,3 +229,4 @@ print("Year 2022, Day 16 solution part 2:", solution2())
 #1213 too low
 #1897 too low
 #1921 too low
+#1922 too low
