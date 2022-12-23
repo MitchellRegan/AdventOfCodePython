@@ -147,8 +147,9 @@ def solution2():
 
             #If there are no elves in the 8 positions adjacent, they don't do anything
             adjacent = [[r+1,c], [r+1,c+1], [r,c+1], [r-1,c+1], [r-1,c], [r-1,c-1], [r,c-1], [r+1,c-1]]
-            #adjacent = [x for x in adjacent if x not in elfLocs]
-            if not any(i in adjacent for i in elfLocs):
+            adjacent = [x for x in adjacent if x not in elfLocs]
+            #if not any(i in adjacent for i in elfLocs):
+            if len(adjacent) == 8:
                 #print("Elf", elf, "is not adjacent to others. No movement")
                 continue
 
@@ -157,7 +158,7 @@ def solution2():
                 #If no elf in N, NE, or NW, they try going north
                 if step == 0:
                     north = [[r-1,c+1], [r-1,c], [r-1,c-1]]
-                    if not any(i in north for i in elfLocs):
+                    if len([x for x in north if x in adjacent]) == 3:
                         #print("Elf at", elf, "can go north")
                         if (r-1,c) in destinations.keys():
                             destinations[(r-1,c)].append(elf)
@@ -167,7 +168,7 @@ def solution2():
                 #If no elf in the S, SE, or SW, they try going south
                 elif step == 1:
                     south = [[r+1,c+1], [r+1,c], [r+1,c-1]]
-                    if not any(i in south for i in elfLocs):
+                    if len([x for x in south if x in adjacent]) == 3:
                         #print("Elf at", elf, "can go north")
                         if (r+1,c) in destinations.keys():
                             destinations[(r+1,c)].append(elf)
@@ -177,7 +178,7 @@ def solution2():
                 #If no elf in the W, NW, or SW, they try going west
                 elif step == 2:
                     west = [[r,c-1], [r-1,c-1], [r+1,c-1]]
-                    if not any(i in west for i in elfLocs):
+                    if len([x for x in west if x in adjacent]) == 3:
                         #print("Elf at", elf, "can go north")
                         if (r,c-1) in destinations.keys():
                             destinations[(r,c-1)].append(elf)
@@ -187,7 +188,7 @@ def solution2():
                 #If no elf in the E, NE, or SE, they try going east
                 elif step == 3:
                     east = [[r,c+1], [r-1,c+1], [r+1,c+1]]
-                    if not any(i in east for i in elfLocs):
+                    if len([x for x in east if x in adjacent]) == 3:
                         #print("Elf at", elf, "can go north")
                         if (r,c+1) in destinations.keys():
                             destinations[(r,c+1)].append(elf)
@@ -197,7 +198,6 @@ def solution2():
 
         #If there were no movements this loop, we return the loop number
         if len(destinations.keys()) == 0:
-            print(destinations.keys())
             return i
         i += 1
 
@@ -217,5 +217,5 @@ def solution2():
     return "Don't know"
 
 
-#print("Year 2022, Day 23 solution part 1:", solution1())
+print("Year 2022, Day 23 solution part 1:", solution1())
 print("Year 2022, Day 23 solution part 2:", solution2())

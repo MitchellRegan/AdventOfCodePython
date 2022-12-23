@@ -26,6 +26,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AdventOfCodePython.py" />
+    <Compile Include="HelperFunctions\binaryTree_coord.py" />
     <Compile Include="HelperFunctions\inputReaders.py">
       <SubType>Code</SubType>
     </Compile>
