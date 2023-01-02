@@ -36,6 +36,9 @@
     <Compile Include="HelperFunctions\pathfinding.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="HelperFunctions\sortingAlgorithms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="HelperFunctions\__init__.py">
       <SubType>Code</SubType>
     </Compile>
@@ -202,6 +205,9 @@
     <Compile Include="Year2022\Day24.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2022\Day25.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2022\Day3.py">
       <SubType>Code</SubType>
     </Compile>
@@ -319,6 +325,9 @@
     <Content Include="Year2022\InputRealFiles\d24_real.txt">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Year2022\InputRealFiles\d25_real.txt">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Year2022\InputRealFiles\d2_real.txt">
       <SubType>Code</SubType>
     </Content>
@@ -389,6 +398,9 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="Year2022\InputTestFiles\d24_test.txt">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Year2022\InputTestFiles\d25_test.txt">
       <SubType>Code</SubType>
     </Content>
     <Content Include="Year2022\InputTestFiles\d2_test.txt">

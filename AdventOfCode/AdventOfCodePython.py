@@ -20,7 +20,69 @@ elif y == '2022':
 
 
 if True:
+    import time
+    import random
+    import HelperFunctions.sortingAlgorithms as sa
+
+    iterations = 100
+    exampleList = [x for x in range(25, -1, -1)]
+    random.shuffle(exampleList)
+
+    print("Start:         ", exampleList)
+
+    start = time.time()
+    for i in range(iterations):
+        bubbleList = [x for x in exampleList]
+        sa.bubble_sort(bubbleList)
+    end = time.time() - start
+    print("Bubble Sort:   ", bubbleList, "Time: %.8f" % end)
+
+    start = time.time()
+    for i in range(iterations):
+        coctailList = [x for x in exampleList]
+        sa.coctail_shaker_sort(coctailList)
+    end = time.time() - start
+    print("Coctail Sort:  ", coctailList, "Time: %.8f" % end)
+
+    start = time.time()
+    for i in range(iterations):
+        insertList = [x for x in exampleList]
+        sa.insertion_sort(insertList)
+    end = time.time() - start
+    print("Insertion Sort:", insertList, "Time: %.8f" % end)
+
+    start = time.time()
+    for i in range(iterations):
+        shellList = [x for x in exampleList]
+        sa.shell_sort(shellList)
+    end = time.time() - start
+    print("Shell Sort:    ", shellList, "Time: %.8f" % end)
+
+    start = time.time()
+    for i in range(iterations):
+        combList = [x for x in exampleList]
+        sa.comb_sort(combList)
+    end = time.time() - start
+    print("Comb Sort:     ", combList, "Time: %.8f" % end)
+
+    start = time.time()
+    for i in range(iterations):
+        mergeList = [x for x in exampleList]
+        sa.merge_sort_top_down(mergeList)
+    end = time.time() - start
+    print("Merge Sort:    ", mergeList, "Time: %.8f" % end)
+
+    start = time.time()
+    for i in range(iterations):
+        selectionList = [x for x in exampleList]
+        sa.selection_sort(selectionList)
+    end = time.time() - start
+    print("Selection Sort:", selectionList, "Time: %.8f" % end)
+
+
+if False:
     inFile = "D:\\Users\\mrega\\Documents\\AdventOfCodePython\\AdventOfCode\\Year2022\\InputRealFiles\\d23_real.txt"
+    #inFile = "D:\\Users\\mrega\\Documents\\AdventOfCodePython\\AdventOfCode\\Year2022\\InputTestFiles\\d23_test.txt"
     import time
     from HelperFunctions import binaryTree as bt
 

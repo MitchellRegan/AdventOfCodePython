@@ -1,13 +1,11 @@
 class Node:
     '''Nodes used in the Binary Search Tree to store data values.
     '''
-    def __init__(self, data, lambdaComp=None):
+    def __init__(self, data):
         '''Constructor for the Binary Tree.
         - data: The data to be stored in this node.
-        - lambdaComp: Lambda comparison function. Required for data structures that don't have a built-in method for "less than"
         '''
         self.data = data
-        self.lambdaComp = lambdaComp
         self.left = None
         self.right = None
     
@@ -21,84 +19,9 @@ class Node:
         if self.right:
             self.right.printTree()
 
-    
-    def insert(self, data):
-        '''Inserts a new data value into the binary tree.
-        Return: Bool for if the insertion was successful.
-        '''
-        #If there is no special lambda comparison function, we use '<'
-        if self.lambdaComp is None:
-            if data < self.data:
-                if self.left is None:
-                    self.left = Node(data, self.lambdaComp)
-                    return True
-                else:
-                    return self.left.insert(data)
-            else:
-                if self.right is None:
-                    self.right = Node(data, self.lambdaComp)
-                    return True
-                else:
-                    return self.right.insert(data)
-        #If there is a lambda comparison function, we use that
-        else:
-            if self.lambdaComp(data, self.data):
-                if self.left is None:
-                    self.left = Node(data, self.lambdaComp)
-                    return True
-                else:
-                    return self.left.insert(data)
-            else:
-                if self.right is None:
-                    self.right = Node(data, self.lambdaComp)
-                    return True
-                else:
-                    return self.right.insert(data)
-
-    
-    def length(self):
-        '''Returns the number of elements in this binary tree.
-        '''
-        l = 0
-        if self.left is not None:
-            l = self.left.length()
-        r = 0
-        if self.right is not None:
-            r = self.right.length()
-
-        return 1 + l + r
-
-
-    def toList(self):
-        '''Returns all elements in this binary tree as a sorted list from smallest to largest.
-        '''
-        binList = []
-
-        if self.left:
-            binList = self.left.toList()
-
-        binList.append(self.data)
-
-        if self.right:
-            binList.extend(self.right.toList())
-
-        return binList
-
-
-    def inTree(self, value):
-        '''Checks if the given value is in this binary tree.
-        '''
-        if self.data == value:
-            return True
-        elif value < self.data and self.left:
-            return self.left.inTree(value)
-        elif self.left:
-            return self.right.inTree(value)
-        return False
-
 
     def deleteNode(self):
-        '''Method to delete this node and all of its child nodes.
+        '''Deletes this node and all of its child nodes.
         '''
         if self.left:
             self.left.deleteNode()
@@ -108,6 +31,19 @@ class Node:
             self.right = None
         self.data = None
         del self
+            
+    
+    def toList(self, binList):
+        '''Appends this node's data and all child data to the given list.
+        '''
+        if self.left:
+            self.left.toList(binList)
+        print("2")
+        binList.append(self.data)
+        print("3")
+        if self.right:
+            self.right.toList(binList)
+        print("4")
 
 
 class BinaryTree:
@@ -148,27 +84,35 @@ class BinaryTree:
         '''Inserts a new data value into the binary tree.
         Return: Bool for if the insertion was successful.
         '''
-        if self.head:
-            try:
-                if self.head.insert(data):
+        #If this tree is empty, we set the new value as the head node
+        if self.head is None:
+            self.head = Node(data)
+            self._size += 1
+            return True
+
+        #If there's at least one node in this tree, we have to find where to put the new value
+        ptr = self.head
+        while ptr is not None:
+            #If the current value is already in the tree, we break
+            if ptr.data == data:
+                return False
+
+            #If the new value is less than the current node's value, we go left
+            if (self.lambdaComp is not None and self.lambdaComp(data, ptr.data)) or data < ptr.data:
+                if ptr.left:
+                    ptr = ptr.left
+                else:
+                    ptr.left = Node(data)
                     self._size += 1
                     return True
+            #Otherwise we go right
+            else:
+                if ptr.right:
+                    ptr = ptr.right
                 else:
-                    return False
-            #If the max recursion limit has been hit, we try rebalancing the tree and inserting again
-            except RecursionError as err:
-                print("==============================Insert. Num elements:", self.size)
-                self.balanceTree()
-                if self.head.insert(data):
+                    ptr.right = Node(data)
                     self._size += 1
                     return True
-                else:
-                    return False
-
-
-        self.head = Node(data, self.lambdaComp)
-        self._size = 1
-        return True
 
 
     def remove(self, value):
@@ -214,7 +158,7 @@ class BinaryTree:
                     self._size -= 1
 
                 #If the node has both left and right children
-                else:
+                #else:
 
                 #Returning the value stored in the deleted node
                 return returnVal
@@ -243,18 +187,31 @@ class BinaryTree:
 
 
     def toList(self):
-        '''Returns all elements in this binary tree as a sorted list from smallest to largest.
+        '''Returns all elements in this binary tree as a sorted list from smallest to largest. If empty, returns None.
         '''
         if self.head:
-            return self.head.toList()
-        return []
+            binList = []
+            self.head.toList(binList)
+            return binList
+
+        return None
 
 
     def inTree(self, value):
-        '''Checks if the given value is in this binary tree.
+        '''Checks if a given value is in this binary tree.
         '''
-        if self.head:
-            return self.head.inTree(value)
+        if self.head is None:
+            return False
+
+        ptr = self.head
+        while ptr is not None:
+            if ptr.data == value:
+                return True
+            elif (self.lambdaComp is not None and self.lambdaComp(data, ptr.data)) or value < ptr.data:
+                ptr = ptr.left
+            else:
+                ptr = ptr.right
+
         return False
 
 
@@ -263,6 +220,7 @@ class BinaryTree:
         '''
         if self.head:
             self.head.deleteNode()
+
         self.head = None
         self._size = 0
 
@@ -271,6 +229,9 @@ class BinaryTree:
         '''Inserts all values of a sorted list into this binary tree.
         '''
         #add the middle value
+        if li is None:
+            return
+
         middleIndex = len(li) // 2
         self.insert(li[middleIndex])
 
@@ -289,9 +250,13 @@ class BinaryTree:
         '''
         if self.head is None:
             return
+        print("A")
         #Converting the tree into an ordered list
         vals = self.toList()
+        print("B")
         #Clearing the current tree
         self.deleteTree()
+        print("C")
         #Adding the elements back in using our list-to-binary tree method which inserts everything in a balanced way.
         self.listToBinaryTree(vals)
+        print("D")
