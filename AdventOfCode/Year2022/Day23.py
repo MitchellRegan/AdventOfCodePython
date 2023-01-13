@@ -22,6 +22,21 @@ def getInput():
     return elfLocs
 
 
+def getInput2():
+    #Dict to store the row,col position of each elf
+    elfLocs = {}
+
+    with open(inFile, 'r') as f:
+        row = 0
+        for line in f:
+            for col in range(0, len(line)):
+                if line[col] == '#':
+                    elfLocs[(row, col)] = True
+            row += 1
+
+    return elfLocs
+
+
 def solution1():
     #Dict to store the row,col location of each elf and their step order
     elfLocs = getInput()
@@ -130,24 +145,24 @@ def solution1():
 
 def solution2():
     #Dict to store the row,col location of each elf and their step order
-    elfLocs = getInput()
+    elfLocs = getInput2()
     stepOrder = [0, 1, 2, 3] # 0=N, 1=S, 2=W, 3=E
 
     #Iterating through 10 loops before getting the final output
     i = 1
     while True:
-        print("Loop", i)
         #Dictionary to store the destination locations for each elf
         destinations = {}
+        collisions = {}
 
         #Getting the destination for each elf, one by one
-        for elf in elfLocs:
+        for elf in elfLocs.keys():
             r = elf[0]
             c = elf[1]
 
             #If there are no elves in the 8 positions adjacent, they don't do anything
-            adjacent = [[r+1,c], [r+1,c+1], [r,c+1], [r-1,c+1], [r-1,c], [r-1,c-1], [r,c-1], [r+1,c-1]]
-            adjacent = [x for x in adjacent if x not in elfLocs]
+            adjacent = [(r+1,c), (r+1,c+1), (r,c+1), (r-1,c+1), (r-1,c), (r-1,c-1), (r,c-1), (r+1,c-1)]
+            adjacent = [x for x in adjacent if x not in elfLocs.keys()]
             #if not any(i in adjacent for i in elfLocs):
             if len(adjacent) == 8:
                 #print("Elf", elf, "is not adjacent to others. No movement")
@@ -157,43 +172,47 @@ def solution2():
             for step in stepOrder:
                 #If no elf in N, NE, or NW, they try going north
                 if step == 0:
-                    north = [[r-1,c+1], [r-1,c], [r-1,c-1]]
+                    north = [(r-1,c+1), (r-1,c), (r-1,c-1)]
                     if len([x for x in north if x in adjacent]) == 3:
                         #print("Elf at", elf, "can go north")
                         if (r-1,c) in destinations.keys():
-                            destinations[(r-1,c)].append(elf)
-                        else:
-                            destinations[(r-1,c)] = [elf]
+                            #destinations.pop((r-1,c))
+                            collisions[(r-1,c)] = True
+                        elif (r-1,c) not in collisions.keys():
+                            destinations[(r-1,c)] = elf
                         break
                 #If no elf in the S, SE, or SW, they try going south
                 elif step == 1:
-                    south = [[r+1,c+1], [r+1,c], [r+1,c-1]]
+                    south = [(r+1,c+1), (r+1,c), (r+1,c-1)]
                     if len([x for x in south if x in adjacent]) == 3:
                         #print("Elf at", elf, "can go north")
                         if (r+1,c) in destinations.keys():
-                            destinations[(r+1,c)].append(elf)
-                        else:
-                            destinations[(r+1,c)] = [elf]
+                            #destinations.pop((r+1,c))
+                            collisions[(r+1,c)] = True
+                        elif (r+1,c) not in collisions.keys():
+                            destinations[(r+1,c)] = elf
                         break
                 #If no elf in the W, NW, or SW, they try going west
                 elif step == 2:
-                    west = [[r,c-1], [r-1,c-1], [r+1,c-1]]
+                    west = [(r,c-1), (r-1,c-1), (r+1,c-1)]
                     if len([x for x in west if x in adjacent]) == 3:
                         #print("Elf at", elf, "can go north")
                         if (r,c-1) in destinations.keys():
-                            destinations[(r,c-1)].append(elf)
-                        else:
-                            destinations[(r,c-1)] = [elf]
+                            #destinations.pop((r,c-1))
+                            collisions[(r,c-1)] = True
+                        elif (r,c-1) not in collisions.keys():
+                            destinations[(r,c-1)] = elf
                         break
                 #If no elf in the E, NE, or SE, they try going east
                 elif step == 3:
-                    east = [[r,c+1], [r-1,c+1], [r+1,c+1]]
+                    east = [(r,c+1), (r-1,c+1), (r+1,c+1)]
                     if len([x for x in east if x in adjacent]) == 3:
                         #print("Elf at", elf, "can go north")
                         if (r,c+1) in destinations.keys():
-                            destinations[(r,c+1)].append(elf)
-                        else:
-                            destinations[(r,c+1)] = [elf]
+                            #destinations.pop((r,c+1))
+                            collisions[(r,c+1)] = True
+                        elif (r,c+1) not in collisions.keys():
+                            destinations[(r,c+1)] = elf
                         break
 
         #If there were no movements this loop, we return the loop number
@@ -203,12 +222,9 @@ def solution2():
 
         #Looping through each of the destinations
         for d in destinations.keys():
-            #If only one elf wants to go here, we update their position
-            if len(destinations[d]) == 1:
-                #print("Destination", d, "elves:", destinations[d])
-                elfLocs.remove(destinations[d][0])
-                elfLocs.append([d[0], d[1]])
-            #Otherwise, no movements
+            #print("Destination", d, "elves:", destinations[d])
+            elfLocs.pop(destinations[d])
+            elfLocs[(d[0], d[1])] = True
 
         #Cycling the step order
         f = stepOrder.pop(0)

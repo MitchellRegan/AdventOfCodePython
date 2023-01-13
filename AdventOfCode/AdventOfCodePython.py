@@ -19,7 +19,8 @@ elif y == '2022':
     import Year2022
 
 
-if True:
+if False:
+    print("Testing sorting algorithms")
     import time
     import random
     import HelperFunctions.sortingAlgorithms as sa
@@ -80,9 +81,17 @@ if True:
     print("Selection Sort:", selectionList, "Time: %.8f" % end)
 
 
+from HelperFunctions import testing
+testing.heapTimeTest()
+#for i in range(1, 10):
+#    testing.binaryTreeTimeTest(iterations=100, elements=i*100)
+#testing.binaryTreeTimeTest(elements=1000)
+#testing.binaryTreeTimeTest(elements=10000)
+
 if False:
-    inFile = "D:\\Users\\mrega\\Documents\\AdventOfCodePython\\AdventOfCode\\Year2022\\InputRealFiles\\d23_real.txt"
-    #inFile = "D:\\Users\\mrega\\Documents\\AdventOfCodePython\\AdventOfCode\\Year2022\\InputTestFiles\\d23_test.txt"
+    print("Testing binary tree")
+    #inFile = "D:\\Users\\mrega\\Documents\\AdventOfCodePython\\AdventOfCode\\Year2022\\InputRealFiles\\d23_real.txt"
+    inFile = "D:\\Users\\mrega\\Documents\\AdventOfCodePython\\AdventOfCode\\Year2022\\InputTestFiles\\d23_test.txt"
     import time
     from HelperFunctions import binaryTree as bt
 
@@ -123,3 +132,4 @@ if False:
     print(inCount1, "list check time:", end1)
     print(inCount2, "bin check time: ", end2)
     print("Bin Tree faster?", end2 < end1, '\n')
+    bin.printTree()
