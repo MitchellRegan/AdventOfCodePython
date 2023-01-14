@@ -162,66 +162,83 @@ def heapTimeTest(iterations=100, elements=100):
             print("\tIn order: True")
 
 
-def sortingAlgorithmTimeTest(iterations=100):
+def sortingAlgorithmTimeTest(iterations=100, listSize=25):
     print("Testing sorting algorithms")
-    import time
-    import random
-    import HelperFunctions.sortingAlgorithms as sa
+    print(" -", iterations, "iterations using lists with", listSize, "shuffled elements")
+    details = []
 
-    exampleList = [x for x in range(25, -1, -1)]
+    exampleList = [x for x in range(listSize, -1, -1)]
     random.shuffle(exampleList)
-
-    print("Start:         ", exampleList)
 
     start = time.time()
     for i in range(iterations):
         bubbleList = [x for x in exampleList]
         sa.bubble_sort(bubbleList)
     end = time.time() - start
-    print("Bubble Sort:   ", bubbleList, "Time: %.8f" % end)
+    details.append(("Bubble Sort", end, bubbleList, "O(n^2)"))
 
     start = time.time()
     for i in range(iterations):
         coctailList = [x for x in exampleList]
         sa.coctail_shaker_sort(coctailList)
     end = time.time() - start
-    print("Coctail Sort:  ", coctailList, "Time: %.8f" % end)
+    details.append(("Coctail Sort", end, coctailList, "O(n^2)"))
 
     start = time.time()
     for i in range(iterations):
         insertList = [x for x in exampleList]
         sa.insertion_sort(insertList)
     end = time.time() - start
-    print("Insertion Sort:", insertList, "Time: %.8f" % end)
+    details.append(("Insertion Sort", end, insertList, "O(n^2)"))
 
     start = time.time()
     for i in range(iterations):
         shellList = [x for x in exampleList]
         sa.shell_sort(shellList)
     end = time.time() - start
-    print("Shell Sort:    ", shellList, "Time: %.8f" % end)
+    details.append(("Shell Sort", end, shellList, "O(n^2) - O(n log(n))"))
 
     start = time.time()
     for i in range(iterations):
         combList = [x for x in exampleList]
         sa.comb_sort(combList)
     end = time.time() - start
-    print("Comb Sort:     ", combList, "Time: %.8f" % end)
+    details.append(("Comb Sort", end, combList, "O(n^2 / 2^p)"))
 
     start = time.time()
     for i in range(iterations):
         mergeList = [x for x in exampleList]
         sa.merge_sort_top_down(mergeList)
     end = time.time() - start
-    print("Merge Sort:    ", mergeList, "Time: %.8f" % end)
+    details.append(("Merge Sort", end, mergeList, "O(n log(n))"))
 
     start = time.time()
     for i in range(iterations):
         selectionList = [x for x in exampleList]
         sa.selection_sort(selectionList)
     end = time.time() - start
-    print("Selection Sort:", selectionList, "Time: %.8f" % end)
+    details.append(("Selection Sort", end, selectionList, "O(n^2)"))
+
+    start = time.time()
+    for i in range(iterations):
+        heapList = [x for x in exampleList]
+        sa.heap_sort(heapList)
+    end = time.time() - start
+    details.append(("Heap Sort", end, heapList, "O(n log(n))"))
+
+    detailSort = lambda x,y: x[1] > y[1]
+    sa.comb_sort_complex(details, detailSort)
+    for d in details:
+        print("    %20s:   %20s   Time: %0.8f " %(d[0], d[3], d[1]))
+        for i in range(len(d[2])-1):
+            if d[2][i] > d[2][i+1]:
+                print("        - Out of order:", d[2])
+                break
+    print()
 
 
-heapTimeTest()
-sortingAlgorithmTimeTest()
+#heapTimeTest()
+for i in range(10):
+    iter = 100#100 * (i+1)
+    elem = 25 + (25 * i)
+    sortingAlgorithmTimeTest(iterations=iter, listSize=elem)

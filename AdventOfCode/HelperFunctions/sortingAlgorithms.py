@@ -32,6 +32,7 @@ def bubble_sort_complex(li, greaterThan=(lambda a,b: a>b)):
                 li[j] = placeholder
 
 
+
 #https://en.wikipedia.org/wiki/Cocktail_shaker_sort
 def coctail_shaker_sort(li):
     '''Coctail Shaker Sort
@@ -106,6 +107,7 @@ def coctail_shaker_sort_complex(li, greaterThan=(lambda a,b: a>b)):
             min += 1
 
 
+
 #https://en.wikipedia.org/wiki/Insertion_sort
 def insertion_sort(li):
     '''Insertion Sort
@@ -138,6 +140,7 @@ def insertion_sort_complex(li, greaterThan=(lambda a,b: a>b)):
             li[j] = li[j-1]
             li[j-1] = placeholder
             j -= 1
+
 
 
 #https://en.wikipedia.org/wiki/Shellsort
@@ -178,6 +181,7 @@ def shell_sort_complex(li, greaterThan=(lambda a,b: a>b), gapSequence=[5,3,1]):
                 j -= gap
 
 
+
 #https://en.wikipedia.org/wiki/Comb_sort
 def comb_sort(li, shrinkFactor=1.3):
     '''Comb Sort
@@ -188,18 +192,19 @@ def comb_sort(li, shrinkFactor=1.3):
         shrinkFactor: The amount to divide the gap size by in each iteration.
     '''
     gap = len(li)
-    while True:
-        gap = int(gap / shrinkFactor)
-        if gap < 1:
-            return
+    sorted = False
+    while not sorted:
+        gap = int(gap // shrinkFactor)
+        if gap <= 1:
+            gap = 1
+            sorted = True
 
-        i = 0
-        while i + gap < len(li):
-            if li[i] > li[i+gap]:
+        for i in range(len(li) - gap):
+            if li[i] > li[gap+i]:
                 placeholder = li[i]
-                li[i] = li[i+gap]
-                li[i+gap] = placeholder
-            i += 1
+                li[i] = li[gap+i]
+                li[gap+i] = placeholder
+                sorted = False
 
 
 def comb_sort_complex(li, greaterThan=(lambda a,b: a>b), shrinkFactor=1.3):
@@ -212,18 +217,20 @@ def comb_sort_complex(li, greaterThan=(lambda a,b: a>b), shrinkFactor=1.3):
         shrinkFactor: The amount to divide the gap size by in each iteration.
     '''
     gap = len(li)
-    while True:
-        gap = int(gap / shrinkFactor)
-        if gap < 1:
-            return
+    sorted = False
+    while not sorted:
+        gap = int(gap // shrinkFactor)
+        if gap <= 1:
+            gap = 1
+            sorted = True
 
-        i = 0
-        while i + gap < len(li):
-            if greaterThan(li[i], li[i+gap]):
+        for i in range(len(li) - gap):
+            if greaterThan(li[i], li[gap+i]):
                 placeholder = li[i]
-                li[i] = li[i+gap]
-                li[i+gap] = placeholder
-            i += 1
+                li[i] = li[gap+i]
+                li[gap+i] = placeholder
+                sorted = False
+
 
 
 #https://en.wikipedia.org/wiki/Merge_sort
@@ -302,6 +309,7 @@ def merge_sort_top_down_complex(li, greaterThan=(lambda a,b: a>b)):
         r += 1
 
 
+
 #https://en.wikipedia.org/wiki/Selection_sort
 def selection_sort(li):
     '''Selection Sort
@@ -338,18 +346,104 @@ def selection_sort_complex(li, greaterThan=(lambda a,b: a>b)):
         li[i] = placeholder
 
 
+
 #https://en.wikipedia.org/wiki/Heapsort
-def heap_sort(li, greaterThan=(lambda a,b: a>b)):
+def heap_sort(li):
     '''Heap Sort
     Performance: O(n log(n))
     Space: O(n)
     Params:
         li: The list to be sorted.
-        greaterThan: lambda function to check if one value is greater than another. Defaults to "a>b"
     '''
-    #Turn the list into a max heap
+    #Convert the list to a binary max heap in-place, starting from the last element and working backwards
+    for i in range(len(li)-1, -1, -1):
+        root = i
+        while (root * 2) + 1 < len(li):
+            left = (root * 2) + 1
+            swap = root
 
-    return
+            if li[swap] < li[left]:
+                swap = left
+            if left+1 < len(li) and li[swap] < li[left+1]:
+                swap = left + 1
+            if swap == root:
+                break
+            placeholder = li[root]
+            li[root] = li[swap]
+            li[swap] = placeholder
+            root = swap
+
+    #Loop where the largest (root) element of the heap is placed at the end of the list
+    for last in range(len(li)-1, 0, -1):
+        placeholder = li[last]
+        li[last] = li[0]
+        li[0] = placeholder
+        #Sifting the root element down to get the new largest value at the top
+        root = 0
+        while (root * 2) + 1 <= last-1:
+            left = (root * 2) + 1
+            swap = root
+
+            if li[swap] < li[left]:
+                swap = left
+            if left+1 <= last-1 and li[swap] < li[left+1]:
+                swap = left + 1
+            if swap == root:
+                break
+            placeholder = li[root]
+            li[root] = li[swap]
+            li[swap] = placeholder
+            root = swap
+
+
+def heap_sort_complex(li, lessThan=(lambda a,b: a<b)):
+    '''Heap Sort
+    Performance: O(n log(n))
+    Space: O(n)
+    Params:
+        li: The list to be sorted.
+        lessThan: lambda function to check if one value is smaller than another. Defaults to "a<b"
+    '''
+    #Convert the list to a binary max heap in-place, starting from the last element and working backwards
+    for i in range(len(li)-1, -1, -1):
+        root = i
+        while (root * 2) + 1 < len(li):
+            left = (root * 2) + 1
+            swap = root
+
+            if lessThan(li[swap], li[left]):
+                swap = left
+            if left+1 < len(li) and lessThan(li[swap], li[left+1]):
+                swap = left + 1
+            if swap == root:
+                break
+            placeholder = li[root]
+            li[root] = li[swap]
+            li[swap] = placeholder
+            root = swap
+
+    #Loop where the largest (root) element of the heap is placed at the end of the list
+    for last in range(len(li)-1, 0, -1):
+        placeholder = li[last]
+        li[last] = li[0]
+        li[0] = placeholder
+        #Sifting the root element down to get the new largest value at the top
+        root = 0
+        while (root * 2) + 1 <= last-1:
+            left = (root * 2) + 1
+            swap = root
+
+            if lessThan(li[swap], li[left]):
+                swap = left
+            if left+1 <= last-1 and lessThan(li[swap], li[left+1]):
+                swap = left + 1
+            if swap == root:
+                break
+            placeholder = li[root]
+            li[root] = li[swap]
+            li[swap] = placeholder
+            root = swap
+
 
 
 #https://en.wikipedia.org/wiki/Quicksort

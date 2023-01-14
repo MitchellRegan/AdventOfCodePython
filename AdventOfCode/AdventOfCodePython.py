@@ -1,5 +1,5 @@
 print(" Advent of Code Solutions")
-y = input(" - Select a year: ")
+y = input(" - Select a year or press enter to run tests: ")
 
 if y == '2015':
     import Year2015
@@ -17,5 +17,5 @@ elif y == '2021':
     import Year2021
 elif y == '2022':
     import Year2022
-elif y == 'test':
+else:
     from HelperFunctions import testing
