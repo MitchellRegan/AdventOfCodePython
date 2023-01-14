@@ -226,8 +226,15 @@ def sortingAlgorithmTimeTest(iterations=100, listSize=25):
     end = time.time() - start
     details.append(("Heap Sort", end, heapList, "O(n log(n))"))
 
+    start = time.time()
+    for i in range(iterations):
+        quickList = [x for x in exampleList]
+        sa.quick_sort(quickList, 0, len(quickList)-1)
+    end = time.time() - start
+    details.append(("Quicksort", end, quickList, "O(n log(n))"))
+
     detailSort = lambda x,y: x[1] > y[1]
-    sa.comb_sort_complex(details, detailSort)
+    sa.quick_sort_complex(details, 0, len(details)-1, detailSort)
     for d in details:
         print("    %20s:   %20s   Time: %0.8f " %(d[0], d[3], d[1]))
         for i in range(len(d[2])-1):

@@ -397,7 +397,7 @@ def heap_sort(li):
 
 
 def heap_sort_complex(li, lessThan=(lambda a,b: a<b)):
-    '''Heap Sort
+    '''Heap Sort for complex objects that require a custom comparitor.
     Performance: O(n log(n))
     Space: O(n)
     Params:
@@ -447,21 +447,87 @@ def heap_sort_complex(li, lessThan=(lambda a,b: a<b)):
 
 
 #https://en.wikipedia.org/wiki/Quicksort
-def quick_sort(li, greaterThan=(lambda a,b: a>b)):
+def quick_sort(li, left, right):
     '''Quick Sort
     Performance: O(n log(n))
     Space: O(n)
     Params:
         li: The list to be sorted.
+        left: The left-most index in the list partition to sort.
+        right: The right-most index in the list partition to sort.
+    '''
+    #Must have at least 2 elements in the partition to sort
+    if left >= right or left < 0:
+        return
+
+    tempPivot = left - 1
+    #Comparing each element in the list partition to the element at the pivot index (we're using the right-most index as the pivot)
+    for i in range(left, right):
+        if li[i] <= li[right]:
+            tempPivot += 1
+            placeholder = li[i]
+            li[i] = li[tempPivot]
+            li[tempPivot] = placeholder
+
+    tempPivot += 1
+    placeholder = li[tempPivot]
+    li[tempPivot] = li[right]
+    li[right] = placeholder
+    
+    #Recursively calling sorting all elements to the left, and all elements to the right of our temp pivot
+    quick_sort(li, left, tempPivot-1)
+    quick_sort(li, tempPivot+1, right)
+
+
+def quick_sort_complex(li, left, right, greaterThan=(lambda a,b: a>b)):
+    '''Quick Sort for complex objects that require a custom comparitor.
+    Performance: O(n log(n))
+    Space: O(n)
+    Params:
+        li: The list to be sorted.
+        left: The left-most index in the list partition to sort.
+        right: The right-most index in the list partition to sort.
         greaterThan: lambda function to check if one value is greater than another. Defaults to "a>b"
     '''
+    #Must have at least 2 elements in the partition to sort
+    if left >= right or left < 0:
+        return
+
+    tempPivot = left - 1
+    #Comparing each element in the list partition to the element at the pivot index (we're using the right-most index as the pivot)
+    for i in range(left, right):
+        if greaterThan(li[right], li[i]):
+            tempPivot += 1
+            placeholder = li[i]
+            li[i] = li[tempPivot]
+            li[tempPivot] = placeholder
+
+    tempPivot += 1
+    placeholder = li[tempPivot]
+    li[tempPivot] = li[right]
+    li[right] = placeholder
+    
+    #Recursively calling sorting all elements to the left, and all elements to the right of our temp pivot
+    quick_sort_complex(li, left, tempPivot-1, greaterThan)
+    quick_sort_complex(li, tempPivot+1, right, greaterThan)
+
+
+
+#https://en.wikipedia.org/wiki/Radix_sort
+def radix_sort_LSD(li):
+    '''Least-Significant Digit Radix Sort
+    Performance: O(w*n)
+    Space: O(w+n)
+        Note: w = element length and n = number of elements
+    Params:
+        li: The list to be sorted.
+     '''
 
     return
 
 
-#https://en.wikipedia.org/wiki/Radix_sort
-def radix_sort(li, greaterThan=(lambda a,b: a>b)):
-    '''Radix Sort
+def radix_sort_LSD_complex(li, greaterThan=(lambda a,b: a>b)):
+    '''Least-Significant Digit Radix Sort for complex objects that require a custom comparitor.
     Performance: O(w*n)
     Space: O(w+n)
         Note: w = key length and n = number of keys
@@ -473,9 +539,21 @@ def radix_sort(li, greaterThan=(lambda a,b: a>b)):
     return
 
 
+
 #https://en.wikipedia.org/wiki/Bitonic_sorter
-def bitonic_sort(li, greaterThan=(lambda a,b: a>b)):
+def bitonic_sort(li):
     '''Bitonic Sort
+    Performance: O(log(n)^2) parallel time
+    Space: O(n log(n)^2)
+    Params:
+        li: The list to be sorted.
+    '''
+
+    return
+
+
+def bitonic_sort(li, greaterThan=(lambda a,b: a>b)):
+    '''Bitonic Sort for complex objects that require a custom comparitor.
     Performance: O(log(n)^2) parallel time
     Space: O(n log(n)^2)
     Params:
