@@ -17,5 +17,8 @@ elif y == '2021':
     import Year2021
 elif y == '2022':
     import Year2022
+elif y == 'wordle':
+    from HelperFunctions import wordle
+    wordle.solver()
 else:
     from HelperFunctions import testing

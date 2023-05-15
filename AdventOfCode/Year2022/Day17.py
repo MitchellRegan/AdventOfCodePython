@@ -10,7 +10,7 @@ airSymb = '-'
 rockSymb = 'O'
 floorSymb = '#'
 part1Iterations = 2022
-part2Iterations = 5045500 #1000000000000
+part2Iterations = 1000 #1000000000000
 
 def spawnRock(rockID, rockGrid):
     #Finding the number of empty rows at the top of the grid
@@ -401,6 +401,28 @@ def solution2():
                     if grid[r[0]] == 127:
                         rowsUsed.append(r[0])
                 rockFalling = False
+
+                tempHeight = maxHeight
+                for r in range(0, len(grid)):
+                    if grid[r] > 0:
+                        tempHeight += len(grid) - r - 1
+                        break
+
+                
+                # - 0 = Horizontal line, 1 = Cross, 2 = Backwards L shape, 3 = Vertical line, 4 = Square
+                s = ''
+                if i%5 == 0:
+                    s = "Horizontal Line"
+                elif i%5 == 1:
+                    s = "Cross"
+                elif i%5 == 2:
+                    s = "Backwards L"
+                elif i%5 == 3:
+                    s = "Vertical Line"
+                else:
+                    s = "Square"
+                #print("I = %3d,   Height = %4d,   Shape = %s" %(i, tempHeight, s))
+                print(tempHeight)
 
                 #If there is a blockage, we can remove all rows below the last one taken up by the new rock
                 if len(rowsUsed) > 0:

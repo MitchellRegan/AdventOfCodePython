@@ -39,10 +39,16 @@
     <Compile Include="HelperFunctions\pathfinding.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="HelperFunctions\pvz_izombie_solver.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="HelperFunctions\sortingAlgorithms.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="HelperFunctions\testing.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="HelperFunctions\wordle.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="HelperFunctions\__init__.py">

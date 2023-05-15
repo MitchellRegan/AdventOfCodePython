@@ -245,7 +245,26 @@ def sortingAlgorithmTimeTest(iterations=100, listSize=25):
 
 
 #heapTimeTest()
-for i in range(10):
+for i in range(1):
     iter = 100#100 * (i+1)
     elem = 25 + (25 * i)
     sortingAlgorithmTimeTest(iterations=iter, listSize=elem)
+
+
+
+
+def getSum(a,b):
+    xor = a^b
+    carry = a&b
+    carry <<= 1
+    val = xor^carry
+    carry = xor&carry
+    
+    if carry != 0:
+        carry <<= 1
+        val = getSum(val, carry)
+
+    return val
+
+
+print(getSum(-1, 1))
