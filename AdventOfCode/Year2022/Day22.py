@@ -3,8 +3,8 @@
 
 import os
 inFileDir = os.path.dirname(__file__)
-#inFile = os.path.join(inFileDir, "InputTestFiles/d22_test.txt")
-inFile = os.path.join(inFileDir, "InputRealFiles/d22_real.txt")
+inFile = os.path.join(inFileDir, "InputTestFiles/d22_test.txt")
+#inFile = os.path.join(inFileDir, "InputRealFiles/d22_real.txt")
 
 map = []
 cube = {
@@ -48,9 +48,10 @@ def getInput():
             for s in range(0, maxWidth-len(map[r])):
                 fillSpace += ' '
             map[r] = map[r] + fillSpace
+    return
 
 
-def makeCube():
+def makeCube_old():
     real = True
 
     faces = []
@@ -92,6 +93,155 @@ def makeCube():
         for i in range(4,8):
             cube["bottom"].append(map[i][8:12])
         #for i in range()
+    return
+
+
+def makeCube():
+    '''Function to identify which parts of the input map is which face.
+    Fr = Front
+    Bk = Back
+    Rt = Right
+    Lf = Left
+    Tp = Top
+    Bt = Bottom
+             Bk
+          ___V___
+         /  Tp  /|
+        /_____ / |
+       |      |Rt|
+    Lf |  Fr  | /
+       |______|/
+          ^
+          Bt
+    '''
+    #Determining if the face sizes are 50x50 tiles (real input) or 4x4 tiles (test input)
+    faceSize = 4
+    if len(map) % 50 == 0:
+        faceSize = 50
+
+    #Determining which faces are next to one another
+    faces = []
+    count = 0
+    for i in range(0, len(map), faceSize):
+        row = []
+        for j in range(0, len(map[0]), faceSize):
+            if map[i][j] == ' ':
+                row.append(' ')
+            else:
+                if count == 0:
+                    row.append("Fr")
+                else:
+                    row.append("?")
+                count += 1
+        faces.append(row)
+        print("".join(row))
+    print("-----")
+
+    #Looping until all faces are identified
+    while count > 0:
+        #Determining which face is which
+        for i in range(0, len(faces)):
+            for j in range(0, len(faces[i])):
+                #When we look at the "Front" face, we check the adjacent faces
+                if faces[i][j] == "Fr":
+                    #Looking for the "Bottom" face
+                    if faces[i+1][j] == "?":
+                        faces[i+1][j] = "Bt"
+                        count -= 1
+                    #Looking for the "Right" face
+                    if faces[i][j+1] == "?":
+                        faces[i][j+1] = "Rt"
+                        count -= 1
+
+                #When we look at non-front faces
+                elif faces[i][j] != " ":
+                    #Looking at faces in the same row
+                    if j > 0 and j < len(faces[i])-1:
+                        #If the face to the left is unknown, but the face to the right isn't
+                        if faces[i][j-1] == "?" and faces[i][j+1] != "?" and faces[i][j+1] != " ":
+                            #If it's either the front or back
+                            if faces[i][j+1] in ["Fr","Bk"]:
+                                newVal = ["Fr","Bk"]
+                                newVal.remove(faces[i][j+1])
+                                faces[i][j-1] = newVal[0]
+                            #If it's either the right or left
+                            elif faces[i][j+1] in ["Rt","Lf"]:
+                                newVal = ["Rt","Lf"]
+                                newVal.remove(faces[i][j+1])
+                                faces[i][j-1] = newVal[0]
+                                count -= 1
+                            #If it's either the top or bottom
+                            elif faces[i][j+1] in ["Tp","Bt"]:
+                                newVal = ["Tp","Bt"]
+                                newVal.remove(faces[i][j+1])
+                                faces[i][j-1] = newVal[0]
+                                count -= 1
+                        #If the face to the right is unknown, but the face to the left isn't
+                        elif faces[i][j+1] == "?" and faces[i][j-1] != "?" and faces[i][j-1] != " ":
+                            #If it's either the front or back
+                            if faces[i][j-1] in ["Fr","Bk"]:
+                                newVal = ["Fr","Bk"]
+                                newVal.remove(faces[i][j-1])
+                                faces[i][j+1] = newVal[0]
+                                count -= 1
+                            #If it's either the right or left
+                            elif faces[i][j-1] in ["Rt","Lf"]:
+                                newVal = ["Rt","Lf"]
+                                newVal.remove(faces[i][j-1])
+                                faces[i][j+1] = newVal[0]
+                                count -= 1
+                            #If it's either the top or bottom
+                            elif faces[i][j-1] in ["Tp","Bt"]:
+                                newVal = ["Tp","Bt"]
+                                newVal.remove(faces[i][j-1])
+                                faces[i][j+1] = newVal[0]
+                                count -= 1
+                    #Looking at faces in the same column
+                    if i > 0 and i < len(faces)-1:
+                        #If the face above is unknown, but the face below isn't
+                        if faces[i-1][j] == "?" and faces[i+1][j] != "?" and faces[i+1][j] != " ":
+                            #If it's either the front or back
+                            if faces[i+1][j] in ["Fr","Bk"]:
+                                newVal = ["Fr","Bk"]
+                                newVal.remove(faces[i+1][j])
+                                faces[i-1][j] = newVal[0]
+                                count -= 1
+                            #If it's either the right or left
+                            elif faces[i+1][j] in ["Rt","Lf"]:
+                                newVal = ["Rt","Lf"]
+                                newVal.remove(faces[i+1][j])
+                                faces[i-1][j] = newVal[0]
+                                count -= 1
+                            #If it's either the top or bottom
+                            elif faces[i+1][j] in ["Tp","Bt"]:
+                                newVal = ["Tp","Bt"]
+                                newVal.remove(faces[i+1][j])
+                                faces[i-1][j] = newVal[0]
+                                count -= 1
+                        #If the face below is unknown, but the face above isn't
+                        elif faces[i+1][j] == "?" and faces[i-1][j] != "?" and faces[i-1][j] != " ":
+                            #If it's either the front or back
+                            if faces[i-1][j] in ["Fr","Bk"]:
+                                newVal = ["Fr","Bk"]
+                                newVal.remove(faces[i-1][j])
+                                faces[i+1][j] = newVal[0]
+                                count -= 1
+                            #If it's either the right or left
+                            elif faces[i-1][j] in ["Rt","Lf"]:
+                                newVal = ["Rt","Lf"]
+                                newVal.remove(faces[i-1][j])
+                                faces[i+1][j] = newVal[0]
+                                count -= 1
+                            #If it's either the top or bottom
+                            elif faces[i-1][j] in ["Tp","Bt"]:
+                                newVal = ["Tp","Bt"]
+                                newVal.remove(faces[i-1][j])
+                                faces[i+1][j] = newVal[0]
+                                count -= 1
+        for row in faces:
+            print(row)
+        break
+    return
 
 
 def solution1():
@@ -231,8 +381,6 @@ def solution1():
 def solution2():
     getInput()
     makeCube()
-    for r in cube["front"]:
-        print(r)
     return
 
 
