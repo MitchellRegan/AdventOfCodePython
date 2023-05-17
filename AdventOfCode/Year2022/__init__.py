@@ -52,5 +52,6 @@ try:
         from Year2022 import Day24
     elif i == '25':
         from Year2022 import Day25
-except:
-    print("Day", i, "has no solution currently. Try again.")
+except Exception as e:
+    print("Day", i, "might not have a solution currently.")
+    print("Error:", e)
