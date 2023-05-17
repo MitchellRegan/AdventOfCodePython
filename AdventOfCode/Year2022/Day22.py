@@ -3,18 +3,11 @@
 
 import os
 inFileDir = os.path.dirname(__file__)
-inFile = os.path.join(inFileDir, "InputTestFiles/d22_test.txt")
-#inFile = os.path.join(inFileDir, "InputRealFiles/d22_real.txt")
+#inFile = os.path.join(inFileDir, "InputTestFiles/d22_test.txt")
+inFile = os.path.join(inFileDir, "InputRealFiles/d22_real.txt")
 
 map = []
-cube = {
-    "front":[],
-    "top":[],
-    "bottom":[],
-    "back":[],
-    "left":[],
-    "right":[]
-    }
+map2 = []
 #2D list to store the layout of which part of the map corresponds to which cube face
 faces = []
 #Storing which faces are in which orientation from each face. Index 0: UP, 1: RIGHT, 2: DOWN, 3: LEFT
@@ -39,6 +32,7 @@ def getInput():
             elif onMap:
                 line = line[:-1] + ' '
                 map.append(line)
+                map2.append(line)
                 if len(line) > maxWidth:
                     maxWidth = len(line)
             elif not onMap:
@@ -59,202 +53,8 @@ def getInput():
             for s in range(0, maxWidth-len(map[r])):
                 fillSpace += ' '
             map[r] = map[r] + fillSpace
+            map2[r] = map2[r] + fillSpace
     return
-
-
-def makeCube_old():
-    real = True
-
-    faces = []
-    count = 0
-    for i in range(0, len(map), 50):
-        row = []
-        for j in range(0, len(map[0]), 50):
-            if map[i][j] == ' ':
-                row.append('')
-            else:
-                if count == 0:
-                    row.append("Front")
-                else:
-                    row.append(count)
-                count += 1
-        faces.append(row)
-        print(row)
-
-
-
-    if real:
-        #Manually creating the real input for the cube
-        for i in range(0, 50):
-            cube["front"].append(map[i][50:100])
-        for i in range(0, 50):
-            cube["right"].append(map[i][100:150])
-        for i in range(50,100):
-            cube["bottom"].append(map[i][50:100])
-        for i in range(100, 150):
-            cube["back"].append(map[i][50:100])
-        for i in range(100, 150):
-            cube["left"].append(map[i][0:50])
-        for i in range(150, 200):
-            cube["top"].append(map[i][0:50])
-    else:
-        #Manually creating the test input for the cube
-        for i in range(0,4):
-            cube["front"].append(map[i][8:12])
-        for i in range(4,8):
-            cube["bottom"].append(map[i][8:12])
-        #for i in range()
-    return
-
-
-def makeCube_old2():
-    '''Function to identify which parts of the input map is which face.
-    Fr = Front
-    Bk = Back
-    Rt = Right
-    Lf = Left
-    Tp = Top
-    Bt = Bottom
-             Bk
-          ___V___
-         /  Tp  /|
-        /_____ / |
-       |      |Rt|
-    Lf |  Fr  | /
-       |______|/
-          ^
-          Bt
-    '''
-    #Determining if the face sizes are 50x50 tiles (real input) or 4x4 tiles (test input)
-    faceSize = 4
-    if len(map) % 50 == 0:
-        faceSize = 50
-
-    #Determining which faces are next to one another
-    faces = []
-    count = 0
-    for i in range(0, len(map), faceSize):
-        row = []
-        for j in range(0, len(map[0]), faceSize):
-            if map[i][j] == ' ':
-                row.append(' ')
-            else:
-                if count == 0:
-                    row.append("Fr")
-                else:
-                    row.append("?")
-                count += 1
-        faces.append(row)
-        print("".join(row))
-    print("-----")
-
-    #Looping until all faces are identified
-    while count > 0:
-        #Determining which face is which
-        for i in range(0, len(faces)):
-            for j in range(0, len(faces[i])):
-                #When we look at the "Front" face, we check the adjacent faces
-                if faces[i][j] == "Fr":
-                    #Looking for the "Bottom" face
-                    if faces[i+1][j] == "?":
-                        faces[i+1][j] = "Bt"
-                        count -= 1
-                    #Looking for the "Right" face
-                    if faces[i][j+1] == "?":
-                        faces[i][j+1] = "Rt"
-                        count -= 1
-
-                #When we look at non-front faces
-                elif faces[i][j] != " ":
-                    #Looking at faces in the same row
-                    if j > 0 and j < len(faces[i])-1:
-                        #If the face to the left is unknown, but the face to the right isn't
-                        if faces[i][j-1] == "?" and faces[i][j+1] != "?" and faces[i][j+1] != " ":
-                            #If it's either the front or back
-                            if faces[i][j+1] in ["Fr","Bk"]:
-                                newVal = ["Fr","Bk"]
-                                newVal.remove(faces[i][j+1])
-                                faces[i][j-1] = newVal[0]
-                            #If it's either the right or left
-                            elif faces[i][j+1] in ["Rt","Lf"]:
-                                newVal = ["Rt","Lf"]
-                                newVal.remove(faces[i][j+1])
-                                faces[i][j-1] = newVal[0]
-                                count -= 1
-                            #If it's either the top or bottom
-                            elif faces[i][j+1] in ["Tp","Bt"]:
-                                newVal = ["Tp","Bt"]
-                                newVal.remove(faces[i][j+1])
-                                faces[i][j-1] = newVal[0]
-                                count -= 1
-                        #If the face to the right is unknown, but the face to the left isn't
-                        elif faces[i][j+1] == "?" and faces[i][j-1] != "?" and faces[i][j-1] != " ":
-                            #If it's either the front or back
-                            if faces[i][j-1] in ["Fr","Bk"]:
-                                newVal = ["Fr","Bk"]
-                                newVal.remove(faces[i][j-1])
-                                faces[i][j+1] = newVal[0]
-                                count -= 1
-                            #If it's either the right or left
-                            elif faces[i][j-1] in ["Rt","Lf"]:
-                                newVal = ["Rt","Lf"]
-                                newVal.remove(faces[i][j-1])
-                                faces[i][j+1] = newVal[0]
-                                count -= 1
-                            #If it's either the top or bottom
-                            elif faces[i][j-1] in ["Tp","Bt"]:
-                                newVal = ["Tp","Bt"]
-                                newVal.remove(faces[i][j-1])
-                                faces[i][j+1] = newVal[0]
-                                count -= 1
-                    #Looking at faces in the same column
-                    if i > 0 and i < len(faces)-1:
-                        #If the face above is unknown, but the face below isn't
-                        if faces[i-1][j] == "?" and faces[i+1][j] != "?" and faces[i+1][j] != " ":
-                            #If it's either the front or back
-                            if faces[i+1][j] in ["Fr","Bk"]:
-                                newVal = ["Fr","Bk"]
-                                newVal.remove(faces[i+1][j])
-                                faces[i-1][j] = newVal[0]
-                                count -= 1
-                            #If it's either the right or left
-                            elif faces[i+1][j] in ["Rt","Lf"]:
-                                newVal = ["Rt","Lf"]
-                                newVal.remove(faces[i+1][j])
-                                faces[i-1][j] = newVal[0]
-                                count -= 1
-                            #If it's either the top or bottom
-                            elif faces[i+1][j] in ["Tp","Bt"]:
-                                newVal = ["Tp","Bt"]
-                                newVal.remove(faces[i+1][j])
-                                faces[i-1][j] = newVal[0]
-                                count -= 1
-                        #If the face below is unknown, but the face above isn't
-                        elif faces[i+1][j] == "?" and faces[i-1][j] != "?" and faces[i-1][j] != " ":
-                            #If it's either the front or back
-                            if faces[i-1][j] in ["Fr","Bk"]:
-                                newVal = ["Fr","Bk"]
-                                newVal.remove(faces[i-1][j])
-                                faces[i+1][j] = newVal[0]
-                                count -= 1
-                            #If it's either the right or left
-                            elif faces[i-1][j] in ["Rt","Lf"]:
-                                newVal = ["Rt","Lf"]
-                                newVal.remove(faces[i-1][j])
-                                faces[i+1][j] = newVal[0]
-                                count -= 1
-                            #If it's either the top or bottom
-                            elif faces[i-1][j] in ["Tp","Bt"]:
-                                newVal = ["Tp","Bt"]
-                                newVal.remove(faces[i-1][j])
-                                faces[i+1][j] = newVal[0]
-                                count -= 1
-        for row in faces:
-            print(row)
-        break
-    return
-
-
 
 
 def identifyOrientation(f_, i_, j_):
@@ -323,7 +123,7 @@ def identifyOrientation(f_, i_, j_):
     return
 
 
-def makeCube():
+def makeCube(faceSize):
     '''Function to identify which parts of the input map is which face.
     Fr = Front
     Bk = Back
@@ -341,11 +141,6 @@ def makeCube():
           ^
           Bt
     '''
-    #Determining if the face sizes are 50x50 tiles (real input) or 4x4 tiles (test input)
-    faceSize = 4
-    if len(map) % 50 == 0:
-        faceSize = 50
-
     #Determining which areas of the map are faces of the cube
     foundFront = False
     frow = 0
@@ -376,12 +171,95 @@ def makeCube():
         faces[frow+1][fcol] = "Bt"
         identifyOrientation("Bt", frow+1, fcol)
 
-    for row in faces:
-        print(" ".join(row))
+    #for row in faces:
+    #    print(" ".join(row))
 
-    print("Orientations:")
-    for key in faceOrientations.keys():
-        print(" -", key, ":", faceOrientations[key])
+    #print("Orientations:")
+    #for key in faceOrientations.keys():
+    #    print(" -", key, ":", faceOrientations[key])
+
+
+def travelBetweenFaces(r_, c_, dir_, faceSize_):
+    '''Function to find the next position on the map when traveling between cube faces with different orientations.
+    param r_: Int for the current row position on the map.
+    param c_: Int for the current col position on the map.
+    param dir_: Int for the direction that is being traveled: U - Up, R - Right, D - Down, L - Left.
+    param faceSize_: Int for the dimension of each cube face. 4x4 is the test input, 50x50 is for the real input.
+    return: A tuple for (newRow, newCol, newDir).
+    '''
+    #Finding the ID of the face that we're currently on (Fr, Bk, Tp, Bt, Lf, Rt)
+    currFace = faces[int(r_/faceSize_)][int(c_/faceSize_)]
+    #Based on the direction we're traveling out of the current face, we can use our orientation to find the ID of the next face
+    directionEnum = ["U", "R", "D", "L"]
+    nextFace = faceOrientations[currFace][directionEnum.index(dir_)]
+    #The new direction we're facing is the opposite of whichever side of the face we come out on (i.e if we arrive from the top, we're going Down)
+    newDir = faceOrientations[nextFace].index(currFace) + 2
+    newDir = directionEnum[newDir%4]
+
+    #Finding which map coordinates are encompassed by each face
+    currFaceRowRange = []
+    currFaceColRange = []
+    nextFaceRowRange = []
+    nextFaceColRange = []
+    for i in range(0, len(faces)):
+        for j in range(0, len(faces[i])):
+            if faces[i][j] == currFace:
+                currFaceRowRange = [i*faceSize_, (i+1)*faceSize_ - 1]
+                currFaceColRange = [j*faceSize_, (j+1)*faceSize_ - 1]
+            elif faces[i][j] == nextFace:
+                nextFaceRowRange = [i*faceSize_, (i+1)*faceSize_ - 1]
+                nextFaceColRange = [j*faceSize_, (j+1)*faceSize_ - 1]
+
+    #print("Current face:", currFace)
+    #print("\t- Traveling", dir_)
+    #print("\t- Face Orientation:", faceOrientations[currFace])
+    #print("\t- Rows:", currFaceRowRange[0], "-", currFaceRowRange[1])
+    #print("\t- Cols:", currFaceColRange[0], "-", currFaceColRange[1])
+
+    #print("Next face:", nextFace)
+    #print("\t- Traveling", newDir)
+    #print("\t- Face Orientation:", faceOrientations[nextFace])
+    #print("\t- Rows:", nextFaceRowRange[0], "-", nextFaceRowRange[1])
+    #print("\t- Cols:", nextFaceColRange[0], "-", nextFaceColRange[1])
+
+    #Finding the new row/column coordinates on the next face
+    newRow = 0
+    newCol = 0
+
+    if newDir == "U":
+        newRow = nextFaceRowRange[1]
+    elif newDir == "D":
+        newRow = nextFaceRowRange[0]
+    elif newDir == "L":
+        newCol = nextFaceColRange[1]
+    elif newDir == "R":
+        newCol = nextFaceColRange[0]
+
+    dirCombo = dir_ + newDir
+    #Same direction
+    if dirCombo == "UU" or dirCombo == "DD":
+        newCol = nextFaceColRange[0] + (c_ - currFaceColRange[0])
+    elif dirCombo == "RR" or dirCombo == "LL":
+        newRow = nextFaceRowRange[0] + (r_ - currFaceRowRange[0])
+    #Opposite direction
+    elif dirCombo == "UD" or dirCombo == "DU":
+        newCol = nextFaceColRange[1] - (c_ - currFaceColRange[0])
+    elif dirCombo == "RL" or dirCombo == "LR":
+        newRow = nextFaceRowRange[1] - (r_ - currFaceRowRange[0])
+    #Horizontal to vertical
+    elif dirCombo == "RD" or dirCombo == "LU":
+        newCol = nextFaceColRange[1] - (r_ - currFaceRowRange[0])
+    elif dirCombo == "RU" or dirCombo == "LD":
+        newCol = nextFaceColRange[0] + (r_ - currFaceRowRange[0])
+    #Vertical to horizontal
+    elif dirCombo == "UR" or dirCombo == "DL":
+        newRow = nextFaceRowRange[0] + (c_ - currFaceColRange[0])
+    elif dirCombo == "UL" or dirCombo == "DR":
+        newRow = nextFaceRowRange[1] - (c_ - currFaceColRange[0])
+
+    #print("New position:", newRow, newCol, newDir)
+    #print("----------------------------------------------")
+    return (newRow, newCol, newDir)
 
 
 def solution1():
@@ -520,7 +398,15 @@ def solution1():
 
 def solution2():
     getInput()
-    makeCube()
+
+    #Determining if the face sizes are 50x50 tiles (real input) or 4x4 tiles (test input)
+    faceSize = 4
+    if len(map) % 50 == 0:
+        faceSize = 50
+
+    #Identifying the faces and their orientations
+    makeCube(faceSize)
+
     facing = 'R'
     r = 0
     c = 0
@@ -529,9 +415,9 @@ def solution2():
             c = col
             break
 
-    print("Start pos is row", r, "col", c)
+    #print("Start pos is row", r, "col", c)
     while len(dir) > 0:
-        print("Instruction:", dir[0], "   Current pos:", r, ",", c)
+        #print("Instruction:", dir[0], "   Current pos:", r, ",", c)
 
         #Right turn means turn clockwise 90 degrees
         if dir[0] == 'R':
@@ -559,38 +445,40 @@ def solution2():
         else:
             if facing == 'R':
                 for i in range(0, dir[0]):
+                    map2[r] = map2[r][:c] + ">" + map2[r][c+1:]
                     if map[r][c+1] == '.':
                         c += 1
                     elif map[r][c+1] == '#':
                         break
                     elif map[r][c+1] == ' ':
-                        opposite = c
-                        while True:
-                            if opposite - 1 < 0 or map[r][opposite - 1] == ' ':
-                                break
-                            else:
-                                opposite -= 1
+                        #print("\tGoing out of bounds RIGHT at row", r, "col", c)
+                        nextPos = travelBetweenFaces(r, c, facing, faceSize)
 
-                        if map[r][opposite] == '.':
+                        if map[nextPos[0]][nextPos[1]] == '.':
                             #print("Looping right from", r, c, "to", r, opposite)
-                            c = opposite
-                        elif map[r][opposite] == '#':
+                            r = nextPos[0]
+                            c = nextPos[1]
+                            facing = nextPos[2]
+                            dir.insert(1, dir[0] - i - 1)
+                            break
+                        elif map[nextPos[0]][nextPos[1]] == '#':
                             #print("Can't loop right. is blocked")
                             break
             elif facing == 'L':
                 for i in range(0, dir[0]):
+                    map2[r] = map2[r][:c] + "<" + map2[r][c+1:]
                     if c-1 < 0 or map[r][c-1] == ' ':
-                        opposite = c
-                        while True:
-                            if opposite + 1 >= len(map[r]) or map[r][opposite + 1] == ' ':
-                                break
-                            else:
-                                opposite += 1
+                        #print("\tGoing out of bounds LEFT at row", r, "col", c)
+                        nextPos = travelBetweenFaces(r, c, facing, faceSize)
 
-                        if map[r][opposite] == '.':
+                        if map[nextPos[0]][nextPos[1]] == '.':
                             #print("Looping left from", r, c, "to", r, opposite)
-                            c = opposite
-                        elif map[r][opposite] == '#':
+                            r = nextPos[0]
+                            c = nextPos[1]
+                            facing = nextPos[2]
+                            dir.insert(1, dir[0] - i - 1)
+                            break
+                        elif map[nextPos[0]][nextPos[1]] == '#':
                             #print("Can't loop left. is blocked")
                             break
                     if map[r][c-1] == '.':
@@ -599,19 +487,20 @@ def solution2():
                         break
             elif facing == 'U':
                 for i in range(0, dir[0]):
+                    map2[r] = map2[r][:c] + "^" + map2[r][c+1:]
                     if r-1 < 0 or map[r-1][c] == ' ':
-                        opposite = r
-                        while True:
-                            if opposite + 1 >= len(map) or map[opposite+1][c] == ' ':
-                                break
-                            else:
-                                opposite += 1
+                        #print("\tGoing out of bounds UP at row", r, "col", c)
+                        nextPos = travelBetweenFaces(r, c, facing, faceSize)
 
-                        if map[opposite][c] == '.':
-                            #print("Looping up from", r, c, "to", opposite, c)
-                            r = opposite
-                        elif map[opposite][c] == '#':
-                            #print("Can't loop up. is blocked")
+                        if map[nextPos[0]][nextPos[1]] == '.':
+                            #print("Looping left from", r, c, "to", r, opposite)
+                            r = nextPos[0]
+                            c = nextPos[1]
+                            facing = nextPos[2]
+                            dir.insert(1, dir[0] - i - 1)
+                            break
+                        elif map[nextPos[0]][nextPos[1]] == '#':
+                            #print("Can't loop left. is blocked")
                             break
                     elif map[r-1][c] == '.':
                         r -= 1
@@ -619,19 +508,20 @@ def solution2():
                         break
             elif facing == 'D':
                 for i in range(0, dir[0]):
+                    map2[r] = map2[r][:c] + "V" + map2[r][c+1:]
                     if r+1 >= len(map) or map[r+1][c] == ' ':
-                        opposite = r
-                        while True:
-                            if opposite - 1 < 0 or map[opposite-1][c] == ' ':
-                                break
-                            else:
-                                opposite -= 1
+                        #print("\tGoing out of bounds DOWN at row", r, "col", c)
+                        nextPos = travelBetweenFaces(r, c, facing, faceSize)
 
-                        if map[opposite][c] == '.':
-                            #print("Looping down from", r, c, "to", opposite, c)
-                            r = opposite
-                        elif map[opposite][c] == '#':
-                            #print("Can't loop down. is blocked")
+                        if map[nextPos[0]][nextPos[1]] == '.':
+                            #print("Looping left from", r, c, "to", r, opposite)
+                            r = nextPos[0]
+                            c = nextPos[1]
+                            facing = nextPos[2]
+                            dir.insert(1, dir[0] - i - 1)
+                            break
+                        elif map[nextPos[0]][nextPos[1]] == '#':
+                            #print("Can't loop left. is blocked")
                             break
                     elif map[r+1][c] == '.':
                         r += 1
@@ -649,9 +539,11 @@ def solution2():
     elif facing == 'U':
         score += 3
 
-    print("End row:", r, "col:", c, "facing:", facing)
+    #print("End row:", r, "col:", c, "facing:", facing)
+    #for row in map2:
+    #    print("".join(row))
     return score
 
 
-#print("Year 2022, Day 22 solution part 1:", solution1())
+print("Year 2022, Day 22 solution part 1:", solution1())
 print("Year 2022, Day 22 solution part 2:", solution2())
