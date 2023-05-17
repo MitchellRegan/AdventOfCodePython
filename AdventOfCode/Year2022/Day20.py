@@ -8,67 +8,70 @@ inFile = os.path.join(inFileDir, "InputRealFiles/d20_real.txt")
 
 
 def getInput():
-    nums = []
+    '''Function to get the puzzle input from our input file.
+    Return 1: List of ordered pairs for the initial sequence of values.
+    '''
+    numList = []
 
     with open(inFile, 'r') as f:
+        index = 0
         for line in f:
             if line[-1] == '\n':
                 line = line[:-1]
-            nums.append(int(line))
+            #Storing each value as well as it's original index in the list
+            val = int(line)
+            numList.append((val, index))
+            index += 1
 
-    return nums
+    return numList
 
 
 def solution1():
-    og = getInput()
-    nums = getInput()
+    numList = getInput()
+    #print("\tStarting Order:", numList)
 
-    for i in range(0, len(og)):
-        startIndex = nums.index(og[i])
-        newIndex = nums[startIndex] + startIndex
+    #Looping through each initial index of numbers to move
+    for startIndex in range(0, len(numList)):
+        #Finding the current index of the value that was initially at the starting index
+        currIndex = 0
+        for c in range(0, len(numList)):
+            if numList[c][1] == startIndex:
+                currIndex = c
+                break
 
-        if newIndex < 0:
-            newIndex -= 1
-            while newIndex < 0:
-                newIndex += (len(og))
+        #Finding the new index by adding the number value to the current index
+        newIndex = currIndex
+        if numList[currIndex][0] < 0 and currIndex + numList[currIndex][0] <= 0:
+            newIndex += (numList[currIndex][0] - 1)
+        elif numList[currIndex][0] > 0 and currIndex + numList[currIndex][0] >= len(numList) - 1:
+            newIndex += (numList[currIndex][0] + 1) % len(numList)
+        else:
+            newIndex += numList[currIndex][0] % len(numList)
 
-        if newIndex >= len(og):
-            while newIndex >= len(og):
-                newIndex -= len(og)
+        newIndex = newIndex % len(numList)
+        #print(numList[currIndex][0], "\tMoving from index", currIndex, "to", newIndex)
 
-        #newIndex = newIndex % len(og)
+        if newIndex != currIndex:
+            val = numList.pop(currIndex)
+            numList.insert(newIndex, val)
 
-        if newIndex == 0:
-            nums.pop(startIndex)
-            #nums.append(og[i])
-            nums.insert(0, og[i])
-        elif newIndex == len(og)-1:
-            nums.pop(startIndex)
-            #nums.insert(0, og[i])
-            nums.append(og[i])
-        elif startIndex < newIndex:
-            nums.pop(startIndex)
-            nums.insert(newIndex, og[i])
-        elif startIndex > newIndex:
-            nums.pop(startIndex)
-            nums.insert(newIndex+1, og[i])
+    #outputStr = ""
+    #for x in numList:
+    #    outputStr = outputStr + str(x[0]) + ", "
+    #print(outputStr)
+    #print()
 
-    n1000 = (1000 % len(og)) + nums.index(0)
-    if n1000 >= len(og):
-        n1000 -= len(og)
-    n2000 = (2000 % len(og)) + nums.index(0)
-    if n2000 >= len(og):
-        n2000 -= len(og)
-    n3000 = (3000 % len(og)) + nums.index(0)
-    if n3000 >= len(og):
-        n3000 -= len(og)
-
-    print("1000th:", nums[n1000], "2000th:", nums[n2000], "3000th:", nums[n3000])
-    #not -7625
-    #not -18805
-    #not 11148
-    #not 8925
-    return nums[n1000] + nums[n2000] + nums[n3000]
+    #Finding the index where value 0 is
+    offset = 0
+    for x in range(0, len(numList)):
+        if numList[x][0] == 0:
+            offset = x
+    #print("Zero found at index", offset)
+    val1000 = numList[(1000+offset) % len(numList)][0]
+    val2000 = numList[(2000+offset) % len(numList)][0]
+    val3000 = numList[(3000+offset) % len(numList)][0]
+    #print("1000th val:", val1000, "2000th val:", val2000, "3000th val:", val3000)
+    return val1000 + val2000 + val3000
 
 
 def solution2():
