@@ -3,8 +3,8 @@
 
 import os
 inFileDir = os.path.dirname(__file__)
-inFile = os.path.join(inFileDir, "InputTestFiles/d25_test.txt")
-#inFile = os.path.join(inFileDir, "InputRealFiles/d25_real.txt")
+#inFile = os.path.join(inFileDir, "InputTestFiles/d25_test.txt")
+inFile = os.path.join(inFileDir, "InputRealFiles/d25_real.txt")
 
 
 def snafuToInt(snafu):
@@ -32,23 +32,23 @@ def snafuToInt(snafu):
 def intToSnafu(val):
     snafu = []
     #Finding the largest power of 5 that we can remove from the int
-    i = 0
-    while i < 6:
-        remainder = val % 5**i
-        print(val, "%", (5**i), "=", remainder)
-        if remainder == 0:
-            snafu.append('0')
-        if remainder == 1:
-            snafu.append('1')
-        elif remainder == 2:
-            snafu.append('2')
-        elif remainder == 3:
-            snafu.append('')
+    remainder = val + 0
+    snafuVals = [1, 2, -2, -1, 0]
+    snafuSymb = ["1", "2", "=", "-", "0"]
+    pwr = 0
 
-        i+=1
-        val -= remainder
-
-    print("Remainder:", val)
+    i = (val-1) % 5
+    snafu.insert(0, snafuSymb[i])
+    remainder -= snafuVals[i] * 5**pwr
+    pwr += 1
+    
+    #print("Remainder", remainder)
+    while remainder != 0:
+        i = int((remainder - 2*(5**(pwr-1))) / 5**pwr) % 5 #IDK what this monstrosity is. Was very tired when writing it, but it seems to work
+        snafu.insert(0, snafuSymb[i])
+        remainder -= snafuVals[i] * 5**pwr
+        pwr += 1
+        
     return ''.join(snafu)
 
 
@@ -59,10 +59,12 @@ def solution1():
         for line in f:
             if line[-1] == '\n':
                 line = line[:-1]
-            sum += snafuToInt(line)
+            val = snafuToInt(line)
+            #print("Snafu:", line, "\tDecimal:", val)
+            sum += val
 
     #Converting our sum back to snafu format for our final answer
-    print("Int sum:", sum)
+    #print("Int sum:", sum)
     return intToSnafu(sum)
 
 
