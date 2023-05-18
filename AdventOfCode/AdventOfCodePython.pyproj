@@ -33,6 +33,9 @@
     <Compile Include="HelperFunctions\inputReaders.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="HelperFunctions\linkedList.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="HelperFunctions\miscMath.py">
       <SubType>Code</SubType>
     </Compile>
