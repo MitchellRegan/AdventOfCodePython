@@ -3,8 +3,8 @@
 
 import os
 inFileDir = os.path.dirname(__file__)
-#inFile = os.path.join(inFileDir, "InputTestFiles/d20_test.txt")
-inFile = os.path.join(inFileDir, "InputRealFiles/d20_real.txt")
+inFile = os.path.join(inFileDir, "InputTestFiles/d20_test.txt")
+#inFile = os.path.join(inFileDir, "InputRealFiles/d20_real.txt")
 
 
 def getInput():
@@ -20,7 +20,7 @@ def getInput():
                 line = line[:-1]
             #Storing each value as well as it's original index in the list
             val = int(line)
-            numList.append((val, index))
+            numList.append([val, index])
             index += 1
 
     return numList
@@ -44,9 +44,9 @@ def solution1():
         if numList[currIndex][0] < 0 and currIndex + numList[currIndex][0] <= 0:
             newIndex += (numList[currIndex][0] - 1)
         elif numList[currIndex][0] > 0 and currIndex + numList[currIndex][0] >= len(numList) - 1:
-            newIndex += (numList[currIndex][0] + 1) % len(numList)
+            newIndex += (numList[currIndex][0] + 1)
         else:
-            newIndex += numList[currIndex][0] % len(numList)
+            newIndex += numList[currIndex][0]
 
         newIndex = newIndex % len(numList)
         #print(numList[currIndex][0], "\tMoving from index", currIndex, "to", newIndex)
@@ -75,8 +75,67 @@ def solution1():
 
 
 def solution2():
-    return
+    numList = getInput()
+
+    #Applying the decryption key to each starting value
+    outputStr = ""
+    for x in range(0, len(numList)):
+        numList[x][0] = numList[x][0] * 811589153
+        outputStr = outputStr + str(numList[x][0]) + ", "
+    print("Starting Order:\n", outputStr, "\n\n")
+
+    #Have to run this loop 10 times
+    for mix in range(0, 1):
+        print("\t\tMixing round", mix+1)
+        #Looping through each initial index of numbers to move
+        for startIndex in range(0, len(numList)):
+            #Finding the current index of the value that was initially at the starting index
+            currIndex = 0
+            for c in range(0, len(numList)):
+                if numList[c][1] == startIndex:
+                    currIndex = c
+                    break
+
+            #Finding the new index by adding the number value to the current index
+            newIndex = currIndex + (numList[currIndex][0] % len(numList))
+
+            print("sIndex:", startIndex)
+            print("\t- current index:", currIndex)
+            print("\t- value:", numList[currIndex][0])
+            print("\t\t- val mod size:", numList[currIndex][0] % len(numList))
+            print("\t- new index:", newIndex)
+
+            if newIndex >= len(numList):
+                print("\t\t- Positive loop. new index:", newIndex+1)
+                newIndex = (newIndex + 1) % len(numList)
+                print("\t\t- new index mod size:", newIndex)
+            elif newIndex < 0:
+                print("\t\t- Negative loop. new index:", newIndex-1)
+                newIndex = (newIndex - 1) % len(numList)
+                print("\t\t- new index mod size:", newIndex)
+
+            val = numList.pop(currIndex)
+            numList.insert(newIndex, val)
+
+            outputStr = ""
+            for x in numList:
+                outputStr = outputStr + str(x[0]) + ", "
+            print(outputStr)
+            print("================================================")
+
+    #Finding the index where value 0 is
+    offset = 0
+    for x in range(0, len(numList)):
+        if numList[x][0] == 0:
+            offset = x
+    #print("Zero found at index", offset)
+    val1000 = numList[(1000+offset) % len(numList)][0]
+    val2000 = numList[(2000+offset) % len(numList)][0]
+    val3000 = numList[(3000+offset) % len(numList)][0]
+    #print("1000th val:", val1000, "2000th val:", val2000, "3000th val:", val3000)
+    return val1000 + val2000 + val3000
 
 
-print("Year 2022, Day 20 solution part 1:", solution1())
+#print("Year 2022, Day 20 solution part 1:", solution1())
 print("Year 2022, Day 20 solution part 2:", solution2())
+#5890514072474 too low

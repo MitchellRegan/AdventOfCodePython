@@ -2,7 +2,7 @@ class Node:
     '''Nodes used in the Binary Search Tree to store data values.
     '''
     def __init__(self, data):
-        '''Constructor for the Binary Tree.
+        '''Constructor for the Binary Tree Node.
         - data: The data to be stored in this node.
         '''
         self.data = data
