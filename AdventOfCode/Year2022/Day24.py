@@ -6,52 +6,199 @@ inFileDir = os.path.dirname(__file__)
 inFile = os.path.join(inFileDir, "InputTestFiles/d24_test.txt")
 #inFile = os.path.join(inFileDir, "InputRealFiles/d24_real.txt")
 
+#2D list where each row index represents the minute in time, and each value in the row is the position of every storm
+stormStates = []
+#Map boundaries so that we can know when storms need to loop
+minMaxRow = [1,None]
+minMaxCol = [1,None]
+#Coordinates for the starting location and the exit to reach
+start = [0,1]
+exit = [None,None]
+
+
 def getInput():
-    map = []
-    #Dict to store all of the storms found. The key is an int for the ID, and the value is [row, col, direction]
-    stormID = 0
-    storms = {}
+    #List to store initial positions of all of the storms found. Each value is [row, col, direction]
+    storms = []
 
     with open(inFile, 'r') as f:
         row = 0
         for line in f:
             if line[-1] == '\n':
                 line = line[:-1]
+
+            #Storing the maximum col index allowed
+            if minMaxCol[1] == None:
+                minMaxCol[1] = len(line) - 2
+
+            #When a storm icon is found, we store it's position and direction it faces
             for col in range(0, len(line)):
-                if line[col] == '>':
-                    storms[stormID] = [row, col, 'R']
-                    stormID += 1
-                elif line[col] == 'V':
-                    storms[stormID] = [row, col, 'D']
-                    stormID += 1
-                elif line[col] == '<':
-                    storms[stormID] = [row, col, 'L']
-                    stormID += 1
-                elif line[col] == '^':
-                    storms[stormID] = [row, col, 'U']
-                    stormID += 1
-
+                if line[col] in ['>', '<', '^', 'v']:
+                    storms.append([row, col, line[col]])
             row += 1
-            map.append(line)
 
-    start = (0, 1)
-    exit = (len(map)-1, len(map[0])-2)
-    return [map, start, exit, storms]
+        #Storing the maximum row index allowed
+        minMaxRow[1] = row - 2
 
-
-def solution1():
-    map, start, exit, storms = getInput()
-    print("Start:", start, "End:", exit)
-    for row in map:
-        print(row)
-    for s in storms.keys():
-        print(s, ":", storms[s])
+    #Keeping track of where we need to start pathfinding and where our exit is
+    #start = (0, 1)
+    exit[0] = minMaxRow[1]+1
+    exit[1] = minMaxCol[1]
+    #Storing the initial storm state
+    stormStates.append(storms)
     return
+
+
+def displayMapState(stormIndex_, userLoc_=None):
+    #Creating the 2D list to display the map
+    stateMap = []
+    for x in range(0, minMaxRow[1]+2):
+        if x == 0 or x == minMaxRow[1]+1:
+            row = ['#'] * (minMaxCol[1]+2)
+            stateMap.append(row)
+        else:
+            row = ['.'] * (minMaxCol[1]+2)
+            row[0] = '#'
+            row[-1] = '#'
+            stateMap.append(row)
+
+    #Displaying the start and exit points
+    stateMap[start[0]][start[1]] = 'S'
+    stateMap[exit[0]][exit[1]] = 'E'
+
+    #Displaying each storm location
+    for s in stormStates[stormIndex_]:
+        #If the position is empty, we display the storm arrow
+        if stateMap[s[0]][s[1]] == '.':
+            stateMap[s[0]][s[1]] = s[2]
+        #If a storm arrow is already in this position, we display a number for how many storms are here
+        elif stateMap[s[0]][s[1]] in ['>', '<', '^', 'v']:
+            stateMap[s[0]][s[1]] = '2'
+        #If a number is already in this position, we increment it by 1
+        else:
+            val = int(stateMap[s[0]][s[1]]) + 1
+            stateMap[s[0]][s[1]] = str(val)
+
+    #If the user's location is given, we display them with an '@' symbol
+    if userLoc_ != None:
+        stateMap[userLoc_[0]][userLoc_[1]] = '@'
+
+    print("\tMap At Min", stormIndex_)
+    for row in stateMap:
+        print(''.join(row))
+    print()
+
+
+def generateNextStormState():
+    #Creating a new state for the storm positions, starting from their most recent locations
+    newState = []
+    for x in stormStates[-1]:
+        newState.append([x[0], x[1], x[2]])
+
+    #Looping through each storm to update their position
+    for s in newState:
+        #s[0] = row, s[1] = col, s[2] = direction
+        if s[2] == '^':
+            s[0] -= 1
+            if s[0] < minMaxRow[0]:
+                s[0] = minMaxRow[1]
+        elif s[2] == 'v':
+            s[0] += 1
+            if s[0] > minMaxRow[1]:
+                s[0] = minMaxRow[0]
+        elif s[2] == '<':
+            s[1] -= 1
+            if s[1] < minMaxCol[0]:
+                s[1] = minMaxCol[1]
+        elif s[2] == '>':
+            s[1] += 1
+            if s[1] > minMaxCol[1]:
+                s[1] = minMaxCol[0]
+
+    #Adding this new state to the global list of states
+    stormStates.append(newState)
+
+
+def solution1(showPath_=False):
+    #Setting the global variables to their starting values
+    getInput()
+    
+    #Creating the que of positions that have been located but not searched
+    #Each element is (row, col, stateIndex/time)
+    q = [(start[0], start[1], 0)]
+    #Dictionary for each searched location/time and its previous location
+    found = {(start[0], start[1], 0):None}
+
+    #Pathfinding for as long as there are open locations to search
+    while len(q) > 0:
+        cur = q.pop(0)
+        #Making easier variables for the current location's row, column and time
+        r = cur[0]
+        c = cur[1]
+        t = cur[2]
+
+        #If we've found the exit to the maze, this location's time is the answer
+        if r == exit[0] and c == exit[1]:
+            #If we want to show the path taken to get to the exit, we trace back through each locations previous position
+            if showPath_:
+                path = [cur]
+                while path[-1] in found.keys() and found[path[-1]] != None:
+                    path.append(found[path[-1]])
+                for i in range(len(path)-1, -1, -1):
+                    print(path[i])
+                    displayMapState(path[i][2], (path[i][0], path[i][1]))
+            return t
+
+        #If the next storm state in time doesn't exist yet, we make it
+        if t+1 >= len(stormStates):
+            generateNextStormState()
+
+        #Making a list of all potential locations we can move to
+        moves = []
+
+        #Checking we can stand still
+        if (r,c,t+1) not in q and (r,c,t+1) not in found.keys():
+            moves.append((r,c,t+1))
+        #Checking up
+        if (r > 1 or [r-1,c] == start) and (r-1,c,t+1) not in q and (r-1,c,t+1) not in found.keys():
+            moves.append((r-1,c,t+1))
+        #Checking down
+        if (r < minMaxRow[1] or [r+1,c] == exit) and (r+1,c,t+1) not in q and (r+1,c,t+1) not in found.keys():
+            moves.append((r+1,c,t+1))
+        #Checking left
+        if c > 1 and r > 0 and r <= minMaxRow[1] and (r,c-1,t+1) not in q and (r,c-1,t+1) not in found.keys():
+            moves.append((r,c-1,t+1))
+        #Checking right
+        if c < minMaxCol[1] and r > 0 and r <= minMaxRow[1] and (r,c+1,t+1) not in q and (r,c+1,t+1) not in found.keys():
+            moves.append((r,c+1,t+1))
+
+        #Removing any movements that overlap with storms
+        for s in range(0, len(stormStates[t+1])):
+            stormNext = stormStates[t+1][s]
+            stormCurr = stormStates[t][s]
+
+            i = 0
+            while i < len(moves):
+                #Removing the movement if it results in a space occupied by storms
+                if (moves[i][0], moves[i][1]) == (stormNext[0], stormNext[1]):
+                    moves.pop(i)
+                #Removing the movement if it travels through an oncoming storm
+                elif moves[i][0] == stormCurr[0] and moves[i][1] == stormCurr[1] and r == stormNext[0] and c == stormNext[1]:
+                    moves.pop(i)
+                else:
+                    i += 1
+
+        #Adding any remaining movements to the que to check
+        for m in moves:
+            q.append(m)
+            found[m] = (r,c,t)
+
+    #If we can't find the maze through pathfinding, we error out
+    return -1
 
 
 def solution2():
     return
 
 
-print("Year 2022, Day 24 solution part 1:", solution1())
+print("Year 2022, Day 24 solution part 1:", solution1(True))
 print("Year 2022, Day 24 solution part 2:", solution2())
