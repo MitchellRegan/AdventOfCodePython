@@ -3,8 +3,8 @@
 
 import os
 inFileDir = os.path.dirname(__file__)
-inFile = os.path.join(inFileDir, "InputTestFiles/d24_test.txt")
-#inFile = os.path.join(inFileDir, "InputRealFiles/d24_real.txt")
+#inFile = os.path.join(inFileDir, "InputTestFiles/d24_test.txt")
+inFile = os.path.join(inFileDir, "InputRealFiles/d24_real.txt")
 
 #2D list where each row index represents the minute in time, and each value in the row is the position of every storm
 stormStates = []
@@ -48,27 +48,30 @@ def getInput():
     return
 
 
-def displayMapState(stormIndex_, userLoc_=None):
+def displayMapState(stormIndex_, userLoc_=None, potentialMoves_=None):
     #Creating the 2D list to display the map
     stateMap = []
     for x in range(0, minMaxRow[1]+2):
         if x == 0 or x == minMaxRow[1]+1:
-            row = ['#'] * (minMaxCol[1]+2)
+            row = []
+            for i in range(0, minMaxCol[1]+2):
+                row.append('█')
             stateMap.append(row)
         else:
-            row = ['.'] * (minMaxCol[1]+2)
-            row[0] = '#'
-            row[-1] = '#'
+            row = ['█']
+            for i in range(0,minMaxCol[1]):
+                row.append(' ')
+            row.append('█')
             stateMap.append(row)
 
     #Displaying the start and exit points
-    stateMap[start[0]][start[1]] = 'S'
-    stateMap[exit[0]][exit[1]] = 'E'
+    stateMap[start[0]][start[1]] = ' '
+    stateMap[exit[0]][exit[1]] = ' '
 
     #Displaying each storm location
     for s in stormStates[stormIndex_]:
         #If the position is empty, we display the storm arrow
-        if stateMap[s[0]][s[1]] == '.':
+        if stateMap[s[0]][s[1]] == ' ':
             stateMap[s[0]][s[1]] = s[2]
         #If a storm arrow is already in this position, we display a number for how many storms are here
         elif stateMap[s[0]][s[1]] in ['>', '<', '^', 'v']:
@@ -80,8 +83,22 @@ def displayMapState(stormIndex_, userLoc_=None):
 
     #If the user's location is given, we display them with an '@' symbol
     if userLoc_ != None:
-        stateMap[userLoc_[0]][userLoc_[1]] = '@'
+        if stateMap[userLoc_[0]][userLoc_[1]] != ' ':
+            print("Position", userLoc_, "was", stateMap[userLoc_[0]][userLoc_[1]])
+            stateMap[userLoc_[0]][userLoc_[1]] = 'E'
+        else:
+            stateMap[userLoc_[0]][userLoc_[1]] = '@'
 
+    #If potential moves are given, we display them
+    if potentialMoves_ != None:
+        for pm in potentialMoves_:
+            if stateMap[pm[0]][pm[1]] != ' ' and stateMap[pm[0]][pm[1]] != '@':
+                print("Position", (pm[0], pm[1]), "has ", stateMap[pm[0]][pm[1]])
+                stateMap[pm[0]][pm[1]] = 'E'
+            else:
+                stateMap[pm[0]][pm[1]] = '+'
+
+    #Showing the map visualization
     print("\tMap At Min", stormIndex_)
     for row in stateMap:
         print(''.join(row))
@@ -89,6 +106,7 @@ def displayMapState(stormIndex_, userLoc_=None):
 
 
 def generateNextStormState():
+    print("Creating state", len(stormStates))
     #Creating a new state for the storm positions, starting from their most recent locations
     newState = []
     for x in stormStates[-1]:
@@ -118,7 +136,7 @@ def generateNextStormState():
     stormStates.append(newState)
 
 
-def solution1(showPath_=False):
+def solution1(showPath_=False, showDebug_=False):
     #Setting the global variables to their starting values
     getInput()
     
@@ -130,6 +148,8 @@ def solution1(showPath_=False):
 
     #Pathfinding for as long as there are open locations to search
     while len(q) > 0:
+        if showDebug_:
+            print("==============================================================")
         cur = q.pop(0)
         #Making easier variables for the current location's row, column and time
         r = cur[0]
@@ -151,25 +171,65 @@ def solution1(showPath_=False):
         #If the next storm state in time doesn't exist yet, we make it
         if t+1 >= len(stormStates):
             generateNextStormState()
+            if showDebug_:
+                print("States:", t+1)
 
         #Making a list of all potential locations we can move to
-        moves = []
+        moves = [(r,c,t+1), (r+1,c,t+1), (r-1,c,t+1), (r,c+1,t+1), (r,c-1,t+1)]
+        if showDebug_:
+            print("\t\tPosition:", cur)
+            print("Potential Moves 1:", moves)
 
-        #Checking we can stand still
-        if (r,c,t+1) not in q and (r,c,t+1) not in found.keys():
-            moves.append((r,c,t+1))
+        #Removing any of the movements that have already been located
+        i = 0
+        while i < len(moves):
+            if moves[i] in q or moves[i] in found.keys():
+                if showDebug_:
+                    print("\tMove", moves[i], "already seen")
+                moves.pop(i)
+            else:
+                i += 1
+
+        if showDebug_:
+            print("Potential Moves 2:", moves)
+
+        #Removing any movements that go out of bounds
         #Checking up
-        if (r > 1 or [r-1,c] == start) and (r-1,c,t+1) not in q and (r-1,c,t+1) not in found.keys():
-            moves.append((r-1,c,t+1))
+        if (r-1,c,t+1) in moves:
+            #Can't move to row -1
+            if r-1 == -1:
+                if showDebug_:
+                    print("\tMove",(r-1,c,t+1), "removed. Off map up.")
+                moves.remove((r-1,c,t+1))
+            #Can't move to row 0 unless it's the starting point because walls are there
+            elif r-1 == 0 and c != start[1]:
+                if showDebug_:
+                    print("\tMove",(r-1,c,t+1), "removed. Hitting wall up.")
+                moves.remove((r-1,c,t+1))
         #Checking down
-        if (r < minMaxRow[1] or [r+1,c] == exit) and (r+1,c,t+1) not in q and (r+1,c,t+1) not in found.keys():
-            moves.append((r+1,c,t+1))
+        if (r+1,c,t+1) in moves:
+            #Can't move past the max row bound unless it's the exit because walls are there
+            if r+1 > minMaxRow[1] and c != minMaxCol[1]:
+                if showDebug_:
+                    print("\tMove", (r+1,c,t+1), "removed. Hitting wall down.")
+                moves.remove((r+1,c,t+1))
         #Checking left
-        if c > 1 and r > 0 and r <= minMaxRow[1] and (r,c-1,t+1) not in q and (r,c-1,t+1) not in found.keys():
-            moves.append((r,c-1,t+1))
+        if (r,c-1,t+1) in moves:
+            #Can't move to col 0 because walls are there
+            if c-1 == 0 or r == 0:
+                if showDebug_:
+                    print("\tMove",(r,c-1,t+1), "removed. Hitting wall left.")
+                moves.remove((r,c-1,t+1))
         #Checking right
-        if c < minMaxCol[1] and r > 0 and r <= minMaxRow[1] and (r,c+1,t+1) not in q and (r,c+1,t+1) not in found.keys():
-            moves.append((r,c+1,t+1))
+        if (r,c+1,t+1):
+            #Can't move past the max col bound because walls are there
+            if c+1 > minMaxCol[1] or r == 0:
+                if showDebug_:
+                    print("\tMove",(r,c+1,t+1), "removed. Hitting wall right.")
+                moves.remove((r,c+1,t+1))
+
+        if showDebug_:
+            print("Potential Moves 3:", moves)
 
         #Removing any movements that overlap with storms
         for s in range(0, len(stormStates[t+1])):
@@ -180,12 +240,27 @@ def solution1(showPath_=False):
             while i < len(moves):
                 #Removing the movement if it results in a space occupied by storms
                 if (moves[i][0], moves[i][1]) == (stormNext[0], stormNext[1]):
+                    if showDebug_ and t+1 <= 18:
+                        print("\tHit By Storm")
+                        print("\tPlayer Pos:",(r,c), "\t Move Pos:", moves[i])
+                        print("\tStorm Pos: ", stormCurr, " Storm Next:", stormNext)
                     moves.pop(i)
-                #Removing the movement if it travels through an oncoming storm
-                elif moves[i][0] == stormCurr[0] and moves[i][1] == stormCurr[1] and r == stormNext[0] and c == stormNext[1]:
-                    moves.pop(i)
+                #Removing the movement if it travels through an oncoming storm (Not needed?)
+                #elif moves[i][0] == stormCurr[0] and moves[i][1] == stormCurr[1] and r == stormNext[0] and c == stormNext[1]:
+                #    if showDebug_ and t+1 <= 18:
+                #        print("\tOncoming Overlap")
+                #        print("\tPlayer Pos:",(r,c), "\t Move Pos:", moves[i])
+                #        print("\tStorm Pos: ", stormCurr, " Storm Next:", stormNext)
+                #    moves.pop(i)
                 else:
                     i += 1
+
+        if showDebug_ and t+1 <= 18:
+            print("Potential Moves 4:", moves)
+            displayMapState(t, (r,c))
+            displayMapState(t+1, None, moves)
+            if t+1 == 18:
+                return
 
         #Adding any remaining movements to the que to check
         for m in moves:
@@ -197,8 +272,104 @@ def solution1(showPath_=False):
 
 
 def solution2():
-    return
+    #Setting the global variables to their starting values
+    getInput()
+    
+    #Creating the que of positions that have been located but not searched
+    #Each element is (row, col, stateIndex/time)
+    q = [(start[0], start[1], 0)]
+    #Dictionary for each searched location/time and its previous location
+    found = {(start[0], start[1], 0):None}
+
+    #Count for how many times we've gone from end-to-end. Once it reaches 4, we have our answer
+    numTrips = 0
+
+    #Pathfinding for as long as there are open locations to search
+    while len(q) > 0:
+        cur = q.pop(0)
+        #Making easier variables for the current location's row, column and time
+        r = cur[0]
+        c = cur[1]
+        t = cur[2]
+
+        #If we've found the exit to the maze
+        if r == exit[0] and c == exit[1]:
+            #If we're on trip 0, we end trip 1 and have to double-back to the start
+            if numTrips == 0:
+                print("\tFirst time at exit. Beginning trip 2 at time", t)
+                numTrips = 1
+                q = []
+                found = {(r,c,t):None}
+            #If we're done with trip 2, we're at the end and have the answer
+            elif numTrips == 2:
+                return t
+        #If we've found the start of the maze and doubling-back
+        elif r == start[0] and c == start[1] and numTrips == 1:
+            numTrips = 2
+            q = []
+            found = {(r,c,t):None}
+            print("\tBack at the start again. Beginning trip 3 at time", t)
+
+        #If the next storm state in time doesn't exist yet, we make it
+        if t+1 >= len(stormStates):
+            generateNextStormState()
+
+        #Making a list of all potential locations we can move to
+        #In order:  up,          down,        left,        right,   Standing Still
+        moves = [(r-1,c,t+1), (r+1,c,t+1), (r,c-1,t+1), (r,c+1,t+1), (r,c,t+1)]
+
+        #Removing any movements that go out of bounds
+        #Checking up
+        #Can't move to row -1
+        if r-1 == -1:
+            moves[0] = None
+        #Can't move to row 0 unless it's the starting point because walls are there
+        elif r-1 == 0 and c != start[1]:
+            moves[0] = None
+
+        #Checking down
+        #Can't move below the last row
+        if r+1 == minMaxRow[1]+2:
+            moves[1] = None
+        #Can't move past the max row bound unless it's the exit because walls are there
+        elif r+1 == minMaxRow[1]+1 and c != minMaxCol[1]:
+            moves[1] = None
+
+        #Checking left
+        #Can't move to col 0 because walls are there
+        if c-1 == 0 or r == 0:
+            moves[2] = None
+
+        #Checking right
+        #Can't move past the max col bound because walls are there
+        if c+1 > minMaxCol[1] or r == 0:
+            moves[3] = None
+                
+        #Removing any of the movements that have already been located
+        for i in range(0, len(moves)):
+            if moves[i] != None and (moves[i] in q or moves[i] in found.keys()):
+                moves[i] = None
+
+        #Removing any movements that overlap with storms
+        for s in range(0, len(stormStates[t+1])):
+            stormNext = stormStates[t+1][s]
+            stormCurr = stormStates[t][s]
+
+            for i in range(0, len(moves)):
+                #Removing the movement if it results in a space occupied by storms
+                if moves[i] != None and moves[i][0] == stormNext[0] and moves[i][1] == stormNext[1]:
+                        moves[i] = None
+
+        #Adding any remaining movements to the que to check
+        for m in moves:
+            if m != None:
+                q.append(m)
+                found[m] = (r,c,t)
+
+    #If we can't find the maze through pathfinding, we error out
+    return -1
 
 
-print("Year 2022, Day 24 solution part 1:", solution1(True))
+#print("Year 2022, Day 24 solution part 1:", solution1())
 print("Year 2022, Day 24 solution part 2:", solution2())
+#660 too low
