@@ -373,3 +373,4 @@ def solution2():
 #print("Year 2022, Day 24 solution part 1:", solution1())
 print("Year 2022, Day 24 solution part 2:", solution2())
 #660 too low
+#661 too low
