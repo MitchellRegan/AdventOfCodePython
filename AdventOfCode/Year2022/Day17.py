@@ -9,8 +9,8 @@ inFile = os.path.join(inFileDir, "InputRealFiles/d17_real.txt")
 airSymb = '-'
 rockSymb = 'O'
 floorSymb = '#'
-part1Iterations = 2022
-part2Iterations = 1000 #1000000000000
+part1Iterations = 16
+part2Iterations = 1000000 #1000000000000
 
 def spawnRock(rockID, rockGrid):
     #Finding the number of empty rows at the top of the grid
@@ -103,10 +103,10 @@ def spawnRock_v2(rockID, rockGrid):
     return rockPos
 
 
-def spawnRock_v3(rockID, windShift, rockGrid):
+def spawnRock_v3(rockID, rockGrid):
     #Finding the number of empty rows at the top of the grid
     empty = 0
-    needed = 1
+    needed = 4
     for r in range(0, len(rockGrid)):
         if rockGrid[r] > 0:
             empty = r
@@ -117,53 +117,32 @@ def spawnRock_v3(rockID, windShift, rockGrid):
 
     #Getting the spawn coordinates for the new rock based on the rock ID
     if rockID == 0: # Horizontal line
-        if windShift > 0:
-            rockPos = [[0, 30>>1]] #can only shift 1 right before hitting a wall
-        else:
-            if windShift < -2: #Can only shift 2 left before hitting wall
-                windShift = -2
-            windShift *= -1
-            rockPos = [[0, 30<<windShift]]
+        # Shape: |--1111-| = 30
+        rockPos = [[0, 30]]
     elif rockID == 1: # Cross
-        if windShift > 0:
-            if windShift > 2:
-                windShift = 2
-            rockPos = [[0,8>>windShift], [1,28>>windShift], [2,8>>windShift]]
-        else:
-            if windShift < -2:
-                windShift = -2
-            windShift *= -1
-            rockPos = [[0,8<<windShift], [1,28<<windShift], [2,8<<windShift]]
-        needed = 3
+        # Shape: |---1---| = 8
+        #        |--111--| = 28
+        #        |---1---| = 8
+        rockPos = [[0,8], [1,28], [2,8]]
+        needed = 6
     elif rockID == 2: # Backwards L
-        if windShift > 0:
-            if windShift > 2:
-                windShift = 2
-            rockPos = [[0,4>>windShift], [1,4>>windShift], [2,28>>windShift]]
-        else:
-            if windShift < -2:
-                windShift = -2
-            windShift *= -1
-            rockPos = [[0,4<<windShift], [1,4<<windShift], [2,28<<windShift]]
-        needed = 3
+        # Shape: |----1--| = 4
+        #        |----1--| = 4
+        #        |--111--| = 28
+        rockPos = [[0,4], [1,4], [2,28]]
+        needed = 6
     elif rockID == 3: # Vertical line
-        if windShift > 0:
-            rockPos = [[0,16>>windShift], [1,16>>windShift], [2,16>>windShift], [3,16>>windShift]]
-        else:
-            if windShift < -2:
-                windShift = -2
-            windShift *= -1
-            rockPos = [[0,16<<windShift], [1,16<<windShift], [2,16<<windShift], [3,16<<windShift]]
-        needed = 4
+        # Shape: |--1----| = 16
+        #        |--1----| = 16
+        #        |--1----| = 16
+        #        |--1----| = 16
+        rockPos = [[0,16], [1,16], [2,16], [3,16]]
+        needed = 7
     elif rockID == 4: # Square
-        if windShift > 0:
-            rockPos = [[0,24>>windShift], [1,24>>windShift]]
-        else:
-            if windShift < -2:
-                windShift = -2
-            windShift *= -1
-            rockPos = [[0,24<<windShift], [1,24<<windShift]]
-        needed = 2
+        # Shape: |--11---| = 24
+        #        |--11---| = 24
+        rockPos = [[0,24], [1,24]]
+        needed = 5
     else:
         print("Spawn Rock invalid input:", rockID)
         rockPos = None
@@ -200,6 +179,7 @@ def solution1():
 
     #Cycling through 2022 rocks falling
     for i in range(0, part1Iterations):
+        print("Wind Index at start of iteration", i, "is:", wi)
         #Getting a new rock each cycle, which also increases the grid height to fit
         currRock = spawnRock(i % 5, grid)
 
@@ -280,27 +260,44 @@ def solution1():
                     if s == 0:
                         rowsFull = False
                         break
-                #If there is a blockage, we can remove all rows below the last one taken up by the new rock
-                #if rowsFull:
-                #    print("Height:", maxHeight, " Grid before row removal")
-                #    for r in grid:
-                #        print(''.join(r))
-                #    maxHeight += max(rowsUsed)
-                #    grid = grid[:maxRowsUsed+1]
-                #    print("Height:", maxHeight, " Grid after row removal")
-                #    for r in grid:
-                #        print(''.join(r))
-                #    return
 
-    with open(os.path.join(inFileDir, "day17p2_visualization.txt"), 'w') as o:
-        for r in range(0, len(grid)):
-            o.write(''.join(grid[r]) + '\n')
+        #print("Iteration", i)
+        #for r in grid:
+        #    print(''.join(r))
+        #print()
 
     for r in range(0, len(grid)):
         if floorSymb in grid[r]:
             maxHeight += len(grid) - r - 1
             break
     return maxHeight
+
+
+def patternFinder(heights_):
+    #print("Pattern Finder")
+    #print(heights_)
+    #print("Initial value of i:", int(len(heights_)/2))
+    #Looking for patterns starting with the first half of the list and working down to smaller list sizes
+    for i in range(int(len(heights_)/2), 1, -1):
+        subList = heights_[:i]
+        #print("\t", subList, " Initial sublist")
+        patternFound = True
+        #Checking the first sublist against all possible sublists of the same size in the rest of the list
+        for j in range(1, int(len(heights_)/i)):
+            nextSubList = heights_[i*j:i*(j+1)]
+            #print("\t", nextSubList, " <-- Checking")
+            #If the pattern doesn't match any of the other sublists, we move to the next pattern
+            if nextSubList != subList:
+                patternFound = False
+                break
+        #If a pattern was found, we output the length of the pattern and all of the values in it
+        if patternFound:
+            print("PATTERN FOUND! LENGTH:", i)
+            for p in subList:
+                print(p)
+            return
+    #Otherwise we indicate that no pattern was found
+    print("No pattern found")
 
 
 def solution2():
@@ -320,6 +317,8 @@ def solution2():
             
     #Key: (grid height, wind index, shape index). Value: Grid's current state
     memo = {}
+    #List to track the max height after each block lands
+    heightTracker = [0]
 
     #Variable to track the height of the rock stack
     maxHeight = 0
@@ -332,17 +331,8 @@ def solution2():
 
     #Cycling through 1000000000000 rocks falling
     for i in range(0, part2Iterations):
-        #To eliminate the first 3 steps of falling, we get the sum of the next 3 wind shifts
-        windShifts = [0,0,0]
-        for b in range(0,3):
-            windShifts[b] = wind[wi]
-            wi += 1
-            if wi == len(wind):
-                wi = 0
-
         #Getting a new rock each cycle, which also increases the grid height to fit
-        currRock = spawnRock_v3(i % 5, sum(windShifts), grid)
-        #currRock = spawnRock_v2(i % 5, grid)
+        currRock = spawnRock_v3(i % 5, grid)
 
         #Looping until the rock comes to rest
         rockFalling = True
@@ -408,21 +398,6 @@ def solution2():
                         tempHeight += len(grid) - r - 1
                         break
 
-                
-                # - 0 = Horizontal line, 1 = Cross, 2 = Backwards L shape, 3 = Vertical line, 4 = Square
-                s = ''
-                if i%5 == 0:
-                    s = "Horizontal Line"
-                elif i%5 == 1:
-                    s = "Cross"
-                elif i%5 == 2:
-                    s = "Backwards L"
-                elif i%5 == 3:
-                    s = "Vertical Line"
-                else:
-                    s = "Square"
-                #print("I = %3d,   Height = %4d,   Shape = %s" %(i, tempHeight, s))
-                print(tempHeight)
 
                 #If there is a blockage, we can remove all rows below the last one taken up by the new rock
                 if len(rowsUsed) > 0:
@@ -438,34 +413,47 @@ def solution2():
                     else:
                         memo[m] = (i, grid)
 
+        #print("Iteration", i)
     for r in range(0, len(grid)):
         binStr = bin(grid[r])[2:].zfill(7)
-        print(binStr)
+        #print(binStr)
         if grid[r] > 0:
             maxHeight += len(grid) - r - 1
             break
+
+    #Looking for patterns in how much each block increases the stack height
+    for i in range(len(heightTracker)-1, 0, -1):
+        heightTracker[i] -= heightTracker[i-1]
+    heightTracker.pop(0)
+    patternFinder(heightTracker)
     return maxHeight
 
 
 import time
-startTime = time.time()
-print("Year 2022, Day 17 solution part 1:", solution1())
-endTime1 = time.time() - startTime
-print("Part 1 time: ", endTime1, "sec")
-ips = part1Iterations / endTime1
-completionTime = 1000000000000 / ips
-completionTime /= 60
-completionTime /= 60
-completionTime /= 24
-print("Estimated completion time of full input: ", completionTime, "days")
+if False:
+    #startTime = time.time()
+    print("Year 2022, Day 17 solution part 1:", solution1())
+    #endTime1 = time.time() - startTime
+    #print("Part 1 time: ", endTime1, "sec")
+    #ips = part1Iterations / endTime1
+    #completionTime = 1000000000000 / ips
+    #completionTime /= 60
+    #completionTime /= 60
+    #completionTime /= 24
+    #print("Estimated completion time of full input: ", completionTime, "days")
 
-startTime = time.time()
-print("Year 2022, Day 17 solution part 2:", solution2())
-endTime2 = time.time() - startTime
-print("Part 2 time: ", endTime2, "sec")
-ips = part2Iterations / endTime2
-completionTime = 1000000000000 / ips
-completionTime /= 60
-completionTime /= 60
-completionTime /= 24
-print("Estimated completion time of full input: ", completionTime, "days")
+if True:
+    #startTime = time.time()
+    print("Year 2022, Day 17 solution part 2:", solution2())
+    #endTime2 = time.time() - startTime
+    #print("Part 2 time: ", endTime2, "sec")
+    #ips = part2Iterations / endTime2
+    #completionTime = 1000000000000 / ips
+    #completionTime /= 60
+    #completionTime /= 60
+    #completionTime /= 24
+    #print("Estimated completion time of full input: ", completionTime, "days")
+
+#for i in range(1, 101):
+#    part2Iterations = i*10000
+#    print(i*10000, "=", solution2())
