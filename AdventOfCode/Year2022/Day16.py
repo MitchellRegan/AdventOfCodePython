@@ -3,8 +3,8 @@
 
 import os
 inFileDir = os.path.dirname(__file__)
-inFile = os.path.join(inFileDir, "InputTestFiles/d16_test.txt")
-#inFile = os.path.join(inFileDir, "InputRealFiles/d16_real.txt")
+#inFile = os.path.join(inFileDir, "InputTestFiles/d16_test.txt")
+inFile = os.path.join(inFileDir, "InputRealFiles/d16_real.txt")
 
 
 def getInput():
@@ -166,13 +166,20 @@ def solution2():
                             maxPressure = p1score + p2score
                             bestValve1 = a
                             bestValve2 = b
+                        elif (p1score + p2score) == maxPressure:
+                            print("TIE IN MAX PRESSURE! Heuristic value:", maxPressure)
+                            print("Current best valve combo:", bestValve1, bestValve2)
+                            print("Equally good valve combo:", a, b)
 
             visited[0].append(bestValve1)
             visited[1].append(bestValve2)
             steps[0] -= valveDists[(min(visited[0][-1], visited[0][-2]), max(visited[0][-1], visited[0][-2]))]
             steps[1] -= valveDists[(min(visited[1][-1], visited[1][-2]), max(visited[1][-1], visited[1][-2]))]
             pressure += maxPressure
-        #If person 1 has more steps than person 2, they go first
+            print("\tPerson 1 turns on valve", bestValve1, "at time:", 26-steps[0])
+            print("\tPerson 2 turns on valve", bestValve2, "at time:", 26-steps[1])
+            print("===============================================================")
+        #If person 1 is the only one with steps remaining
         elif steps[0] > 0 and steps[1] == 0:
 
             bestValve = None
@@ -195,7 +202,8 @@ def solution2():
                 visited[0].append(bestValve)
                 pressure += maxPressure
                 steps[0] -= valveDists[(min(visited[0][-1], visited[0][-2]), max(visited[0][-1], visited[0][-2]))]
-        #If person 2 has more steps, they go first
+                print("\tPerson 1 turns on valve", bestValve1, "at time:", 26-steps[0])
+        #If person 2 is the only one with steps remaining
         else:
             bestValve = None
             maxPressure = 0
@@ -217,58 +225,10 @@ def solution2():
                 visited[1].append(bestValve)
                 pressure += maxPressure
                 steps[1] -= valveDists[(min(visited[1][-1], visited[1][-2]), max(visited[1][-1], visited[1][-2]))]
+                print("\tPerson 2 turns on valve", bestValve2, "at time:", 26-steps[1])
 
-
-    return pressure
-
-
-def findOptimalValves(curValve_, visitedValves_, timeRemaining_):
-    options = []
-    #Finding all valves that could be opened
-    for v in valveEdges.keys():
-        if v not in visitedValves_:
-            #Calculating how much total pressure (score) the valve would be able to release after considering travel time
-            score = timeRemaining_ - valveDists[(min(curValve_,v), max(curValve_,v))]
-            score *= valveFlows[v]
-            if score > 0:
-                options.append([v,score])
-
-    #If the list of options doesn't have anything, we make it None
-    if len(options) == 0:
-        options = None
-    #Otherwise, we sort the options in decending order so the highest-scoring ones are at the front
-    sorted(options, key=lambda x: x[1], reverse=True)
-    return options
-
-
-def solution3():
-    #Lists for both people in the problem, each containing the valve being traveled to and the distance remaining
-    paths = [["AA",0],["AA",0]]
-    #List of valves turned on by either person
-    visited = ["AA"]
-    #Int for how many minutes are remaining
-    min = 26
-    #The total amount of pressure released from the valves
-    pressure = 0
-
-    #Looping through the number of minutes required
-    for min in range(26, -1, -1):
-        #Taking an action for each person
-        for p in range(0,2):
-            #If the path for this person is None, they have no valid moves and are waiting out the clock
-            if paths[p] == None:
-                continue
-            #If the valve has some distance remaining, we move closer for 1min
-            if paths[p][1] > 0:
-                paths[p][1] -= 1
-            #If the valve being traveled to has a distance of 0, we've turned the valve on
-            else:
-                #Comparing the 2 most optimal valves for each person
-                p1Optimal = findOptimalValves(paths[0][0], visited, min - paths[0][1])
-                p2Optimal = findOptimalValves(paths[1][0], visited, min - paths[1][1])
-
-
-
+    print("Person 1 Path:", visited[0])
+    print("Person 2 Path:", visited[1])
     return pressure
 
 
