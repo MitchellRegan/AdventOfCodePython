@@ -18,7 +18,7 @@ exit = [None,None]
 
 def getInput():
     #List to store initial positions of all of the storms found. Each value is [row, col, direction]
-    storms = []
+    storms = {}
 
     with open(inFile, 'r') as f:
         row = 0
@@ -33,7 +33,10 @@ def getInput():
             #When a storm icon is found, we store it's position and direction it faces
             for col in range(0, len(line)):
                 if line[col] in ['>', '<', '^', 'v']:
-                    storms.append([row, col, line[col]])
+                    if (row,col) in storms:
+                        storms[(row, col)].append(line[col])
+                    else:
+                        storms[(row,col)] = [line[col]]
             row += 1
 
         #Storing the maximum row index allowed
@@ -69,17 +72,11 @@ def displayMapState(stormIndex_, userLoc_=None, potentialMoves_=None):
     stateMap[exit[0]][exit[1]] = ' '
 
     #Displaying each storm location
-    for s in stormStates[stormIndex_]:
-        #If the position is empty, we display the storm arrow
-        if stateMap[s[0]][s[1]] == ' ':
-            stateMap[s[0]][s[1]] = s[2]
-        #If a storm arrow is already in this position, we display a number for how many storms are here
-        elif stateMap[s[0]][s[1]] in ['>', '<', '^', 'v']:
-            stateMap[s[0]][s[1]] = '2'
-        #If a number is already in this position, we increment it by 1
+    for s in stormStates[stormIndex_].keys():
+        if len(stormStates[stormIndex_][s]) == 1:
+            stateMap[s[0]][s[1]] = stormStates[stormIndex_][s][0]
         else:
-            val = int(stateMap[s[0]][s[1]]) + 1
-            stateMap[s[0]][s[1]] = str(val)
+            stateMap[s[0]][s[1]] = str(len(stormStates[stormIndex_][s]))
 
     #If the user's location is given, we display them with an '@' symbol
     if userLoc_ != None:
@@ -106,31 +103,35 @@ def displayMapState(stormIndex_, userLoc_=None, potentialMoves_=None):
 
 
 def generateNextStormState():
-    print("Creating state", len(stormStates))
     #Creating a new state for the storm positions, starting from their most recent locations
-    newState = []
-    for x in stormStates[-1]:
-        newState.append([x[0], x[1], x[2]])
+    newState = {}
+    for pos in stormStates[-1].keys():
+        for arrow in stormStates[-1][pos]:
+            r = pos[0]
+            c = pos[1]
+            #Updating the new row,col position of the arrow and cycling around the map if needed
+            if arrow == "^":
+                r -= 1
+                if r < minMaxRow[0]:
+                    r = minMaxRow[1]
+            elif arrow == "v":
+                r += 1
+                if r > minMaxRow[1]:
+                    r = minMaxRow[0]
+            elif arrow == ">":
+                c += 1
+                if c > minMaxCol[1]:
+                    c = minMaxCol[0]
+            elif arrow == "<":
+                c -= 1
+                if c < minMaxCol[0]:
+                    c = minMaxCol[1]
 
-    #Looping through each storm to update their position
-    for s in newState:
-        #s[0] = row, s[1] = col, s[2] = direction
-        if s[2] == '^':
-            s[0] -= 1
-            if s[0] < minMaxRow[0]:
-                s[0] = minMaxRow[1]
-        elif s[2] == 'v':
-            s[0] += 1
-            if s[0] > minMaxRow[1]:
-                s[0] = minMaxRow[0]
-        elif s[2] == '<':
-            s[1] -= 1
-            if s[1] < minMaxCol[0]:
-                s[1] = minMaxCol[1]
-        elif s[2] == '>':
-            s[1] += 1
-            if s[1] > minMaxCol[1]:
-                s[1] = minMaxCol[0]
+            #Adding the arrow's position to the new state
+            if (r,c) in newState:
+                newState[(r,c)].append(arrow)
+            else:
+                newState[(r,c)] = [arrow]
 
     #Adding this new state to the global list of states
     stormStates.append(newState)
@@ -232,35 +233,18 @@ def solution1(showPath_=False, showDebug_=False):
             print("Potential Moves 3:", moves)
 
         #Removing any movements that overlap with storms
-        for s in range(0, len(stormStates[t+1])):
-            stormNext = stormStates[t+1][s]
-            stormCurr = stormStates[t][s]
-
-            i = 0
-            while i < len(moves):
-                #Removing the movement if it results in a space occupied by storms
-                if (moves[i][0], moves[i][1]) == (stormNext[0], stormNext[1]):
-                    if showDebug_ and t+1 <= 18:
-                        print("\tHit By Storm")
-                        print("\tPlayer Pos:",(r,c), "\t Move Pos:", moves[i])
-                        print("\tStorm Pos: ", stormCurr, " Storm Next:", stormNext)
-                    moves.pop(i)
-                #Removing the movement if it travels through an oncoming storm (Not needed?)
-                #elif moves[i][0] == stormCurr[0] and moves[i][1] == stormCurr[1] and r == stormNext[0] and c == stormNext[1]:
-                #    if showDebug_ and t+1 <= 18:
-                #        print("\tOncoming Overlap")
-                #        print("\tPlayer Pos:",(r,c), "\t Move Pos:", moves[i])
-                #        print("\tStorm Pos: ", stormCurr, " Storm Next:", stormNext)
-                #    moves.pop(i)
-                else:
-                    i += 1
+        i = 0
+        while i < len(moves):
+            #Removing the movement if it results in a space occupied by storms
+            if (moves[i][0], moves[i][1]) in stormStates[t+1]:
+                moves.pop(i)
+            else:
+                i += 1
 
         if showDebug_ and t+1 <= 18:
             print("Potential Moves 4:", moves)
             displayMapState(t, (r,c))
             displayMapState(t+1, None, moves)
-            if t+1 == 18:
-                return
 
         #Adding any remaining movements to the que to check
         for m in moves:
@@ -271,9 +255,10 @@ def solution1(showPath_=False, showDebug_=False):
     return -1
 
 
-def solution2():
+def solution2(showPath_=False):
     #Setting the global variables to their starting values
-    getInput()
+    if len(stormStates) == 0:
+        getInput()
     
     #Creating the que of positions that have been located but not searched
     #Each element is (row, col, stateIndex/time)
@@ -296,19 +281,46 @@ def solution2():
         if r == exit[0] and c == exit[1]:
             #If we're on trip 0, we end trip 1 and have to double-back to the start
             if numTrips == 0:
-                print("\tFirst time at exit. Beginning trip 2 at time", t)
                 numTrips = 1
+                #If we want to show the path taken to get to the exit, we trace back through each locations previous position
+                if showPath_:
+                    print("\tFirst time at exit. Beginning trip 2 at time", t)
+                    path = [cur]
+                    while path[-1] in found.keys() and found[path[-1]] != None:
+                        path.append(found[path[-1]])
+                    for i in range(len(path)-1, -1, -1):
+                        print(path[i])
+                        displayMapState(path[i][2], (path[i][0], path[i][1]))
+
                 q = []
                 found = {(r,c,t):None}
             #If we're done with trip 2, we're at the end and have the answer
             elif numTrips == 2:
+                #If we want to show the path taken to get to the exit, we trace back through each locations previous position
+                if showPath_:
+                    path = [cur]
+                    while path[-1] in found.keys() and found[path[-1]] != None:
+                        path.append(found[path[-1]])
+                    for i in range(len(path)-1, -1, -1):
+                        print(path[i])
+                        displayMapState(path[i][2], (path[i][0], path[i][1]))
+
                 return t
         #If we've found the start of the maze and doubling-back
         elif r == start[0] and c == start[1] and numTrips == 1:
             numTrips = 2
+            #If we want to show the path taken to get to the exit, we trace back through each locations previous position
+            if showPath_:
+                print("\tBack at the start again. Beginning trip 3 at time", t)
+                path = [cur]
+                while path[-1] in found.keys() and found[path[-1]] != None:
+                    path.append(found[path[-1]])
+                for i in range(len(path)-1, -1, -1):
+                    print(path[i])
+                    displayMapState(path[i][2], (path[i][0], path[i][1]))
+
             q = []
             found = {(r,c,t):None}
-            print("\tBack at the start again. Beginning trip 3 at time", t)
 
         #If the next storm state in time doesn't exist yet, we make it
         if t+1 >= len(stormStates):
@@ -337,28 +349,23 @@ def solution2():
 
         #Checking left
         #Can't move to col 0 because walls are there
-        if c-1 == 0 or r == 0:
+        if c-1 == 0 or r == 0 or r == exit[0]:
             moves[2] = None
 
         #Checking right
         #Can't move past the max col bound because walls are there
-        if c+1 > minMaxCol[1] or r == 0:
+        if c+1 > minMaxCol[1] or r == 0 or r == exit[0]:
             moves[3] = None
                 
         #Removing any of the movements that have already been located
         for i in range(0, len(moves)):
             if moves[i] != None and (moves[i] in q or moves[i] in found.keys()):
                 moves[i] = None
-
-        #Removing any movements that overlap with storms
-        for s in range(0, len(stormStates[t+1])):
-            stormNext = stormStates[t+1][s]
-            stormCurr = stormStates[t][s]
-
-            for i in range(0, len(moves)):
-                #Removing the movement if it results in a space occupied by storms
-                if moves[i] != None and moves[i][0] == stormNext[0] and moves[i][1] == stormNext[1]:
-                        moves[i] = None
+                
+        #Removing the movement if it results in a space occupied by storms
+        for i in range(0, len(moves)):
+            if moves[i] != None and (moves[i][0],moves[i][1]) in stormStates[t+1]:
+                    moves[i] = None
 
         #Adding any remaining movements to the que to check
         for m in moves:
@@ -370,7 +377,5 @@ def solution2():
     return -1
 
 
-#print("Year 2022, Day 24 solution part 1:", solution1())
+print("Year 2022, Day 24 solution part 1:", solution1())
 print("Year 2022, Day 24 solution part 2:", solution2())
-#660 too low
-#661 too low

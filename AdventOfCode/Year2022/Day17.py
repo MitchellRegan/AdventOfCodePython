@@ -10,7 +10,7 @@ airSymb = '-'
 rockSymb = 'O'
 floorSymb = '#'
 part1Iterations = 50000
-part2Iterations = 50000 #1000000000000
+part2Iterations = 100000 #1000000000000
 
 def spawnRock(rockID, rockGrid):
     #Finding the number of empty rows at the top of the grid
