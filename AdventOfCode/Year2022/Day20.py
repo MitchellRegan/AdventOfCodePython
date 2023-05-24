@@ -3,8 +3,8 @@
 
 import os
 inFileDir = os.path.dirname(__file__)
-inFile = os.path.join(inFileDir, "InputTestFiles/d20_test.txt")
-#inFile = os.path.join(inFileDir, "InputRealFiles/d20_real.txt")
+#inFile = os.path.join(inFileDir, "InputTestFiles/d20_test.txt")
+inFile = os.path.join(inFileDir, "InputRealFiles/d20_real.txt")
 
 
 def getInput():
@@ -28,7 +28,6 @@ def getInput():
 
 def solution1():
     numList = getInput()
-    #print("\tStarting Order:", numList)
 
     #Looping through each initial index of numbers to move
     for startIndex in range(0, len(numList)):
@@ -40,26 +39,10 @@ def solution1():
                 break
 
         #Finding the new index by adding the number value to the current index
-        newIndex = currIndex
-        if numList[currIndex][0] < 0 and currIndex + numList[currIndex][0] <= 0:
-            newIndex += (numList[currIndex][0] - 1)
-        elif numList[currIndex][0] > 0 and currIndex + numList[currIndex][0] >= len(numList) - 1:
-            newIndex += (numList[currIndex][0] + 1)
-        else:
-            newIndex += numList[currIndex][0]
-
-        newIndex = newIndex % len(numList)
-        #print(numList[currIndex][0], "\tMoving from index", currIndex, "to", newIndex)
-
-        if newIndex != currIndex:
-            val = numList.pop(currIndex)
-            numList.insert(newIndex, val)
-
-    #outputStr = ""
-    #for x in numList:
-    #    outputStr = outputStr + str(x[0]) + ", "
-    #print(outputStr)
-    #print()
+        newIndex = (currIndex + numList[currIndex][0]) % (len(numList)-1)
+        #Moving the value to the new index
+        val = numList.pop(currIndex)
+        numList.insert(newIndex, val)
 
     #Finding the index where value 0 is
     offset = 0
@@ -78,15 +61,11 @@ def solution2():
     numList = getInput()
 
     #Applying the decryption key to each starting value
-    outputStr = ""
     for x in range(0, len(numList)):
         numList[x][0] = numList[x][0] * 811589153
-        outputStr = outputStr + str(numList[x][0]) + ", "
-    print("Starting Order:\n", outputStr, "\n\n")
 
     #Have to run this loop 10 times
-    for mix in range(0, 1):
-        print("\t\tMixing round", mix+1)
+    for mix in range(0, 10):
         #Looping through each initial index of numbers to move
         for startIndex in range(0, len(numList)):
             #Finding the current index of the value that was initially at the starting index
@@ -97,31 +76,10 @@ def solution2():
                     break
 
             #Finding the new index by adding the number value to the current index
-            newIndex = currIndex + (numList[currIndex][0] % len(numList))
-
-            print("sIndex:", startIndex)
-            print("\t- current index:", currIndex)
-            print("\t- value:", numList[currIndex][0])
-            print("\t\t- val mod size:", numList[currIndex][0] % len(numList))
-            print("\t- new index:", newIndex)
-
-            if newIndex >= len(numList):
-                print("\t\t- Positive loop. new index:", newIndex+1)
-                newIndex = (newIndex + 1) % len(numList)
-                print("\t\t- new index mod size:", newIndex)
-            elif newIndex < 0:
-                print("\t\t- Negative loop. new index:", newIndex-1)
-                newIndex = (newIndex - 1) % len(numList)
-                print("\t\t- new index mod size:", newIndex)
-
+            newIndex = (currIndex + numList[currIndex][0]) % (len(numList)-1)
+            #Moving the value to the new index
             val = numList.pop(currIndex)
             numList.insert(newIndex, val)
-
-            outputStr = ""
-            for x in numList:
-                outputStr = outputStr + str(x[0]) + ", "
-            print(outputStr)
-            print("================================================")
 
     #Finding the index where value 0 is
     offset = 0
@@ -136,6 +94,5 @@ def solution2():
     return val1000 + val2000 + val3000
 
 
-#print("Year 2022, Day 20 solution part 1:", solution1())
+print("Year 2022, Day 20 solution part 1:", solution1())
 print("Year 2022, Day 20 solution part 2:", solution2())
-#5890514072474 too low

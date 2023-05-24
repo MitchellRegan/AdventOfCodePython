@@ -9,8 +9,8 @@ inFile = os.path.join(inFileDir, "InputRealFiles/d17_real.txt")
 airSymb = '-'
 rockSymb = 'O'
 floorSymb = '#'
-part1Iterations = 16
-part2Iterations = 1000000 #1000000000000
+part1Iterations = 50000
+part2Iterations = 50000 #1000000000000
 
 def spawnRock(rockID, rockGrid):
     #Finding the number of empty rows at the top of the grid
@@ -179,7 +179,6 @@ def solution1():
 
     #Cycling through 2022 rocks falling
     for i in range(0, part1Iterations):
-        print("Wind Index at start of iteration", i, "is:", wi)
         #Getting a new rock each cycle, which also increases the grid height to fit
         currRock = spawnRock(i % 5, grid)
 
@@ -274,14 +273,23 @@ def solution1():
 
 
 def patternFinder(heights_):
-    #print("Pattern Finder")
-    #print(heights_)
-    #print("Initial value of i:", int(len(heights_)/2))
     #Looking for patterns starting with the first half of the list and working down to smaller list sizes
-    for i in range(int(len(heights_)/2), 1, -1):
+    for i in range(2, int(len(heights_)/2)):
         subList = heights_[:i]
         #print("\t", subList, " Initial sublist")
         patternFound = True
+
+        #Checking the sum of each sublist
+        for j in range(1, int(len(heights_)/i)):
+            nextSubList = heights_[i*j:i*(j+1)]
+            if sum(subList) != sum(nextSubList):
+                patternFound = False
+                break
+        if patternFound:
+            print("Sum Pattern Found. Length:", i)
+            print(sum(subList))
+            return
+
         #Checking the first sublist against all possible sublists of the same size in the rest of the list
         for j in range(1, int(len(heights_)/i)):
             nextSubList = heights_[i*j:i*(j+1)]
@@ -293,11 +301,42 @@ def patternFinder(heights_):
         #If a pattern was found, we output the length of the pattern and all of the values in it
         if patternFound:
             print("PATTERN FOUND! LENGTH:", i)
-            for p in subList:
-                print(p)
+            print(subList)
             return
     #Otherwise we indicate that no pattern was found
     print("No pattern found")
+
+
+def linearRegression(y_, xPredictor_):
+    #Getting the mean values
+    x_mean = sum([x for x in range(1,len(y_)+1)]) / len(y_)
+    y_mean = sum(y_) / len(y_)
+
+    #Finding the standard deviations
+    x_std = 0
+    for x in range(1, len(y_)+1):
+        x_std += (x - x_mean)**2
+    x_std = x_std / (len(y_)-1)
+    x_std = x_std**0.5
+
+    y_std = 0
+    for y in y_:
+        y_std += (y - y_mean)**2
+    y_std = y_std / (len(y_)-1)
+    y_std = y_std**0.5
+
+    #Finding the correlation
+    R = 0
+    for i in range(0, len(y_)):
+        x = (i+1 - x_mean) / x_std
+        y = (y_[i] - y_mean) / y_std
+        R += x * y
+    R *= 1 / (len(y_)-1)
+
+    #Finding the slope
+    m = R * (y_std / x_std)
+
+    return m*(xPredictor_ - x_mean) + y_mean
 
 
 def solution2():
@@ -315,10 +354,8 @@ def solution2():
                 else:
                     print("READING ERROR", line[c])
             
-    #Key: (grid height, wind index, shape index). Value: Grid's current state
-    memo = {}
     #List to track the max height after each block lands
-    heightTracker = [0]
+    heightTracker = []
 
     #Variable to track the height of the rock stack
     maxHeight = 0
@@ -329,7 +366,7 @@ def solution2():
     #List to hold the coordinate points of each tile for the current rock
     currRock = []
 
-    #Cycling through 1000000000000 rocks falling
+    #Cycling through each falling rock
     for i in range(0, part2Iterations):
         #Getting a new rock each cycle, which also increases the grid height to fit
         currRock = spawnRock_v3(i % 5, grid)
@@ -396,22 +433,13 @@ def solution2():
                 for r in range(0, len(grid)):
                     if grid[r] > 0:
                         tempHeight += len(grid) - r - 1
+                        heightTracker.append(tempHeight)
                         break
-
 
                 #If there is a blockage, we can remove all rows below the last one taken up by the new rock
                 if len(rowsUsed) > 0:
                     maxHeight += len(grid) - max(rowsUsed) - 1
                     grid = grid[:max(rowsUsed)+1]
-
-                    #If this state has been seen before in our memoization, we make a note of it
-                    m = (len(grid), wi, i % 5)
-                    if m in memo.keys():
-                        if grid == memo[m][1]:
-                            print("======= FOUND A MATCH AT ROCK", memo[m][0])
-                            return
-                    else:
-                        memo[m] = (i, grid)
 
         #print("Iteration", i)
     for r in range(0, len(grid)):
@@ -421,39 +449,48 @@ def solution2():
             maxHeight += len(grid) - r - 1
             break
 
-    #Looking for patterns in how much each block increases the stack height
     for i in range(len(heightTracker)-1, 0, -1):
-        heightTracker[i] -= heightTracker[i-1]
-    heightTracker.pop(0)
-    patternFinder(heightTracker)
+        heightTracker[i] = heightTracker[i] - heightTracker[i-1]
+
+    if True:
+        print("Pattern for all height increases:")
+        patternFinder(heightTracker)
+    if False:
+        print("Horizontal Line:")
+        patternFinder(heightTracker[0::5])
+        print("Cross:")
+        patternFinder(heightTracker[1::5])
+        print("Reverse L:")
+        patternFinder(heightTracker[2::5])
+        print("Vertical Line:")
+        patternFinder(heightTracker[3::5])
+        print("Square:")
+        patternFinder(heightTracker[4::5])
+        print("========================================")
+    if False:
+        rockCycleHeights = []
+        for r in range(0, len(heightTracker), 5):
+            rockCycleHeights.append(sum(heightTracker[r:r+5]))
+        print("Pattern after every rock has fallen in a cycle:")
+        patternFinder(rockCycleHeights)
+    if False:
+        arrowCycleHeights = []
+        for a in range(0, len(heightTracker), len(wind)):
+            arrowCycleHeights.append(sum(heightTracker[a:a+len(wind)]))
+        print("Pattern after every wind arrow has cycled:")
+        patternFinder(arrowCycleHeights)
+    if False:
+        rockWindCycles = []
+        for r in range(0, len(heightTracker), 5*len(wind)):
+            rockWindCycles.append(sum(heightTracker[r:a + (5*len(wind))]))
+        print("Pattern after every wind and rock have cycled:")
+        patternFinder(rockWindCycles)
+
+    #print("Linear Regression:", linearRegression(heightTracker, 1000000000000))
     return maxHeight
 
 
-import time
-if False:
-    #startTime = time.time()
-    print("Year 2022, Day 17 solution part 1:", solution1())
-    #endTime1 = time.time() - startTime
-    #print("Part 1 time: ", endTime1, "sec")
-    #ips = part1Iterations / endTime1
-    #completionTime = 1000000000000 / ips
-    #completionTime /= 60
-    #completionTime /= 60
-    #completionTime /= 24
-    #print("Estimated completion time of full input: ", completionTime, "days")
-
-if True:
-    #startTime = time.time()
-    print("Year 2022, Day 17 solution part 2:", solution2())
-    #endTime2 = time.time() - startTime
-    #print("Part 2 time: ", endTime2, "sec")
-    #ips = part2Iterations / endTime2
-    #completionTime = 1000000000000 / ips
-    #completionTime /= 60
-    #completionTime /= 60
-    #completionTime /= 24
-    #print("Estimated completion time of full input: ", completionTime, "days")
-
-#for i in range(1, 101):
-#    part2Iterations = i*10000
-#    print(i*10000, "=", solution2())
+#print("Year 2022, Day 17 solution part 1:", solution1())
+print("Year 2022, Day 17 solution part 2:", solution2())
+#1,532,163,834,578 too high
+#1,558,917,761,355 too high
