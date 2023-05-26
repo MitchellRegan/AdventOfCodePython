@@ -7,155 +7,7 @@ inFile = os.path.join(inFileDir, "InputTestFiles/d19_test.txt")
 #inFile = os.path.join(inFileDir, "InputRealFiles/d19_real.txt")
 
 
-def getInstructionScore(ins):
-    #Currently-owned resources
-    ore = 0
-    clay = 0
-    obsidian = 0
-    geodes = 0
-    
-    #Currently-owned bots
-    oreBots = 1
-    clayBots = 0
-    obsBots = 0
-    geodeBots = 0
-    
-    #Can only do 24 iterations to get max geodes
-    for i in range(0, 24):
-        #List to store the bot to make
-        makeBot = [0,0,0,0]
-        #Prioritize making a geode bot first
-        if ore >= ins["geoRobotOreCost"] and obsidian >= ins["geoRobotObsCost"]:
-            ore -= ins["geoRobotOreCost"]
-            obsidian -= ins["geoRobotObsCost"]
-            makeBot[3] = 1
-        #Next prioritize making an obsidian bot
-        elif ore >= ins["obsRobotOreCost"] and clay >= ins["obsRobotClayCost"]:
-            ore -= ins["obsRobotOreCost"]
-            clay -= ins["obsRobotClayCost"]
-            makeBot[2] = 1
-        #After that prioritize making clay bots
-        elif ore >= ins["clayRobotCost"]:
-            ore -= ins["clayRobotCost"]
-            makeBot[1] = 1
-        #Finally make more ore bots
-        elif ore >= ins["oreRobotCost"]:
-            ore -= ins["oreRobotCost"]
-            makeBot[0] = 1
-            
-        #Increase our resource amounts gathered from bots
-        ore += oreBots
-        clay += clayBots
-        obsidian += obsBots
-        geodes += geodeBots
-        
-        #Increase our number of bots
-        oreBots += makeBot[0]
-        clayBots += makeBot[1]
-        obsBots += makeBot[2]
-        geodeBots += makeBot[3]
-        
-    print("Ore Bots:", oreBots, "Clay Bots:", clayBots, "Obsidian Bots:", obsBots, "Geode Bots:", geodeBots)
-    return geodes
-
-
-def recursiveGeodeCount(costs, resources=[0,0,0,0], bots=[1,0,0,0], turns=24):
-    '''Recursive method to find the maximum number of geodes that can be made for a given set of instructions.
-    - costs: Dictionary containing the construction costs for each bot.
-    - resources: List of ints representing the number of resources currently posessed. In order they are: Ore, Clay, Obsidian, Geodes.
-    - bots: List of ints representing the number of bots currently posessed. In order they are: Ore, Clay, Obsidian, Geode.
-    - turns: The number of turns left to produce geodes
-    Returns: Int for the number of geodes created when "turns" reaches 0.
-    '''
-    #First check if we're out of turns. If so, we return the number of geodes that have been created
-    if turns == 0:
-        return resources[3]
-
-    #Int to track the largest number of geodes created from any recursive calls
-    mostGeodes = 0
-
-    #If we can make an ore bot, we try that
-    if resources[0] >= costs["oreRobotCost"]:
-        newResources = [x for x in resources]
-        newResources[0] -= costs["oreRobotCost"]
-
-        newResources[0] += bots[0]
-        newResources[1] += bots[1]
-        newResources[2] += bots[2]
-        newResources[3] += bots[3]
-
-        newBots = [x for x in bots]
-        newBots[0] += 1
-        numGeode = recursiveGeodeCount(costs, newResources, newBots, turns-1)
-        if numGeode > mostGeodes:
-            mostGeodes = numGeode
-
-    #If we can make a clay bot, we try that
-    if resources[0] >= costs["clayRobotCost"]:
-        newResources = [x for x in resources]
-        newResources[0] -= costs["clayRobotCost"]
-
-        newResources[0] += bots[0]
-        newResources[1] += bots[1]
-        newResources[2] += bots[2]
-        newResources[3] += bots[3]
-
-        newBots = [x for x in bots]
-        newBots[1] += 1
-        numGeode = recursiveGeodeCount(costs, newResources, newBots, turns-1)
-        if numGeode > mostGeodes:
-            mostGeodes = numGeode
-
-    #If we can make an obsidian bot, we try that
-    if resources[0] >= costs["obsRobotOreCost"] and resources[1] >= costs["obsRobotClayCost"]:
-        newResources = [x for x in resources]
-        newResources[0] -= costs["obsRobotOreCost"]
-        newResources[1] -= costs["obsRobotClayCost"]
-
-        newResources[0] += bots[0]
-        newResources[1] += bots[1]
-        newResources[2] += bots[2]
-        newResources[3] += bots[3]
-
-        newBots = [x for x in bots]
-        newBots[2] += 1
-        numGeode = recursiveGeodeCount(costs, newResources, newBots, turns-1)
-        if numGeode > mostGeodes:
-            mostGeodes = numGeode
-
-    #If we can make a geode bot, we try that
-    if resources[0] >= costs["geoRobotOreCost"] and resources[2] >= costs["geoRobotObsCost"]:
-        newResources = [x for x in resources]
-        newResources[0] -= costs["geoRobotOreCost"]
-        newResources[2] -= costs["geoRobotObsCost"]
-
-        newResources[0] += bots[0]
-        newResources[1] += bots[1]
-        newResources[2] += bots[2]
-        newResources[3] += bots[3]
-
-        newBots = [x for x in bots]
-        newBots[3] += 1
-        numGeode = recursiveGeodeCount(costs, newResources, newBots, turns-1)
-        if numGeode > mostGeodes:
-            mostGeodes = numGeode
-
-    #Now we try doing nothing and see if that generates more resources
-    newResources = [x for x in resources]
-    newResources[0] += bots[0]
-    newResources[1] += bots[1]
-    newResources[2] += bots[2]
-    newResources[3] += bots[3]
-    newBots = [x for x in bots]
-
-    numGeode = recursiveGeodeCount(costs, newResources, newBots, turns-1)
-    if numGeode > mostGeodes:
-        mostGeodes = numGeode
-
-    return mostGeodes
-
-
-def solution1():
+def getInput():
     ins = {}
     with open(inFile, 'r') as f:
         for line in f:
@@ -170,10 +22,70 @@ def solution1():
             curDict["geoRobotObsCost"] = int(i[30])
         
             ins[idNum] = curDict
+    return ins
+
+
+def getInstructionScore(ins, debug=False):
+    #Currently-owned resources
+    ore = [0] * 25
+    clay = [0] * 25
+    obsidian = [0] * 25
+    geode = [0] * 25
+    
+    #List of ordered pairs for each robot and what minute they were created at
+    oreBot = [1] * 25
+    clayBot = [0] * 25
+    obsidianBot = [0] * 25
+    geodeBot = [0] * 25
+
+    #Creating a projection of each resource we'll have over the 24 min
+    if debug:
+        print("%8s %13s  %13s  %13s  %13s" %("Time", "Ore/Bots", "Clay/Bots", "Obsidian/Bots", "Geodes/Bots"))
+    for i in range(1, 25):
+        #If an ore bot was built, we have to subtract the required ore resources for crafting
+        if oreBot[i] > oreBot[i-1]:
+            ore[i] = ore[i-1] + oreBot[i-1]
+            ore[i] -= ins["oreRobotCost"]
+        else:
+            ore[i] = ore[i-1] + oreBot[i]
+
+        #If a clay bot was built, we have to subtract the required ore resources for crafting
+        if clayBot[i] > clayBot[i-1]:
+            clay[i] = clay[i-1] + clayBot[i-1]
+            ore[i] -= ins["clayRobotCost"]
+        else:
+            clay[i] = clay[i-1] + clayBot[i]
+
+        #If an obsidian bot was built, we have to subtract the required ore and clay resources for crafting
+        if obsidianBot[i] > obsidianBot[i-1]:
+            obsidian[i] = obsidian[i-1] + obsidianBot[i-1]
+            ore[i] -= ins["obsRobotOreCost"]
+            clay[i] -= ins["obsRobotClayCost"]
+        else:
+            obsidian[i] = obsidian[i-1] + obsidianBot[i]
+
+        #If a geode bot was built, we have to subtract the required ore and obsidian resources for crafting
+        if geodeBot[i] > geodeBot[i-1]:
+            geode[i] = geode[i-1] + geodeBot[i-1]
+            ore[i] -= ins["geoRobotOreCost"]
+            obsidian[i] -= ins["geoRobotObsCost"]
+        else:
+            geode[i] = geode[i-1] + geodeBot[i]
         
-    for k in ins.keys():
-        geodes = recursiveGeodeCount(ins[k])
-        print("Instruction", k, "geodes:", geodes)
+        if debug:
+            print("%8s %5d : %-5d  %5d : %-5d  %5d : %-5d  %5d : %-5d" %("t="+str(i), ore[i], oreBot[i], clay[i], clayBot[i], obsidian[i], obsidianBot[i], geode[i], geodeBot[i]))
+
+    print()
+
+
+def solution1():
+    instructions = getInput()
+
+    for k in instructions.keys():
+        #geodes = recursiveGeodeCount(ins[k])
+        #print("Instruction", k, "geodes:", geodes)
+        print(k, ":", instructions[k])
+        getInstructionScore(instructions[k])
 
     return
 

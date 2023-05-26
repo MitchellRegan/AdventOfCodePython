@@ -122,10 +122,15 @@ def pathPermutationsList(path, curPath=[], index=0):
     - index: The index of the valve in the starting path to either include or exclude for further recursions.
     - returns: A list of every possible path between the first and last valves in the given starting path.
     '''
+    print("PathPermutations for", path, "index", index, "current path:", curPath)
+    #If there are no permutations between the start and end valves on the path, we just return the given path
+    if len(path) == 2:
+        return [path]
+
     #On the first loop we make sure the current path always includes the first valve of the starting path
     if index == 0:
-        curPath.append(path[0])
-        return permutationsList(path, curPath, index+1)
+        newPath = [path[0]]
+        return pathPermutationsList(path, newPath, index+1)
         
     #On the final loop we make sure the current path always includes the last valve of the starting path before returning
     if index == len(path)-1:
@@ -139,8 +144,8 @@ def pathPermutationsList(path, curPath=[], index=0):
         path1.append(path[index])
         path2 = [x for x in curPath]
         
-        perm1 = permutationsList(path, path1, index+1)
-        perm2 = permutationsList(path, path2, index+1)
+        perm1 = pathPermutationsList(path, path1, index+1)
+        perm2 = pathPermutationsList(path, path2, index+1)
 
         #Once we get all possible permutations, we combine the results into a single list to return
         combinedPaths = [x for x in perm1]
@@ -160,9 +165,10 @@ def getPathHeuristicScore(path_, steps_):
     #Vars to store the best path
     bestPath = []
     highestScore = 0
-
+    print("\tFinding best score for path", path_)
     #Iterating through each possible permutation along the given path
     for p in pathPerm:
+        print("\t - Checking path permutation:", p)
         curSteps = steps_
         curScore = 0
         #Going from valve to valve along the path
@@ -229,41 +235,71 @@ def solution2(visited = [["AA"], ["AA"]], steps=[26, 26], pressure = 0):
         #For any options that remain, we look for the most optimal valve to go to
         #If person 1 and person 2 have the same number of steps, we figure out which goes first
         if steps[0] > 0 and steps[1] > 0:
-            bestValve1 = None
-            bestValve2 = None
+            p1BestPath = None
+            p2BestPath = None
             maxPressure = 0
-            tieValvePairs = []
+            tieValvePaths = []
             
             #Comparing each option for person 1 against each option for person 2 to find which next pair of valves is the best
             for a in potential1:
                 for b in potential2:
                     if a != b:
-                        p1dist = valveDists[(min(visited[0][-1], a), max(visited[0][-1], a))]
-                        p1score = (steps[0] - p1dist) * valveFlows[a]
+                        #Getting the path of non-zero valves from person 1's current position to the potential valve "a"
+                        p1Path = valvePaths[(min(visited[0][-1], a), max(visited[0][-1], a))]
+                        #Removing any valves along the path that are already on, or is the current potential valve for person 2
+                        index = 1
+                        while index < len(p1Path):
+                            if p1Path[index] in visited[0] or p1Path[index] in visited[1] or p1Path[index] == b or valveFlows[p1Path[index]] == 0:
+                                p1Path.pop(index)
+                            else:
+                                index += 1
+                        #Finding the best permutation of valves to turn on that are along the given path for person 1
+                        print("Checking score for person 1 path", p1Path)
+                        p1Score = getPathHeuristicScore(p1Path, steps[0])
 
-                        p2dist = valveDists[(min(visited[1][-1], b), max(visited[1][-1], b))]
-                        p2score = (steps[1] - p2dist) * valveFlows[b]
+                        #Getting the path of non-zero valves from person 2's current position to the potential valve "b"
+                        p2Path = valvePaths[(min(visited[1][-1], b), max(visited[1][-1], b))]
+                        #Removing any valves along the path that are already on, or is the current potential valve for person 1
+                        index = 1
+                        while index < len(p2Path):
+                            if p2Path[index] in visited[0] or p2Path[index] in visited[1] or p2Path[index] == a or valveFlows[p2Path[index]] == 0:
+                                p2Path.pop(index)
+                            else:
+                                index += 1
+                        #Finding the best permutation of valves to turn on that are along the given path for person 2
+                        print("Checking score for person 2 path", p2Path)
+                        p2Score = getPathHeuristicScore(p2Path, steps[1])
 
-                        #If this pair of valves produces the most pressure release, we make a note of it
-                        if (p1score + p2score) > maxPressure:
-                            maxPressure = p1score + p2score
-                            bestValve1 = a
-                            bestValve2 = b
+                        print("A")
+                        #If this pair of valve paths produces the most pressure release, we make a note of it
+                        if p1Score[0] + p2Score[0] > maxPressure:
+                            print("B")
+                            maxPressure = p1Score[0] + p2Score[0]
+                            p1BestPath = p1Score[1]
+                            p2BestPath = p2Score[1]
                             tieValvePairs = []
+                            print("C")
                         #If there's an equally optimal pair of valves, we add them to the tie valve pairs list to check later
-                        elif (p1score + p2score) == maxPressure:
-                            if not (steps[0] == steps[1] and a == bestValve2 and b == bestValve1):
-                                tieValvePairs.append((a,b))
+                        elif p1Score[0] + p2Score[0] == maxPressure:
+                            print("D")
+                            if not (steps[0] == steps[1] and p1Score[1] == p2Score[1]):
+                                print("E")
+                                tieValvePaths.append((p1Score[1], p2Score[1]))
 
-            #If there is only one pair of valves that offers the best result, we go with them
+            print("F")
+            #If there is only one pair of valve paths that offers the best result, we go with them
             if len(tieValvePairs) == 0:
-                visited[0].append(bestValve1)
-                visited[1].append(bestValve2)
-                steps[0] -= valveDists[(min(visited[0][-1], visited[0][-2]), max(visited[0][-1], visited[0][-2]))]
-                steps[1] -= valveDists[(min(visited[1][-1], visited[1][-2]), max(visited[1][-1], visited[1][-2]))]
+                for i in range(0, len(p1BestPath)-1):
+                    steps[0] -= valveDists[(min(p1BestPath[i], p1BestPath[i+1]), max(p1BestPath[i], p1BestPath[i+1]))]
+                    visited[0].append(p1BestPath[i+1])
+
+                for i in range(0, len(p2BestPath)-1):
+                    steps[1] -= valveDists[(min(p2BestPath[i], p2BestPath[i+1]), max(p2BestPath[i], p2BestPath[i+1]))]
+                    visited[1].append(p2BestPath[i+1])
+
                 pressure += maxPressure
-                print("\tPerson 1 turns on valve", bestValve1, "at time:", 26-steps[0])
-                print("\tPerson 2 turns on valve", bestValve2, "at time:", 26-steps[1])
+                print("\tPerson 1 turns on valve(s)", p1BestPath, "at time:", 26-steps[0])
+                print("\tPerson 2 turns on valve(s)", p2BestPath, "at time:", 26-steps[1])
                 print("===============================================================")
             #If there are multiple pairs of valves that offer the same best result, we need to check them all with DFS
             else:
@@ -351,10 +387,80 @@ def solution2(visited = [["AA"], ["AA"]], steps=[26, 26], pressure = 0):
     return pressure
 
 
+def solution3(visited=["AA"], p1Loc = "AA", p2Loc="AA", p1Steps=26, p2Steps=26, pressure=0):
+    '''DFS solution to search all possible valve permutations for both person 1 and person 2.
+    - visited: List containing all of the valves that either person has already turned on.
+    - p1Loc: The current valve location of person 1.
+    - p2Loc: The current valve location of person 2.
+    - p1Steps: The number of remaining steps for person 1.
+    - p2Steps: The number of remaining steps for person 2.
+    - pressure: The total amount of pressure that has been released so far.
+    - returns: Int for the highest amount of pressure that can be released.
+    '''
+    #If both person 1 and person 2 are out of steps, we return the current amount of pressure released
+    if p1Steps == 0 and p2Steps == 0:
+        return pressure
+
+    #Moving person 1 first if they have more available steps
+    if p1Steps >= p2Steps:
+        #Getting the list of all possible valves that are within range of person 1, have non-zero flows, and haven't already been visited
+        possibleMoves = []
+        for valve in valveFlows.keys():
+            if valve not in visited and valveFlows[valve] > 0 and valveDists[(min(p1Loc, valve), max(p1Loc, valve))] < p1Steps:
+                possibleMoves.append(valve)
+
+        #If there are no possible moves for person 1, we reduce their steps to 0 and move to person 2
+        if len(possibleMoves) == 0:
+            return solution3(visited, p1Loc, p2Loc, 0, p2Steps, pressure)
+        #Otherwise we iterate through each valve option recursively to find the best pressure release
+        else:
+            bestPressure = 0
+            for v in possibleMoves:
+                newVisit = [x for x in visited]
+                newVisit.append(v)
+                newSteps = p1Steps - valveDists[(min(p1Loc, v), max(p1Loc, v))]
+                newPressure = pressure + (newSteps * valveFlows[v])
+                score = solution3(newVisit, v, p2Loc, newSteps, p2Steps, newPressure)
+
+                #If this recursion nets a better max pressure than our previous best, we store it's results
+                if score > bestPressure:
+                    bestPressure = score
+
+            #Returning the largest amount of pressure this recursion can release
+            return bestPressure
+    #Moving person 2 first if they have more available steps
+    else:
+        #Getting the list of all possible valves that are within range of person 2, have non-zero flows, and haven't already been visited
+        possibleMoves = []
+        for valve in valveFlows.keys():
+            if valve not in visited and valveFlows[valve] > 0 and valveDists[(min(p2Loc, valve), max(p2Loc, valve))] < p2Steps:
+                possibleMoves.append(valve)
+
+        #If there are no possible moves for person 2, we reduce their steps to 0 and move to person 1
+        if len(possibleMoves) == 0:
+            return solution3(visited, p1Loc, p2Loc, p1Steps, 0, pressure)
+        #Otherwise we iterate through each valve option recursively to find the best pressure release
+        else:
+            bestPressure = 0
+            for v in possibleMoves:
+                newVisit = [x for x in visited]
+                newVisit.append(v)
+                newSteps = p2Steps - valveDists[(min(p2Loc, v), max(p2Loc, v))]
+                newPressure = pressure + (newSteps * valveFlows[v])
+                score = solution3(newVisit, p1Loc, v, p1Steps, newSteps, newPressure)
+
+                #If this recursion nets a better max pressure than our previous best, we store it's results
+                if score > bestPressure:
+                    bestPressure = score
+
+            #Returning the largest amount of pressure this recursion can release
+            return bestPressure
+
+
 #Getting the starting dictionaries for the flow for each valve, the connections for each valves, the distances from/to each non-zero valve, and which valve to start at
 valveFlows, valveEdges, startValve, valveDists, valvePaths = getInput()
 #print("Year 2022, Day 16 solution part 1:", solution1([startValve], 30))
-print("Year 2022, Day 16 solution part 2:", solution2())
+print("Year 2022, Day 16 solution part 2:", solution3())
 #1213 too low
 #1897 too low
 #1921 too low
