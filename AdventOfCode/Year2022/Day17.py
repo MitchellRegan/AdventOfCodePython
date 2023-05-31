@@ -3,14 +3,14 @@
 
 import os
 inFileDir = os.path.dirname(__file__)
-#inFile = os.path.join(inFileDir, "InputTestFiles/d17_test.txt")
-inFile = os.path.join(inFileDir, "InputRealFiles/d17_real.txt")
+inFile = os.path.join(inFileDir, "InputTestFiles/d17_test.txt")
+#inFile = os.path.join(inFileDir, "InputRealFiles/d17_real.txt")
 
 airSymb = '-'
 rockSymb = 'O'
 floorSymb = '#'
-part1Iterations = 50000
-part2Iterations = 100000 #1000000000000
+part1Iterations = 2022
+part2Iterations = 1000000 #1000000000000
 
 def spawnRock(rockID, rockGrid):
     #Finding the number of empty rows at the top of the grid
@@ -280,15 +280,15 @@ def patternFinder(heights_):
         patternFound = True
 
         #Checking the sum of each sublist
-        for j in range(1, int(len(heights_)/i)):
-            nextSubList = heights_[i*j:i*(j+1)]
-            if sum(subList) != sum(nextSubList):
-                patternFound = False
-                break
-        if patternFound:
-            print("Sum Pattern Found. Length:", i)
-            print(sum(subList))
-            return
+        #for j in range(1, int(len(heights_)/i)):
+        #    nextSubList = heights_[i*j:i*(j+1)]
+        #    if sum(subList) != sum(nextSubList):
+        #        patternFound = False
+        #        break
+        #if patternFound:
+        #    print("Sum Pattern Found. Length:", i)
+        #    print(sum(subList))
+        #    return
 
         #Checking the first sublist against all possible sublists of the same size in the rest of the list
         for j in range(1, int(len(heights_)/i)):
@@ -353,6 +353,9 @@ def solution2():
                     wind[c] = -1
                 else:
                     print("READING ERROR", line[c])
+    print("Number of wind arrows:", len(wind))
+    print("Cycle through all rocks will all wind:", len(wind)*5)
+    landingRows = []
             
     #List to track the max height after each block lands
     heightTracker = []
@@ -436,10 +439,12 @@ def solution2():
                         heightTracker.append(tempHeight)
                         break
 
+                landingRows.append(len(grid) - currRock[-1][0] - 1)
+
                 #If there is a blockage, we can remove all rows below the last one taken up by the new rock
-                if len(rowsUsed) > 0:
-                    maxHeight += len(grid) - max(rowsUsed) - 1
-                    grid = grid[:max(rowsUsed)+1]
+                #if len(rowsUsed) > 0:
+                #    maxHeight += len(grid) - max(rowsUsed) - 1
+                #    grid = grid[:max(rowsUsed)+1]
 
         #print("Iteration", i)
     for r in range(0, len(grid)):
@@ -449,10 +454,60 @@ def solution2():
             maxHeight += len(grid) - r - 1
             break
 
+    heightDiff = [1] * len(heightTracker)
     for i in range(len(heightTracker)-1, 0, -1):
-        heightTracker[i] = heightTracker[i] - heightTracker[i-1]
+        #heightTracker[i] = heightTracker[i] - heightTracker[i-1]
+        heightDiff[i] = heightTracker[i] - heightTracker[i-1]
 
-    if True:
+    if False:
+        print("Linear Regression prediction from height")
+        print(linearRegression(heightTracker, 1000000000000))
+        patternFinder(heightDiff)
+    if False:
+        print("creating CSV file of", part2Iterations, "outputs...")
+        
+        #outFile = os.path.join(inFileDir, "y2022_d17_test_heights_1000000.csv")
+        outFile = os.path.join(inFileDir, "y2022_d17_real_heights_1000000.csv")
+        print("Out File:", outFile)
+        with open(outFile, 'w') as o:
+            o.write("height,heightDifference,blockLandingRow,block\n")
+            for line in range(0, part2Iterations):
+                lineStr = str(heightTracker[line]) + "," + str(heightDiff[line]) + "," + str(landingRows[line]) + ","
+
+                if line % 5 == 0:
+                    lineStr = lineStr + "Horizontal Line\n"
+                elif line % 5 == 1:
+                    lineStr = lineStr + "Cross\n"
+                elif line % 5 == 2:
+                    lineStr = lineStr + "Reverse L\n"
+                elif line % 5 == 3:
+                    lineStr = lineStr + "Vertical Line\n"
+                else:
+                    lineStr = lineStr + "Square\n"
+
+                o.write(lineStr)
+
+    if False:
+        outFile = os.path.join(inFileDir, "y2022_d17_test_grid_1000000.csv")
+        #outFile = os.path.join(inFileDir, "y2022_d17_real_grid_1000000.csv")
+        with open(outFile, 'w') as o:
+            for line in range(len(grid)-2, -1, -1):
+                if grid[line] == 0:
+                    continue
+                binStr = bin(grid[line])[2:].zfill(7)
+                binStr = binStr + '\n'
+                o.write(binStr)
+
+        print("CSV done")
+    if False:
+        for i in range(len(landingRows)-1, 0, -1):
+            landingRows[i] = landingRows[i] - landingRows[i-1]
+        print("Pattern finder for the landing rows of each block")
+        patternFinder(landingRows)
+    if False:
+        for i in range(4, len(heightTracker), 5):
+            print(heightTracker[i])
+    if False:
         print("Pattern for all height increases:")
         patternFinder(heightTracker)
     if False:
@@ -491,6 +546,44 @@ def solution2():
 
 
 #print("Year 2022, Day 17 solution part 1:", solution1())
-print("Year 2022, Day 17 solution part 2:", solution2())
+#print("Year 2022, Day 17 solution part 2:", solution2())
 #1,532,163,834,578 too high
 #1,558,917,761,355 too high
+
+#outFile = os.path.join(inFileDir, "y2022_d17_test_heights_1000000.csv")
+outFile = os.path.join(inFileDir, "y2022_d17_real_heights_1000000.csv")
+size = 20 #1000000
+heights = [0] * size
+heightDiffs = [1] * size
+with open(outFile, 'r') as f:
+    i = 0
+    for line in f:
+        h = line.split(",")
+        if i > 0:
+            heights[i-1] = int(h[0])
+            heightDiffs[i-1] = int(h[1])
+        i += 1
+        if i >= size:
+            break
+        
+hLineHeights = heights[0::5]
+crossHeights = heights[1::5]
+backwardsLHeights = heights[2::5]
+vLineHeights = heights[3::5]
+squareHeights = heights[4::5]
+print("Horizontal line heights:", hLineHeights)
+
+outFile = os.path.join(inFileDir, "y2022_d17_test_grid_1000000.csv")
+#outFile = os.path.join(inFileDir, "y2022_d17_real_grid_1000000.csv")
+size = 20000 #1000000
+grid = [0] * size
+with open(outFile, 'r') as f:
+    i = 0
+    for line in f:
+        grid[i] = line[:-1]
+        grid[i] = grid[i].replace('0', ' ')
+        i += 1
+        if i >= size:
+            break
+
+patternFinder(grid)
