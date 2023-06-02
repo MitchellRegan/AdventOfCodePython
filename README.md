@@ -1,5 +1,5 @@
 # AdventOfCodePython
-My solutions to different Advent of Code problems in Python.
+My solutions to different [Advent of Code](https://adventofcode.com/) problems in Python.
 
 Progress as of June 1st, 2023:
 * 2022: 45 / 50 Stars
