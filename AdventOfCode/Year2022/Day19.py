@@ -101,7 +101,7 @@ def getInstructionScore(ins, debug=False):
     clay = [0] * 25
     obsidian = [0] * 25
     geode = [0] * 25
-    
+
     #List of ordered pairs for each robot and what minute they were created at
     oreBot = [1] * 25
     clayBot = [0] * 25
@@ -145,7 +145,7 @@ def getInstructionScore(ins, debug=False):
         if debug:
             print("%8s %5d : %-5d  %5d : %-5d  %5d : %-5d  %5d : %-5d" %("t="+str(i), ore[i], oreBot[i], clay[i], clayBot[i], obsidian[i], obsidianBot[i], geode[i], geodeBot[i]))
 
-    print()
+    return geode[24]
 
 
 #Value used in recursiveScore to keep track of the earliest minute that a geode bot (index 0) or obsidian bot (index 1) are made.
@@ -279,16 +279,18 @@ def solution1():
     instructions = getInput()
     totalScore = 0
     for k in instructions.keys():
+        print("Running Blueprint", k)
         #geodes = recursiveGeodeCount(ins[k])
         #print("Instruction", k, "geodes:", geodes)
-        print(k, ":", instructions[k])
-        score = recursiveScore(instructions[k])
-        print("\tScore:", score)
-        print("\t\tFastest Geode Time:", 24-bestBotTimes[0])
-        print("\t\tFastest Obsidian Time:", 24-bestBotTimes[1])
-        print("\t\tFastest Clay Time:", 24-bestBotTimes[2])
-        totalScore += score * k
-        #totalScore += getInstructionScore(instructions[k]) * k
+        #print(k, ":", instructions[k])
+        #score = recursiveScore(instructions[k])
+        #print("\tScore:", score)
+        #print("\t\tFastest Geode Time:", 24-bestBotTimes[0])
+        #print("\t\tFastest Obsidian Time:", 24-bestBotTimes[1])
+        #print("\t\tFastest Clay Time:", 24-bestBotTimes[2])
+        #totalScore += score * k
+        
+        totalScore += getInstructionScore(instructions[k], True) * k
 
     return totalScore
 
