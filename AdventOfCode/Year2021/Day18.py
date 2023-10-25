@@ -64,19 +64,44 @@ def readNodeTree(root_:Node):
     return
 
 
+def explodeTree(root_, depth_=0):
+    '''Recursively traverses the given node tree to look for pairs with a depth of 4 or more.
+
+    Parameters
+    ----------
+        root_: Node object to traverse.
+        depth_: The number of brackets around the current Node.
+
+    Returns: True if there were no explosions and the tree is fully reduced. False if there was an explosion.
+    '''
+    if root_ is None:
+        return True
+
+    if isinstance(root_.data, int):
+        return True
+
+    #If this node is a set of brackets with a depth less than 4, we check the left and/or right sides of this bracket
+    if root_.data == ',' and depth_ < 3:
+        return (explodeTree(root_.left, depth_+1) and explodeTree(root_.right, depth_+1))
+
+    #If this node is a set of brackets with depth of 4 or more, we explode
+    if root_.data == ',' and depth_ >= 3:
+        print("\t\tExploding pair [", root_.left.data, ",", root_.right.data, "]")
+        return False
+
+    print("??")
+
+
 def solution1():
     #Parsing each line of input their own binary tree and storing the root nodes into the nodeRootList
     input = getInput()
     nodeRootList = []
-
     for line in input:
-        print("\t", line)
         root = None
         nodeStack = []
         numVal = None
         #Iterating through each char
         for i in range(0, len(line)):
-            print('\t', line[i])
             #If this is the beginning of a pair, we create a new Node to store it
             if line[i] == '[':
                 #If this is a child node, we assign it to the top node in the stack
@@ -85,15 +110,12 @@ def solution1():
                     nodeStack.append(n)
                 #Otherwise this is the root node
                 else:
-                    print("\t\tStart of root node")
                     root = Node(",")
                     nodeStack.append(root)
-                print("\t\tAdded node to stack. Stack size:", len(nodeStack))
             #If this is the end of a pair, we pop the top node in the stack
             elif line[i] == ']':
                 #If there's a number value that needs to be assigned to the right-side of a pair, we store it
                 if numVal is not None:
-                    print("\t\tStoring right-side number", numVal)
                     nodeStack[-1].right = Node(numVal, nodeStack[-1])
                     numVal = None
                 
@@ -104,30 +126,36 @@ def solution1():
                     nodeStack[-2].right = nodeStack[-1]
                 
                 nodeStack.pop(-1)
-                print("\t\tPopping node from stack. Stack size:", len(nodeStack))
             #Commas denote a split between the left and right side values of a pair
             elif line[i] == ',':
                 #If there's a number value that needs to be assigned to the left-side of a pair, we store it
                 if numVal is not None:
-                    print("\t\tStoring left-side number", numVal)
                     nodeStack[-1].left = Node(numVal, nodeStack[-1])
                     numVal = None
             #If this index is a number (or part of a number), we need to store it until we know where it ends
             else:
                 if numVal is None:
                     numVal = int(line[i])
-                    print("\t\tIs number. Stored", numVal)
                 else:
                     numVal = (numVal * 10) + int(line[i])
-                    print("\t\tPart of number. Stored", numVal)
 
         #Once all values have been stored in the binary tree, we store the root node in our list of all root nodes
         nodeRootList.append(root)
-        print("\tAdded root to root list. Size:", len(nodeRootList))
 
-    print("Reading node list")
-    for i in nodeRootList:
-        readNodeTree(i)
+    #Check for pairs that are within 4 brackets and explode them
+    for root in range(0, len(nodeRootList)):
+        print("Checking ", end='')
+        readNodeTree(nodeRootList[root])
+        #Looping until this current tree has no pair that's nested 4 times
+        explodeTree(nodeRootList[root])
+        print("=====================================\n")
+        
+        #while not explodeTree(root):
+        #    continue
+
+    #Check for any numbers that are greater than 9 and split
+    #Find the magnitude of each input line
+    #Sum up the magnitude of all input lines
     return
 
 
