@@ -2,7 +2,7 @@
 #https://adventofcode.com/2021/day/18#part2
 
 import os
-import math as Math
+import math
 inFileDir = os.path.dirname(__file__)
 inFile = os.path.join(inFileDir, "InputTestFiles/d18_test.txt")
 #inFile = os.path.join(inFileDir, "InputRealFiles/d18_real.txt")
@@ -64,6 +64,13 @@ def readNodeTree(root_:Node):
     return
 
 
+.asdf #Need to make a separate function for splitting large numbers
+#Loop explosions without splits until all explosions are done
+#Perform all splits at once
+#Repeat looping explosions without splits
+#Keep doing this until no explosions and no splits
+
+
 def explodeTree(root_, depth_=0):
     '''Recursively traverses the given node tree to look for pairs with a depth of 4 or more.
 
@@ -81,15 +88,112 @@ def explodeTree(root_, depth_=0):
         return True
 
     #If this node is a set of brackets with a depth less than 4, we check the left and/or right sides of this bracket
-    if root_.data == ',' and depth_ < 3:
-        return (explodeTree(root_.left, depth_+1) and explodeTree(root_.right, depth_+1))
+    if root_.data == ',' and depth_ < 4:
+        leftIsValid = explodeTree(root_.left, depth_+1)
+        if not leftIsValid:
+            return False
+        return explodeTree(root_.right, depth_+1)
 
     #If this node is a set of brackets with depth of 4 or more, we explode
-    if root_.data == ',' and depth_ >= 3:
-        print("\t\tExploding pair [", root_.left.data, ",", root_.right.data, "]")
-        return False
+    if root_.data == ',' and depth_ >= 4:
+        #Sometimes a pair is more than a depth of 4, so we need to go deeper
+        if not isinstance(root_.left.data, int) or not isinstance(root_.right.data, int):
+            leftIsValid = explodeTree(root_.left, depth_+1)
+            if not leftIsValid:
+                return False
+            return explodeTree(root_.right, depth_+1)
 
-    print("??")
+        print("\t\tExploding pair [", root_.left.data, ",", root_.right.data, "]")
+
+        #Traversing up the tree to find a branch to the left to add the left number to
+        print("\t\t  Looking for left number...")
+        curr = root_.parent
+        prev = root_
+        goingUp = True
+        while True:
+            if goingUp:
+                #If there aren't any paths upwards, we just drop this left number
+                if curr is None:
+                    print("\t\t\tNo upwards path. Dropping", root_.left.data)
+                    break
+                #Once a valid branch opens up to the left, we start traversing down the right path
+                if curr.right == prev:
+                    goingUp = False
+                    prev = curr
+                    curr = curr.left
+                    print("\t\t\tLeft branch found at value:", curr.data)
+                #If there's no branch to the left, we just keep traversing upwards
+                else:
+                    prev = curr
+                    curr = curr.parent
+                    print("\t\t\tGoing Up")
+            else:
+                #If there aren't any remaining path down-right, we've found the number to add to
+                if curr.right is None:
+                    print("\t\t\tFound value to add to:", curr.data)
+                    curr.data = curr.data + root_.left.data
+                    #If the new total is larger than 9, it needs to be split
+                    if curr.data > 9:
+                        leftSplit = Node(math.floor(curr.data/2), curr)
+                        rightSplit = Node(math.ceil(curr.data/2), curr)
+                        curr.data = ','
+                        curr.left = leftSplit
+                        curr.right = rightSplit
+                    break
+                #Otherwise we need to keep going down
+                else:
+                    prev = curr
+                    curr = curr.right
+                    print("\t\t\tGoing Down-right. Curr value:", curr.data)
+                    
+
+        #Traversing up the tree to find a branch to the right to add the right number to
+        print("\t\t  Looking for right number...")
+        curr = root_.parent
+        prev = root_
+        goingUp = True
+        while True:
+            if goingUp:
+                #If there aren't any paths upwards, we just drop this right number
+                if curr is None:
+                    print("\t\t\tNo upwards path. Dropping", root_.right.data)
+                    break
+                #Once a valid branch opens up to the right, we start traversing down the left path
+                if curr.left == prev:
+                    goingUp = False
+                    prev = curr
+                    curr = curr.right
+                    print("\t\t\tRight branch found at value:", curr.data)
+                #If there's no branch to the right, we just keep traversing upwards
+                else:
+                    prev = curr
+                    curr = curr.parent
+                    print("\t\t\tGoing Up")
+            else:
+                #If there aren't any remaining path down-left, we've found the number to add to
+                if curr.left is None:
+                    print("\t\t\tFound value to add to:", curr.data)
+                    curr.data = curr.data + root_.right.data
+                    #If the new total is larger than 9, it needs to be split
+                    if curr.data > 9:
+                        leftSplit = Node(math.floor(curr.data/2), curr)
+                        rightSplit = Node(math.ceil(curr.data/2), curr)
+                        curr.data = ','
+                        curr.left = leftSplit
+                        curr.right = rightSplit
+                        print("\t\t\t\tToo large. Split into [", leftSplit.data, ",", rightSplit.data, "]")
+                    break
+                #Otherwise we need to keep going down
+                else:
+                    prev = curr
+                    curr = curr.left
+                    print("\t\t\tGoing Down-left. Curr value:", curr.data)
+
+        #After exploding, this pair of numbers is removed and replaced with a single number, 0
+        root_.left = None
+        root_.right = None
+        root_.data = 0
+    return False
 
 
 def solution1():
@@ -140,15 +244,37 @@ def solution1():
                     numVal = (numVal * 10) + int(line[i])
 
         #Once all values have been stored in the binary tree, we store the root node in our list of all root nodes
+        explodeTree(root)
         nodeRootList.append(root)
+        readNodeTree(root)
 
+    #Combining each root tree into a single tree (the one at index zero)
     #Check for pairs that are within 4 brackets and explode them
-    for root in range(0, len(nodeRootList)):
-        print("Checking ", end='')
-        readNodeTree(nodeRootList[root])
-        #Looping until this current tree has no pair that's nested 4 times
-        explodeTree(nodeRootList[root])
-        print("=====================================\n")
+    for i in range(1, len(nodeRootList)):
+        print("Combining tree 0 and", i)
+        print("\t ", end='')
+        readNodeTree(nodeRootList[0])
+        print("\t+", end='')
+        readNodeTree(nodeRootList[i])
+
+        newRoot = Node(',')
+        newRoot.left = nodeRootList[0]
+        newRoot.right = nodeRootList[i]
+        nodeRootList[0].parent = newRoot
+        nodeRootList[i].parent = newRoot
+        nodeRootList[0] = newRoot
+
+        print("\t=", end='')
+        readNodeTree(nodeRootList[0])
+
+        #After combining, loop until this current tree has no pair that's nested 4 times
+        while True:
+            doneExploding = explodeTree(nodeRootList[0])
+            print("\t=", end='')
+            readNodeTree(nodeRootList[0])
+            if doneExploding:
+                break
+        print("\n=====================================\n")
         
         #while not explodeTree(root):
         #    continue
