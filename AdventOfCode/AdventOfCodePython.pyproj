@@ -42,16 +42,10 @@
     <Compile Include="HelperFunctions\pathfinding.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="HelperFunctions\pvz_izombie_solver.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="HelperFunctions\sortingAlgorithms.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="HelperFunctions\testing.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="HelperFunctions\wordle.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="HelperFunctions\__init__.py">
@@ -253,9 +247,13 @@
     <Compile Include="Year2022\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2023\Day1.py" />
+    <Compile Include="Year2023\Day2.py" />
+    <Compile Include="Year2023\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="HelperFunctions\" />
+    <Folder Include="Year2023\" />
     <Folder Include="Year2016\InputRealFiles\" />
     <Folder Include="Year2016\InputTestFiles\" />
     <Folder Include="Year2018\InputRealFiles\" />
@@ -275,6 +273,8 @@
     <Folder Include="Year2021\" />
     <Folder Include="Year2022\InputTestFiles\" />
     <Folder Include="Year2022\InputRealFiles\" />
+    <Folder Include="Year2023\InputRealFiles\" />
+    <Folder Include="Year2023\InputTestFiles\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.6" />
@@ -500,6 +500,10 @@
     <Content Include="Year2022\InputTestFiles\d9_test.txt">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Year2023\InputRealFiles\d1_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d2_real.txt" />
+    <Content Include="Year2023\InputTestFiles\d1_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d2_test.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
