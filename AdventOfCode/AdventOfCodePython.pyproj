@@ -249,6 +249,8 @@
     </Compile>
     <Compile Include="Year2023\Day1.py" />
     <Compile Include="Year2023\Day2.py" />
+    <Compile Include="Year2023\Day3.py" />
+    <Compile Include="Year2023\Day4.py" />
     <Compile Include="Year2023\__init__.py" />
   </ItemGroup>
   <ItemGroup>
@@ -502,8 +504,12 @@
     </Content>
     <Content Include="Year2023\InputRealFiles\d1_real.txt" />
     <Content Include="Year2023\InputRealFiles\d2_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d3_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d4_real.txt" />
     <Content Include="Year2023\InputTestFiles\d1_test.txt" />
     <Content Include="Year2023\InputTestFiles\d2_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d3_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d4_test.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
