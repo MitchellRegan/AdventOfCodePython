@@ -249,14 +249,30 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Year2023\Day1.py" />
+    <Compile Include="Year2023\Day10.py" />
+    <Compile Include="Year2023\Day11.py" />
+    <Compile Include="Year2023\Day12.py" />
+    <Compile Include="Year2023\Day13.py" />
+    <Compile Include="Year2023\Day14.py" />
+    <Compile Include="Year2023\Day15.py" />
+    <Compile Include="Year2023\Day16.py" />
+    <Compile Include="Year2023\Day17.py" />
+    <Compile Include="Year2023\Day18.py" />
+    <Compile Include="Year2023\Day19.py" />
     <Compile Include="Year2023\Day2.py" />
     <Compile Include="Year2023\Day3.py" />
     <Compile Include="Year2023\Day4.py" />
     <Compile Include="Year2023\Day5.py" />
+    <Compile Include="Year2023\Day6.py" />
+    <Compile Include="Year2023\Day7.py" />
+    <Compile Include="Year2023\Day8.py" />
+    <Compile Include="Year2023\Day9.py" />
     <Compile Include="Year2023\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="HelperFunctions\" />
+    <Folder Include="Year2015\InputRealFiles\" />
+    <Folder Include="Year2015\InputTestFiles\" />
     <Folder Include="Year2023\" />
     <Folder Include="Year2016\InputRealFiles\" />
     <Folder Include="Year2016\InputTestFiles\" />
@@ -284,6 +300,56 @@
     <InterpreterReference Include="Global|PythonCore|3.6" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Year2015\InputRealFiles\d10_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d11_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d12_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d13_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d14_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d15_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d16_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d17_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d18_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d19_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d1_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d20_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d21_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d22_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d23_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d24_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d25_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d2_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d3_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d4_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d5_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d6_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d7_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d8_real.txt" />
+    <Content Include="Year2015\InputRealFiles\d9_real.txt" />
+    <Content Include="Year2015\InputTestFiles\d10_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d11_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d12_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d13_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d14_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d15_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d16_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d17_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d18_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d19_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d1_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d20_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d21_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d22_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d23_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d24_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d25_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d2_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d3_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d4_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d5_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d6_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d7_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d8_test.txt" />
+    <Content Include="Year2015\InputTestFiles\d9_test.txt" />
     <Content Include="Year2016\InputRealFiles\d24_real.txt">
       <SubType>Code</SubType>
     </Content>
@@ -504,16 +570,56 @@
     <Content Include="Year2022\InputTestFiles\d9_test.txt">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Year2023\InputRealFiles\d10_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d11_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d12_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d13_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d14_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d15_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d16_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d17_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d18_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d19_real.txt" />
     <Content Include="Year2023\InputRealFiles\d1_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d20_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d21_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d22_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d23_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d24_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d25_real.txt" />
     <Content Include="Year2023\InputRealFiles\d2_real.txt" />
     <Content Include="Year2023\InputRealFiles\d3_real.txt" />
     <Content Include="Year2023\InputRealFiles\d4_real.txt" />
     <Content Include="Year2023\InputRealFiles\d5_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d6_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d7_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d8_real.txt" />
+    <Content Include="Year2023\InputRealFiles\d9_real.txt" />
+    <Content Include="Year2023\InputTestFiles\d10_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d11_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d12_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d13_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d14_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d15_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d16_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d17_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d18_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d19_test.txt" />
     <Content Include="Year2023\InputTestFiles\d1_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d20_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d21_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d22_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d23_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d24_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d25_test.txt" />
     <Content Include="Year2023\InputTestFiles\d2_test.txt" />
     <Content Include="Year2023\InputTestFiles\d3_test.txt" />
     <Content Include="Year2023\InputTestFiles\d4_test.txt" />
     <Content Include="Year2023\InputTestFiles\d5_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d6_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d7_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d8_test.txt" />
+    <Content Include="Year2023\InputTestFiles\d9_test.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
