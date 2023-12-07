@@ -260,6 +260,12 @@
     <Compile Include="Year2023\Day18.py" />
     <Compile Include="Year2023\Day19.py" />
     <Compile Include="Year2023\Day2.py" />
+    <Compile Include="Year2023\Day20.py" />
+    <Compile Include="Year2023\Day21.py" />
+    <Compile Include="Year2023\Day22.py" />
+    <Compile Include="Year2023\Day23.py" />
+    <Compile Include="Year2023\Day24.py" />
+    <Compile Include="Year2023\Day25.py" />
     <Compile Include="Year2023\Day3.py" />
     <Compile Include="Year2023\Day4.py" />
     <Compile Include="Year2023\Day5.py" />
