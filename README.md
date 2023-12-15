@@ -1,9 +1,10 @@
 # AdventOfCodePython
 My solutions to different [Advent of Code](https://adventofcode.com/) problems in Python.
 
-Progress as of June 1st, 2023:
+Progress as of December 15th, 2023:
+* 2023: 28 / 50 stars
 * 2022: 45 / 50 Stars
-* 2021: 34 / 50 Stars
+* 2021: 36 / 50 Stars
 * 2020: 27 / 50 Stars
 * 2019:  7 / 50 Stars
 * 2018:  2 / 50 Stars
