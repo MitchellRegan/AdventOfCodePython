@@ -59,9 +59,14 @@ def solution1():
     return valid
 
 
+def groupCombos()->int:
+
+    return 1
+
 def solution2():
     input = getInput()
     
+    #Extending each line in the input 5 times
     for i in range(0, len(input)):
         newStr = input[i][0] + '?' + input[i][0] + '?' + input[i][0] + '?' + input[i][0] + '?' + input[i][0]
         newList = []
@@ -69,6 +74,7 @@ def solution2():
             newList.extend(input[i][1])
         input[i] = (newStr, newList)
 
+    #Iterating through each line to get the number of combinations
     totalValid = 0
     for line in input:
         valid = 1
