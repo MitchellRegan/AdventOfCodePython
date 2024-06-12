@@ -178,7 +178,7 @@ def solution2():
                 break
         
         col = colRange[0]
-        while col < colRange[1]:
+        #while col < colRange[1]:
 
 
 

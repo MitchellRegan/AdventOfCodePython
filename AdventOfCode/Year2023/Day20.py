@@ -4,122 +4,146 @@
 import os
 inFileDir = os.path.dirname(__file__)
 inFile = ""
-if 1:
+if 0:
     inFile = os.path.join(inFileDir, "InputTestFiles/d20_test.txt")
 else:
     inFile = os.path.join(inFileDir, "InputRealFiles/d20_real.txt")
 
 
 def getInput():
-    broadcast = []
-    flipFlops = {}
-    conjuctions = {}
+    #Key is the module's name. Val is [type, pulse state, list of destinations]
+    modules = {}
 
     with open(inFile, 'r') as f:
         for line in f:
-            line = line.replace('\n','').split(' -> ')
-            key = line[0]
-            vals = line[1]
-            while ' ' in vals:
-                vals = vals.replace(' ', '')
-            vals = vals.split(',')
+            line = line.replace('\n','').replace(' ', '').split('->')
+            mod = line[0]
+            destinations = line[1].split(',')
 
-            if key == "broadcaster":
-                broadcast = vals
-            elif key[0] == "%":
-                flipFlops[key[1:]] = vals
-            elif key[0] == "&":
-                remember = []
-                for x in vals:
-                    remember.append([x, False])
-                conjuctions[key[1:]] = remember
+            if mod == "broadcaster":
+                modules[mod] = ['bc', False, destinations]
+            elif mod[0] == "%":
+                modules[mod[1:]] = ['ff', False, destinations]
+            elif mod[0] == "&":
+                modules[mod[1:]] = ['cj', False, destinations]
 
-    #Dictionary for quickly finding out which flip-flop is connected to each conjunction
-    modConj = {}
-    for con in conjuctions.keys():
-        for mod in conjuctions[con]:
-            if mod[0] in modConj.keys():
-                modConj[mod[0]].append(con)
-            else:
-                modConj[mod[0]] = [con]
+    #Key is the conjunction module's name. Val is [list of module names that output to the conjunction module]
+    conjunctionInputs = {}
+    for outMod in modules.keys():
+        for inMod in modules[outMod][2]:
+            if inMod in modules.keys() and modules[inMod][0] == 'cj':
+                if inMod not in conjunctionInputs.keys():
+                    conjunctionInputs[inMod] = [outMod]
+                else:
+                    conjunctionInputs[inMod].append(outMod)
 
-    return broadcast, flipFlops, conjuctions, modConj
+    return modules, conjunctionInputs
 
 
 def solution1():
-    broadcast, flipFlops, conjuctions, modConj = getInput()
-    #Initializing all modules to the Low pulse state
-    modState = {}
-    for mod in flipFlops.keys():
-        modState[mod] = False
+    modules, conjunctionMemory = getInput()
 
     #Counts for how many Low/High pulses were sent
     lowCount = 0
     highCount = 0
 
-    if True:
-        print("Broadcaster:", broadcast)
-        print("Flip-flops:")
-        for ff in flipFlops.keys():
-            print('\t', ff, "==>", flipFlops[ff], "\tState:", modState[ff])
-            if ff in modConj.keys():
-                print("\t\tBelongs to conjunction", modConj[ff])
-        print("Conjuctions:")
-        for c in conjuctions.keys():
-            print("\t", c, "==>", conjuctions[c])
-        print("============================================\n")
+    for i in range(0, 1000):
+        #queue of tuples where each one contains a pulse and the mod that the pulse is going to
+        q = [("button", False, "broadcaster")]
 
-    for i in range(0, 1):
-        print("Loop", i, "-----------------------------------------")
-        #Handling broadcast signals to each module in the order in which they were sent
-        #Each element is (ID of sender, ID of receiver, Signal Strength)
-        q = []
-        for x in broadcast:
-            q.append(("broadcaster", False, x))
         while len(q) > 0:
-            sender, sig, mod = q.pop(0)
-            print('\t', sender, "---", sig, "-->", mod)
+            fromMod, pulse, toMod = q.pop(0)
 
-            if sig:
+            if pulse:
                 highCount += 1
             else:
                 lowCount += 1
 
-            if mod in flipFlops.keys():
-                #If the signal is Low, the flip-flop changes state and sends a signal to all of it's next modules
-                if not sig:
-                    modState[mod] = not modState[mod]
-                    for nextMod in flipFlops[mod]:
-                        q.append((mod, modState[mod], nextMod))
-                
-                    #Storing the signal this module sent for its associated conjunction
-                    if mod in modConj.keys():
-                        conList = modConj[mod]
-                        for c in conList:
-                            for mc in range(0, len(conjuctions[c])):
-                                if conjuctions[c][mc][0] == mod:
-                                    conjuctions[c][mc][1] = modState[mod]
-                                    break
-            elif mod in conjuctions.keys():
-                allHigh = True
-                for m in conjuctions[mod]:
-                    if not m[1]:
-                        allHigh = False
+            if toMod not in modules.keys():
+                continue
+
+            #Determining how the mod should handle the incoming signal
+            if modules[toMod][0] == "bc": #broadcaster
+                for d in modules[toMod][2]:
+                    q.append((toMod, pulse, d))
+                modules[toMod][1] = pulse
+            elif modules[toMod][0] == "ff": #flip-flop
+                if pulse:
+                    continue
+                else:
+                    modules[toMod][1] = not modules[toMod][1]
+                    for d in modules[toMod][2]:
+                        q.append((toMod, modules[toMod][1], d))
+            elif modules[toMod][0] == "cj": #conjunction
+                newPulse = False
+                for inputMod in conjunctionMemory[toMod]:
+                    if not modules[inputMod][1]:
+                        newPulse = True
                         break
+                for d in modules[toMod][2]:
+                    q.append((toMod, newPulse, d))
+                modules[toMod][1] = newPulse
 
-                #Sending signals to all next modules
-                for m in conjuctions[mod]:
-                    q.append((mod, allHigh, m[0]))
-
-    print("\nHigh Pulses:", highCount, "\nLow Pulses: ", lowCount)
+    #print("\nHigh Pulses:", highCount, "\nLow Pulses: ", lowCount)
     return lowCount * highCount
 
 
 def solution2():
+    modules, conjunctionMemory = getInput()
+
+    #Count for how many times a 'True' signal is sent to the 'rx' mod
+    rxTrueCount = 0
+    #prevCount = 0
+    buttonPresses = 0
+
+    while True:
+        #queue of tuples where each one contains a pulse and the mod that the pulse is going to
+        q = [("button", False, "broadcaster")]
+        buttonPresses += 1
+
+        while len(q) > 0:
+            fromMod, pulse, toMod = q.pop(0)
+
+            if toMod == 'rx':
+                if pulse:
+                    rxTrueCount += 1
+                else:
+                    rxFalseCount += 1
+
+            if toMod not in modules.keys():
+                continue
+
+            #Determining how the mod should handle the incoming signal
+            if modules[toMod][0] == "bc": #broadcaster
+                for d in modules[toMod][2]:
+                    q.append((toMod, pulse, d))
+                modules[toMod][1] = pulse
+            elif modules[toMod][0] == "ff": #flip-flop
+                if pulse:
+                    continue
+                else:
+                    modules[toMod][1] = not modules[toMod][1]
+                    for d in modules[toMod][2]:
+                        q.append((toMod, modules[toMod][1], d))
+            elif modules[toMod][0] == "cj": #conjunction
+                newPulse = False
+                for inputMod in conjunctionMemory[toMod]:
+                    if not modules[inputMod][1]:
+                        newPulse = True
+                        break
+                for d in modules[toMod][2]:
+                    q.append((toMod, newPulse, d))
+                modules[toMod][1] = newPulse
+
+        
+        #print("Button:", buttonPresses, "-->", rxTrueCount)
+        if rxTrueCount == 1:
+            break
+        #prevCount = rxTrueCount
+        rxTrueCount = 0
+
+    return buttonPresses
 
 
-    return
-
-
-print("Year 2023, Day 20 solution part 1:", solution1())
+#print("Year 2023, Day 20 solution part 1:", solution1())
 print("Year 2023, Day 20 solution part 2:", solution2())

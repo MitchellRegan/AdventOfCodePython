@@ -17,7 +17,7 @@ def getInput():
     with open(inFile, 'r') as f:
         for line in f:
             line = line.replace('\n', '')
-            wire1 = line.split(':')[0]
+            wire1 = line.split(': ')[0]
             otherWires = line.split(": ")[1].split(' ')
             if wire1 not in wires.keys():
                 wires[wire1] = []
@@ -64,6 +64,10 @@ def solution1():
             if (min(u,v), max(u,v)) not in edges.keys():
                 e = (min(u,v), max(u,v))
                 edges[e] = 0
+
+    for e in edges.keys():
+        print(e)
+    return
 
     removed = 0
     while removed < 3:
