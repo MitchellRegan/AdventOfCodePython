@@ -30,10 +30,9 @@ class IntcodeReader_v3:
         - Supports Position Mode and Parameter Mode.
     '''
     
-    def __init__(self, intcodeList_:list, inputVal_:int, phase_:int, debugMode_:bool=False):
+    def __init__(self, intcodeList_:list, inputVal_:int, debugMode_:bool=False):
         self.intcodeList = intcodeList_
         self.inputVal = inputVal_
-        self.phase = phase_
         self.index = 0
         self.debugMode = debugMode_
         self.outVal = 0
@@ -310,16 +309,20 @@ def solution1():
     phasePermutations = list(itertools.permutations(range(5), 5))
     
     highestOutput = 0
+    bestPhase = None
     for p in phasePermutations:
-        ampA = IntcodeReader_v3(intcode, 0, p[0], True).process()
-        ampB = IntcodeReader_v3(intcode, ampA, p[1], True).process()
-        ampC = IntcodeReader_v3(intcode, ampB, p[2], True).process()
-        ampD = IntcodeReader_v3(intcode, ampC, p[3], True).process()
-        ampE = IntcodeReader_v3(intcode, ampD, p[4], True).process()
+        print("Phase Permutation:", p)
+        ampA = IntcodeReader_v3(intcode, 0 + p[0], False).process()
+        ampB = IntcodeReader_v3(intcode, ampA + p[1], False).process()
+        ampC = IntcodeReader_v3(intcode, ampB + p[2], False).process()
+        ampD = IntcodeReader_v3(intcode, ampC + p[3], False).process()
+        ampE = IntcodeReader_v3(intcode, ampD + p[4], False).process()
+        print("\tOutput:", ampE)
         if ampE > highestOutput:
             highestOutput = ampE
+            bestPhase = p
         
-    return highestOutput
+    return highestOutput, bestPhase
 
 
 def solution2():
