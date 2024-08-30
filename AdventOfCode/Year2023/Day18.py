@@ -5,7 +5,7 @@ import os
 from tkinter import HORIZONTAL
 inFileDir = os.path.dirname(__file__)
 inFile = ""
-if 0:
+if 1:
     inFile = os.path.join(inFileDir, "InputTestFiles/d18_test.txt")
 else:
     inFile = os.path.join(inFileDir, "InputRealFiles/d18_real.txt")

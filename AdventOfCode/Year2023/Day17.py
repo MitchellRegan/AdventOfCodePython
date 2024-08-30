@@ -24,13 +24,12 @@ def getInput():
 
 
 def solution1():
-    input = getInput()
+    inputGrid = getInput()
     
     #dictionary for each point traveled on the bfs search
-    #   key: (row,loc) of point found
-    #   val: (row,loc, totalTemp) position of the point preceeding it, and the total temp as of this point found
-    path = {(0,0):(None, None)}
-    temps = {(0,0): 0}
+    #   key: (row,col) of point along the path
+    #   val: (row,col, heat loss, dir) position of the point preceeding it, total heat loss incurred so far, and an int for the number of consecutive spaces traveled in the same direction
+    path = {(0,0):(None, 0, 0)}
     maxSpaces = 3
 
     #BFS search from the top-left to the bottom-right
@@ -40,46 +39,57 @@ def solution1():
         row = currPos[0]
         col = currPos[1]
 
-        #making a list of the last several spaces to check if this cart has been travelling in too long of a line
-        prevPos = [path[currPos]]
-        #bools to track if all of the last positions have had either the same row or same column
-        sameRow = True
-        sameCol = True
-        for k in range(0, maxSpaces-1):
-            if prevPos[-1] in path.keys():
-                pp = path[prevPos[-1]]
-                prevPos.append(pp)
-                if pp[0] != prevPos[-2][0]:
-                    sameRow = False
-                if pp[1] != prevPos[-2][1]:
-                    sameCol = False
+        #If the current path has moved too far in the same direction, we pivot 90 degrees
+        pivotUD = False
+        pivotLR = False
+        if path[currPos][2] == maxSpaces:
+            if row == path[currPos][0][0]:
+                pivotUD = True
             else:
-                break
-
-        if len(prevPos) < maxSpaces:
-            sameRow = False
-            sameCol = False
-
-        newPositions = []
-        #Checking the point above current
-        if not sameCol and row > 0 and (row-1, col) != prevPos[0]:
-            newPositions.append((row-1, col))
-        #Checking the point below current
-        if not sameCol and row < len(input)-1 and (row+1, col) != prevPos[0]:
-            newPositions.append((row+1, col))
-        #Checking the point left of current
-        if not sameRow and col > 0 and (row, col-1) != prevPos[0]:
-            newPositions.append((row, col-1))
-        #Checking the point right of current
-        if not sameRow and col < len(input[0])-1 and (row, col+1) != prevPos[0]:
-            newPositions.append((row, col+1))
-
-        for newPos in newPositions:
-            totalTemp = input[newPos[0]][newPos[1]] + temps[currPos]
-            if newPos not in path.keys() or temps[newPos] > totalTemp:
-                path[newPos] = currPos
-                temps[newPos] = totalTemp
+                pivotLR = True
+                
+        #Checking UP
+        if row > 0 and not pivotLR:
+            newPos = (row-1, col)
+            newHeat = inputGrid[row-1][col] + path[currPos][1]
+            consecDist = 0
+            if path[currPos][0] is not None and path[currPos][0][0] == row+1:
+                consecDist = path[currPos][2] + 1
+            if newPos not in path.keys() or path[newPos][1] > newHeat:
+                path[newPos] = (currPos, newHeat, consecDist)
                 q.append(newPos)
+        #Checking DOWN
+        if row < len(inputGrid)-1 and not pivotLR:
+            newPos = (row+1, col)
+            newHeat = inputGrid[row+1][col] + path[currPos][1]
+            consecDist = 0
+            if path[currPos][0] is not None and path[currPos][0][0] == row-1:
+                consecDist = path[currPos][2] + 1
+            if newPos not in path.keys() or path[newPos][1] > newHeat:
+                path[newPos] = (currPos, newHeat, consecDist)
+                q.append(newPos)
+        #Checking LEFT
+        if col > 0 and not pivotUD:
+            newPos = (row, col-1)
+            newHeat = inputGrid[row][col-1] + path[currPos][1]
+            consecDist = 0
+            if path[currPos][0] is not None and path[currPos][0][1] == col+1:
+                consecDist = path[currPos][2] + 1
+            if newPos not in path.keys() or path[newPos][1] > newHeat:
+                path[newPos] = (currPos, newHeat, consecDist)
+                q.append(newPos)
+        #Checking RIGHT
+        if col < len(inputGrid[0])-1 and not pivotUD:
+            newPos = (row, col+1)
+            newHeat = inputGrid[row][col+1] + path[currPos][1]
+            consecDist = 0
+            if path[currPos][0] is not None and path[currPos][0][1] == col-1:
+                consecDist = path[currPos][2] + 1
+            if newPos not in path.keys() or path[newPos][1] > newHeat:
+                path[newPos] = (currPos, newHeat, consecDist)
+                q.append(newPos)
+
+
 
     #Starting at the ending point, we pathfind backwards to the start
     #endPoint = (len(input)-1, len(input[0])-1)
@@ -89,29 +99,25 @@ def solution1():
     #    input[endPoint[0]][endPoint[1]] = '.'
     #    endPoint = path[endPoint]
 
-    for p in path.keys():
-        if path[p] == (None, None):
-            continue
-        prev = path[p]
-        arrow = ''
+    p = (len(inputGrid)-1, len(inputGrid[0])-1)
+    print("End point:", p)
+    while p is not None:
+        r = p[0]
+        c = p[1]
+        print("\tGrid value:", inputGrid[r][c])
+        inputGrid[r][c] = "+"
+        print("\tGrid value:", inputGrid[r][c])
+        print("\tPath value:", path[p])
+        p = path[p][0]
+        print("new point:", p)
 
-        if p[0] < prev[0]:
-            arrow = '^'
-        elif p[0] > prev[0]:
-            arrow = 'v'
-        elif p[1] < prev[1]:
-            arrow = '<'
-        else:
-            arrow = '>'
-        input[p[0]][p[1]] = arrow
-
-    for line in input:
+    for line in inputGrid:
         lineStr = ''
         for c in line:
             lineStr = lineStr + str(c)
         print(lineStr)
 
-    return temps[(len(input)-1, len(input[0])-1)]
+    return path[(len(inputGrid)-1, len(inputGrid[0])-1)][1]
 
 
 def solution2():
