@@ -5,7 +5,7 @@ import os
 import itertools
 inFileDir = os.path.dirname(__file__)
 inFile = ""
-testing = 1
+testing = 0
 if testing:
     inFile = os.path.join(inFileDir, "InputTestFiles/d7_test.txt")
 else:
@@ -30,9 +30,10 @@ class IntcodeReader_v3:
         - Supports Position Mode and Parameter Mode.
     '''
     
-    def __init__(self, intcodeList_:list, inputVal_:int, debugMode_:bool=False):
+    def __init__(self, intcodeList_:list, inputVal_:int, phase_:int, debugMode_:bool=False):
         self.intcodeList = intcodeList_
         self.inputVal = inputVal_
+        self.phase = phase_
         self.index = 0
         self.debugMode = debugMode_
         self.outVal = 0
@@ -100,7 +101,10 @@ class IntcodeReader_v3:
     def inputParam(self):
         '''Opcode 3: Sets the input value given to the position at the current index + 1's position.'''
         inputIndex = self.intcodeList[self.index+1]
-        self.intcodeList[inputIndex] = self.inputVal
+        
+        self.intcodeList[inputIndex] = self.phase
+        if self.phase != self.inputVal:
+            self.phase = self.inputVal
         
         if self.debugMode:
             print("\tINPUT:", self.intcodeList[self.index : self.index+2], self.inputVal)
@@ -311,13 +315,11 @@ def solution1():
     highestOutput = 0
     bestPhase = None
     for p in phasePermutations:
-        print("Phase Permutation:", p)
-        ampA = IntcodeReader_v3(intcode, 0 + p[0], False).process()
-        ampB = IntcodeReader_v3(intcode, ampA + p[1], False).process()
-        ampC = IntcodeReader_v3(intcode, ampB + p[2], False).process()
-        ampD = IntcodeReader_v3(intcode, ampC + p[3], False).process()
-        ampE = IntcodeReader_v3(intcode, ampD + p[4], False).process()
-        print("\tOutput:", ampE)
+        ampA = IntcodeReader_v3(intcode, 0, p[0], False).process()
+        ampB = IntcodeReader_v3(intcode, ampA, p[1], False).process()
+        ampC = IntcodeReader_v3(intcode, ampB, p[2], False).process()
+        ampD = IntcodeReader_v3(intcode, ampC, p[3], False).process()
+        ampE = IntcodeReader_v3(intcode, ampD, p[4], False).process()
         if ampE > highestOutput:
             highestOutput = ampE
             bestPhase = p
@@ -326,7 +328,34 @@ def solution1():
 
 
 def solution2():
-    return
+    intcode = getInput()
+    phasePermutations = list(itertools.permutations([5,6,7,8,9], 5))
+    
+    highestOutput = 0
+    bestPhase = None
+    for p in phasePermutations:
+        currInput = -1
+        nextInput = 0
+        while currInput != nextInput:
+            currInput = nextInput
+            print(currInput)
+            ampA = IntcodeReader_v3(intcode, currInput, p[0], False).process()
+            #print("Amp A:", ampA)
+            ampB = IntcodeReader_v3(intcode, ampA, p[1], False).process()
+            #print("Amp B:", ampB)
+            ampC = IntcodeReader_v3(intcode, ampB, p[2], False).process()
+            #print("Amp C:", ampC)
+            ampD = IntcodeReader_v3(intcode, ampC, p[3], False).process()
+            #print("Amp D:", ampD)
+            ampE = IntcodeReader_v3(intcode, ampD, p[4], False).process()
+            #print("Amp E:", ampE)
+            nextInput = ampE
+            
+        if currInput > highestOutput:
+            highestOutput = currInput
+            bestPhase = p
+        
+    return highestOutput, bestPhase
 
 
 print("Year 2019, Day 7 solution part 1:", solution1())
