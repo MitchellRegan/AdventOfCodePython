@@ -1,8 +1,12 @@
 #https://adventofcode.com/2019/day/4
 #https://adventofcode.com/2019/day/4#part2
 
-input = [246515,739105]
-#input = [111111,111111]
+input = []
+if 1:
+    input = [246515,739105]
+else:
+    input = [111111,111111]
+    
 
 def solution1():
     validPW = 0

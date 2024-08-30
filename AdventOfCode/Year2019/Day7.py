@@ -4,7 +4,7 @@
 import os
 inFileDir = os.path.dirname(__file__)
 inFile = ""
-testing = 0
+testing = 1
 if testing:
     inFile = os.path.join(inFileDir, "InputTestFiles/d7_test.txt")
 else:
@@ -12,23 +12,23 @@ else:
 
 
 def getInput():
-    '''Returns the list of all unique orbiting objects, and a one-way directional graph where each object points to the object it orbits.'''
-    objectList = []
-    orbits = {}
+    inputSeq = []
 
     with open(inFile, 'r') as f:
         for line in f:
-            line = line.replace('\n', '').split(')')
-            if line[0] not in objectList:
-                objectList.append(line[0])
-            if line[1] not in objectList:
-                objectList.append(line[1])
-            orbits[line[1]] = line[0]
+            inputSeq = line.replace('\n', '').split(',')
+            for i in range(0, len(inputSeq)):
+                inputSeq[i] = int(inputSeq[i])
 
-    return objectList, orbits
+    return inputSeq
 
 
 def solution1():
+    insq = getInput()
+    
+    for i in insq:
+        print(i, type(i))
+        
     return
 
 
