@@ -5,7 +5,7 @@ import os
 import itertools
 inFileDir = os.path.dirname(__file__)
 inFile = ""
-testing = 0
+testing = 1
 if testing:
     inFile = os.path.join(inFileDir, "InputTestFiles/d12_test.txt")
 else:
@@ -68,11 +68,12 @@ def solution1():
     moons = getInput()
     
     for step in range(1000):
+        #Applying gravitation changes to each moon's velocity
         for m1 in range(0, len(moons)-1):
             for m2 in range(m1+1, len(moons)):
                 moons[m1].applyGravity(moons[m2])
                 moons[m2].applyGravity(moons[m1])
-                
+        #Updating the positions of each moon due to their current velocity
         for m in moons:
             m.updatePos()
 
@@ -83,7 +84,32 @@ def solution1():
 
 
 def solution2():
-    return
+    moons = getInput()
+    moonStates = {}
+    
+    step = 1
+    while True:
+        #Applying gravitation changes to each moon's velocity
+        for m1 in range(0, len(moons)-1):
+            for m2 in range(m1+1, len(moons)):
+                moons[m1].applyGravity(moons[m2])
+                moons[m2].applyGravity(moons[m1])
+        #Updating the positions of each moon due to their current velocity
+        for m in moons:
+            m.updatePos()
+            
+        #Getting the tuple to act as the state of all moon positions and velocities
+        moonState = []
+        for m in moons:
+            moonState.extend([m.x, m.y, m.z, m.xVel, m.yVel, m.zVel])
+        moonState = tuple(moonState)
+        if moonState in moonStates.keys():
+            return step
+        else:
+            moonStates[moonState] = True
+
+        step += 1
+    return -1
 
 
 print("Year 2019, Day 12 solution part 1:", solution1())
