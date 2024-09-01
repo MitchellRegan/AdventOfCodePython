@@ -94,19 +94,134 @@ def solution2():
         blank = [".....", ".....", "..?..", ".....", "....."]
         return blank
     
-    currState = [makeBlankGrid(), getInput(), makeBlankGrid()]
-    for g in range(0, len(currState)):
-        print("Level", g)
-        for line in currState[g]:
-            print(line)
-        print('\n')
+    currState = {-1:makeBlankGrid(), 0:getInput(), 1:makeBlankGrid()}
+    currState[0] = [
+        currState[0][0],
+        currState[0][1],
+        ''.join([currState[0][2][0], currState[0][2][1], '?', currState[0][2][3], currState[0][2][4]]),
+        currState[0][3],
+        currState[0][4]
+    ]
+    
     
     step = 0
     while step < 200:
+        nextState = {}
         
-        step += 1
+        for level in currState.keys():
+            nextLevel = []
+            for r in range(5):
+                rowStr = ""
+                for c in range(5):
+                    if r == 2 and c == 2:
+                        rowStr = rowStr + '?'
+                        continue
+
+                    adjBugs = 0
+                    
+                    #Check UP--------------------------------------
+                    if r == 0:
+                        #Checking the next level up, position (1,2)
+                        if level+1 in currState.keys() and currState[level+1][1][2] == '#':
+                            adjBugs += 1
+                    elif currState[level][r-1][c] == '?':
+                        #Checking next level down, the entire bottom row
+                        if level-1 in currState.keys():
+                            adjBugs += currState[level-1][4].count('#')
+                    elif currState[level][r-1][c] == '#':
+                        adjBugs += 1
+                        
+                    #Check DOWN------------------------------------
+                    if r == 4:
+                        #Checking the next level up, position (3,2)
+                        if level+1 in currState.keys() and currState[level+1][3][2] == '#':
+                            adjBugs += 1
+                    elif currState[level][r+1][c] == '?':
+                        #Checking next level down, the entire top row
+                        if level-1 in currState.keys():
+                            adjBugs += currState[level-1][0].count('#')
+                    elif currState[level][r+1][c] == '#':
+                        adjBugs += 1
+                    
+                    #Check LEFT------------------------------------
+                    if c == 0:
+                        #Checking the next level up, position (2,1)
+                        if level+1 in currState.keys() and currState[level+1][2][1] == '#':
+                            adjBugs += 1
+                    elif currState[level][r][c-1] == '?':
+                        #Checking next level down, the entire right column
+                        if level-1 in currState.keys():
+                            adjBugs += [
+                                            currState[level-1][0][4],
+                                            currState[level-1][1][4],
+                                            currState[level-1][2][4],
+                                            currState[level-1][3][4],
+                                            currState[level-1][4][4]
+                                        ].count('#')
+                    elif currState[level][r][c-1] == '#':
+                        adjBugs += 1
+                    
+                    #Check RIGHT-----------------------------------
+                    if c == 4:
+                        #Checking the next level up, position (2,3)
+                        if level+1 in currState.keys() and currState[level+1][2][3] == '#':
+                            adjBugs += 1
+                    elif currState[level][r][c+1] == '?':
+                        #Checking next level down, the entire left column
+                        if level-1 in currState.keys():
+                            adjBugs += [
+                                            currState[level-1][0][0],
+                                            currState[level-1][1][0],
+                                            currState[level-1][2][0],
+                                            currState[level-1][3][0],
+                                            currState[level-1][4][0]
+                                        ].count('#')
+                    elif currState[level][r][c+1] == '#':
+                        adjBugs += 1
+                    
+                    #Checking to see if this tile will be bug or empty in the next state
+                    if currState[level][r][c] == '#':
+                        if adjBugs == 1:
+                            rowStr = rowStr + '#'
+                        else:
+                            rowStr = rowStr + '.'
+                    else:
+                        if adjBugs == 1 or adjBugs == 2:
+                            rowStr = rowStr + '#'
+                        else:
+                            rowStr = rowStr + '.'
+                        
+                nextLevel.append(rowStr)
+                
+            #Storing the state for this level at the next step
+            nextState[level] = nextLevel
             
-    return -1
+            #If any bugs are on the outside edge of this level, a new level must be created above this one
+            if level+1 not in currState.keys():
+                if nextLevel[0].count('#') > 0 or nextLevel[4].count('#') > 0 or\
+                    nextLevel[1][0] == '#' or nextLevel[1][4] == '#' or\
+                    nextLevel[2][0] == '#' or nextLevel[2][4] == '#' or\
+                    nextLevel[3][0] == '#' or nextLevel[3][4] == '#':
+                    nextState[level+1] = makeBlankGrid()
+
+            #if any bugs are on the inside edge of this level, a new level must be created below this one
+            if level-1 not in currState.keys():
+                if nextLevel[1][2] == '#' or nextLevel[2][1] == '#' or\
+                    nextLevel[2][3] == '#' or nextLevel[3][2] == '#':
+                    nextState[level-1] = makeBlankGrid()
+            
+        step += 1
+        currState = nextState
+            
+
+    bugCount = 0
+    for level in currState.keys():
+        #print("=============== LEVEL", level, "===============")
+        for r in currState[level]:
+            #print(r)
+            bugCount += r.count('#')
+        #print()
+    return bugCount
 
 
 print("Year 2019, Day 24 solution part 1:", solution1())

@@ -243,7 +243,7 @@ class IntcodeReader_v3:
                 print("Index:", self.index, "    Code:", code, "    Modes:", modes)
                 
             if code == 99:
-                if self.debugMode:
+                if True: #self.debugMode:
                     print("\tTERMINATION at instruction", self.index)
                 return self.outVal
             elif code == 1:
@@ -266,6 +266,7 @@ class IntcodeReader_v3:
                 print("Invalid code:", code, "at index", self.index)
                 return
             
+        print("\tEND OF INTCODE")
         return self.outVal
     
 
@@ -285,7 +286,7 @@ class IntcodeReader_v3:
             print("Index:", self.index, "    Code:", code, "    Modes:", modes)
                 
         if code == 99:
-            if self.debugMode:
+            if True: #self.debugMode:
                 print("\tTERMINATION at instruction", self.index)
             return self.outVal
         elif code == 1:
@@ -334,21 +335,22 @@ def solution2():
     highestOutput = 0
     bestPhase = None
     for p in phasePermutations:
+        print("Permutation", p)
         currInput = -1
         nextInput = 0
-        while currInput != nextInput:
+        for i in range(5):
             currInput = nextInput
             print(currInput)
             ampA = IntcodeReader_v3(intcode, currInput, p[0], False).process()
-            #print("Amp A:", ampA)
+            print("Amp A:", ampA)
             ampB = IntcodeReader_v3(intcode, ampA, p[1], False).process()
-            #print("Amp B:", ampB)
+            print("Amp B:", ampB)
             ampC = IntcodeReader_v3(intcode, ampB, p[2], False).process()
-            #print("Amp C:", ampC)
+            print("Amp C:", ampC)
             ampD = IntcodeReader_v3(intcode, ampC, p[3], False).process()
-            #print("Amp D:", ampD)
+            print("Amp D:", ampD)
             ampE = IntcodeReader_v3(intcode, ampD, p[4], False).process()
-            #print("Amp E:", ampE)
+            print("Amp E:", ampE)
             nextInput = ampE
             
         if currInput > highestOutput:
