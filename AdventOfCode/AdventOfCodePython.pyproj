@@ -77,6 +77,7 @@
     <Compile Include="Year2019\Day2.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2019\Day20.py" />
     <Compile Include="Year2019\Day22.py" />
     <Compile Include="Year2019\Day23.py" />
     <Compile Include="Year2019\Day24.py" />
@@ -382,6 +383,7 @@
     <Content Include="Year2019\InputRealFiles\d10_real.txt" />
     <Content Include="Year2019\InputRealFiles\d11_real.txt" />
     <Content Include="Year2019\InputRealFiles\d12_real.txt" />
+    <Content Include="Year2019\InputRealFiles\d20_real.txt" />
     <Content Include="Year2019\InputRealFiles\d22_real.txt" />
     <Content Include="Year2019\InputRealFiles\d23_real.txt" />
     <Content Include="Year2019\InputRealFiles\d24_real.txt" />
@@ -396,6 +398,7 @@
     <Content Include="Year2019\InputTestFiles\d10_test.txt" />
     <Content Include="Year2019\InputTestFiles\d11_test.txt" />
     <Content Include="Year2019\InputTestFiles\d12_test.txt" />
+    <Content Include="Year2019\InputTestFiles\d20_test.txt" />
     <Content Include="Year2019\InputTestFiles\d22_test.txt" />
     <Content Include="Year2019\InputTestFiles\d23_test.txt" />
     <Content Include="Year2019\InputTestFiles\d24_test.txt" />
