@@ -5,7 +5,7 @@ import os
 import itertools
 inFileDir = os.path.dirname(__file__)
 inFile = ""
-testing = 1
+testing = 0
 if testing:
     inFile = os.path.join(inFileDir, "InputTestFiles/d20_test.txt")
 else:
@@ -295,48 +295,51 @@ def solution2():
         for e in edgeLengths.keys():
             print("\t", e, ":", edgeLengths[e])
                 
-    seen = {startPoint:0} #Dict where key is (portName, depth) and value-pair is totalDist
-    q = [] #Each value is (portName, depth, totalDist)
-    for con in connections[startPoint[0]]:
-        q.append((con, 0, edgeLengths[("AA", con)]))
-        seen[(con, 0)] = edgeLengths[("AA", con)]
+    seen = {startPoint:(None, 0, 0)} #Dict where key is (portName, depth) and value-pair is (prev portName, depth, distance from prev portName)
+    q = [startPoint] #Each value is (portName, depth)
     testing and print("\nStarting recursive bfs starting with", startPoint, "and travelling to", endPoint)
     testing and print("Que:", q)
     testing and print("Seen:", seen)
 
     while len(q) > 0:
-        port, depth, totalDist = q.pop(0)
-        testing and print(port, "depth", depth, "at distance", totalDist)
+        p,d = q.pop(0)
+        testing and print("Point:", p, "    depth:", d, "    Prev:", seen[(p,d)])
+        if d > 0:
+            testing and print("\tCan't have a depth above 0")
+            continue
         
-        #Quitting when the exit is found, because the first instance found will have the shortest distance
-        if port == "ZZ" and depth == 0:
-            return totalDist
-
-        #Otherwise, we take this portal to the next depth up/down
-        else:
-            newPort = ""
-            newDepth = depth
-            if port[-1] == "U":
-                newPort = port[0:-1] + "D"
-                newDepth += 1
+        #Found the exit
+        if p == "ZZ":
+            #Only exits if depth is 0
+            if d == 0:
+                totalDist = 0
+                ptr = (p,d)
+                while seen[ptr][0] is not None:
+                    prevPort, prevDepth, prevDist = seen[ptr]
+                    totalDist += prevDist
+                    ptr = (prevPort, prevDepth)
+                return totalDist
+        #If this portal wasn't just walked through, we gotta walk through it (1 step)
+        elif p != "AA" and p[0:2] != seen[(p,d)][0][0:2]:
+            nextPortal = None
+            if p[-1] == 'U':
+                nextPortal = (p[0:3]+'D', d+1)
             else:
-                newPort = port[0:-1] + "U"
-                newDepth -= 1
-                
-            seen[(newPort, newDepth)] = totalDist + 1
-            testing and print("\tTaking portal", port, "to", newPort, "depth", newDepth, "at distance", seen[(newPort, newDepth)])
-            for con in connections[newPort]:
-                #Ignoring connections to the exit that aren't on depth 0 because that's the only one that exists
-                if newDepth != 0 and con == "ZZ":
-                    continue
-                testing and print("\t\t", newPort, "->", con, "depth", newDepth, "    path dist:", edgeLengths[(min(newPort, con), max(newPort, con))])
-                q.append((con, newDepth, totalDist + 1 + edgeLengths[(min(newPort, con), max(newPort, con))]))
-                seen[(con, newDepth)] = totalDist + 1 + edgeLengths[(min(newPort, con), max(newPort, con))]
-        
-            #Sorting the que so the ones with the smallest distance are at the front
-            q.sort(key=lambda x: x[2])
-            
-        #print("\tQue:", q)
+                nextPortal = (p[0:3]+'U', d-1)
+            if nextPortal not in seen.keys():
+                q.append(nextPortal)
+                seen[nextPortal] = (p, d, 1)
+        #Otherwise we walk to all connected portals at this depth
+        else:
+            for con in connections[p]:
+                dist = edgeLengths[(min(p,con), max(p,con))]
+                testing and print("\t", p, "->", con, "=", dist)
+                if (con, d) not in seen.keys() or seen[(con,d)][2] > dist:
+                    seen[(con, d)] = (p, d, dist)
+                    q.append((con,d))
+
+        #print("Que:", q)
+        #print("Seen:", seen)
         #break
             
     return -1
