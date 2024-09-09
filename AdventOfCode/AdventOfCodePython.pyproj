@@ -51,6 +51,31 @@
     <Compile Include="HelperFunctions\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2015\Day1.py" />
+    <Compile Include="Year2015\Day10.py" />
+    <Compile Include="Year2015\Day11.py" />
+    <Compile Include="Year2015\Day12.py" />
+    <Compile Include="Year2015\Day13.py" />
+    <Compile Include="Year2015\Day14.py" />
+    <Compile Include="Year2015\Day15.py" />
+    <Compile Include="Year2015\Day16.py" />
+    <Compile Include="Year2015\Day17.py" />
+    <Compile Include="Year2015\Day18.py" />
+    <Compile Include="Year2015\Day19.py" />
+    <Compile Include="Year2015\Day2.py" />
+    <Compile Include="Year2015\Day20.py" />
+    <Compile Include="Year2015\Day21.py" />
+    <Compile Include="Year2015\Day22.py" />
+    <Compile Include="Year2015\Day23.py" />
+    <Compile Include="Year2015\Day24.py" />
+    <Compile Include="Year2015\Day25.py" />
+    <Compile Include="Year2015\Day3.py" />
+    <Compile Include="Year2015\Day4.py" />
+    <Compile Include="Year2015\Day5.py" />
+    <Compile Include="Year2015\Day6.py" />
+    <Compile Include="Year2015\Day7.py" />
+    <Compile Include="Year2015\Day8.py" />
+    <Compile Include="Year2015\Day9.py" />
     <Compile Include="Year2015\__init__.py">
       <SubType>Code</SubType>
     </Compile>

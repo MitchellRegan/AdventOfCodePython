@@ -5,7 +5,7 @@ import os
 import itertools
 inFileDir = os.path.dirname(__file__)
 inFile = ""
-testing = 0
+testing = 1
 if testing:
     inFile = os.path.join(inFileDir, "InputTestFiles/d7_test.txt")
 else:
