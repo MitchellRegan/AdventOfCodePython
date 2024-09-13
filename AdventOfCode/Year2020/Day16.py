@@ -1,6 +1,6 @@
 aocDate = [__file__.split('\\')[-2][4:], __file__.split('\\')[-1][3:-3]]
 inFile = ""
-testing = 0
+testing = 1
 if testing:
     inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_test.txt"
 else:
