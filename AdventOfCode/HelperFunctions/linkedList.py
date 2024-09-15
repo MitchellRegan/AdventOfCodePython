@@ -101,7 +101,7 @@ class LinkedList:
         return self._size
 
 
-    def __getitem__(self, key):
+    def __getitem__(self, key:int):
         '''Override for the get index operator LinkedList[#]
         '''
         #If the key given is positive, we search from the head forward
@@ -131,6 +131,78 @@ class LinkedList:
             return p.data
 
 
+    def append(self, data_:any):
+        '''Adds a new node to the end of this Linked List with the given data.
+        - data_: Value to be stored in the new node.
+        '''
+        newNode = LLNode(data_, prev_=self._tail)
+        
+        if self._size > 0:
+            self._tail.setNext(newNode)
+            if self._head._prev is not None:
+                self._head.setPrev(newNode)
+                newNode.setPrev(self._head)
+        else:
+            self._head = newNode
+            
+        self._tail = newNode
+        self._size += 1
+        
+
+    def insert(self, index_:int, data_:any):
+        '''Adds a new node at the given index.
+        - index_: Int for index to insert the new node at.
+        - data_: Value for the inserted node to hold.
+        '''
+        print("---Linked List insert 1, index:", index_, "   data:", data_, "   size:", self._size)
+        newNode = LLNode(data_)
+        if self._size == 0:
+            print("---Linked List insert 2")
+            self._head = newNode
+            self._tail = newNode
+            self._size = 1
+            print("---Linked List insert 3")
+        elif index_ == self._size:
+            print("---Linked List insert 4")
+            self.append(data_)
+            print("---Linked List insert 5")
+        else:
+            print("---Linked List insert 6    ", type(index_))
+            p = None
+            #If the key given is positive, we search from the head forward
+            if index_ >= 0:
+                p = self._head
+                i = 0
+                while i < index_:
+                    print("\tCurrent index", i)
+                    if p == None:
+                        raise Exception("ERROR: LinkedList out of range exception.")
+                    p = p.getNext()
+                    i += 1
+                if p is None:
+                    raise Exception("ERROR: LinkedList out of range exception.")
+            #If the key given is negative, we search from the tail backward
+            else:
+                p = self._tail
+                i = -1
+                while i > index_:
+                    if p is None:
+                        raise Exception("ERROR: LinkedList out of range exception.")
+                    p = p.getPrev()
+                    i -= 1
+                if p is None:
+                    raise Exception("ERROR: LinkedList out of range exception.")
+            print("---Linked List insert 6.1   ", type(p))
+            newNode.setNext(p)
+            print("---Linked List insert 6.2")
+            newNode.setPrev(p._prev)
+            print("---Linked List insert 6.3")
+            p.setPrev(newNode)
+            print("---Linked List insert 6.4")
+            self._size += 1
+            print("---Linked List insert 7")
+
+
     def reverse(self):
         '''Reverses the order of the nodes in this Linked List.
         '''
@@ -149,7 +221,7 @@ class LinkedList:
                 break
 
 
-    def toggleLoop(self, loop_=True):
+    def toggleLoop(self, loop_:bool=True):
         '''Sets this Linked List to either connect or disconnect the head and tail nodes from each other.
         - loop_: Boolean for if the list should be looped or not.
         '''
@@ -160,17 +232,3 @@ class LinkedList:
             self._head.setPrev(None)
             self._tail.setNext(None)
 
-
-testLL = LinkedList(["h", "e", "l", "l", "o"])
-print("========================================")
-for i in range(0, len(testLL)):
-    print(testLL[i])
-print("--------------------------------------")
-testLL.reverse()
-print("========================================")
-for i in range(0, len(testLL)):
-    print(testLL[i])
-    
-testLL.toggleLoop()
-for i in range(0, len(testLL)*2):
-    print(testLL[i])

@@ -32,7 +32,7 @@ def solution1():
             minMaxY[0] = y
         if minMaxY[1] is None or y > minMaxY[1]:
             minMaxY[1] = y
-    testing or print("X Range:", minMaxX, "    Y Range:", minMaxY)
+    testing and print("X Range:", minMaxX, "    Y Range:", minMaxY)
     
     #Performing a BFS search from every starting point
     found = {} #Key is (x,y) point, value pair is (int for distance, XY pos of starting point)
@@ -76,7 +76,7 @@ def solution1():
     return max([posCount[x] for x in posCount.keys()])
 
 
-def solution1_v1():
+def solution2():
     inpt = getInput()
     
     minMaxX = [None, None]
@@ -91,55 +91,21 @@ def solution1_v1():
             minMaxY[0] = y
         if minMaxY[1] is None or y > minMaxY[1]:
             minMaxY[1] = y
-    testing or print("X Range:", minMaxX, "    Y Range:", minMaxY)
-
-    edgePoints = []
-    for point in inpt:
-        x,y = point
-        if x == minMaxX[0] or x == minMaxX[1] or y == minMaxY[0] or y == minMaxY[1]:
-            edgePoints.append(point)
-
-    testing or print("Edge points:", edgePoints)
     
-    #Checking a rectangular area that extends 50% past the min/max values
-    pointCount = {}
-    for x in range(minMaxX[0] - ((minMaxX[1] - minMaxX[0])//4), minMaxX[1] + ((minMaxX[1] - minMaxX[0])//4)):
-        for y in range(minMaxY[0] - ((minMaxY[1] - minMaxY[0])//4), minMaxY[1] + ((minMaxY[1] - minMaxY[0])//4)):
-            #Comparing this location against the manhattan dist of each point to find the closest one
-            closestPoint = None
-            tiedPoint = None
-            closestDist = None
+    #Defining the total manhattan dist from all points that the target area needs to be within
+    targetDist = 10000
+    if testing:
+        targetDist = 32
+    ans = 0
+    for x in range(minMaxX[0], minMaxX[1]+1):
+        for y in range(minMaxY[0], minMaxY[1]+1):
+            score = 0
             for point in inpt:
-                manDist = abs(x - point[0]) + abs(y - point[1])
-                if closestDist is None or manDist < closestDist:
-                    closestDist = manDist
-                    closestPoint = point
-                    tiedPoint = None
-                #If there's a tie in whichever tile is closest, we track them all
-                elif manDist == closestDist:
-                    tiedPoint = point
-                    
-            #Only marking the (x,y) location as belonging to a specific point if the distance isn't tied with any other points
-            if tiedPoint is None:
-                if closestPoint in pointCount.keys():
-                    pointCount[closestPoint] += 1
-                else:
-                    pointCount[closestPoint] = 1
-                    
-    #Finding the point that covers the largest area as long as it isn't one along the outside edge
-    bestPoint = None
-    for point in pointCount.keys():
-        if point not in edgePoints:
-            if bestPoint is None or pointCount[point] > pointCount[bestPoint]:
-                bestPoint = point
-    testing or print("Point with most area is", bestPoint, ":", pointCount[bestPoint])
-    return pointCount[bestPoint]
-
-
-def solution2():
-    inpt = getInput()
-    
-    return
+                score += abs(point[0]-x) + abs(point[1]-y)
+            #If the point's total score (manhattan dist sum from all points) is within the target, we count it
+            if score < targetDist:
+                ans += 1
+    return ans
 
 
 print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 1:", solution1()) #42693 too high

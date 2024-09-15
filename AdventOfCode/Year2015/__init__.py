@@ -56,5 +56,6 @@ while True:
         else:
             print("Done")
             break
-    except:
+    except Exception as e:
         print("Day", i, "has no solution currently. Try again.")
+        print("ERROR:", e)
