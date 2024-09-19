@@ -7,7 +7,7 @@ Progress as of September 14th, 2024:
 * 2021: 36 / 50 Stars
 * 2020: 36 / 50 Stars
 * 2019: 23 / 50 Stars
-* 2018: 12 / 50 Stars
+* 2018: 31 / 50 Stars
 * 2017:  0 / 50 Stars
 * 2016:  2 / 50 Stars
 * 2015:  0 / 50 Stars
