@@ -175,6 +175,7 @@ def solution1():
 def solution2():
     rails, cartState = getInput()
     
+    seen = {}
     #Looping the carts along the rails until a crash happens
     while True:
         if testing:
@@ -195,16 +196,8 @@ def solution2():
             #If this cart was run into before it could move, we ignore it's movement
             if cart in removedCarts:
                 continue
-            #If all other remaining carts have been removed, this cart's position is the final one
-            elif len(nextState.keys()) == 0:
-                lastCart = True
-                for i in range(cartOrder.index(cart)+1, len(cartOrder)):
-                    if cartOrder[i] not in removedCarts:
-                        lastCart = False
-                        break
-                if lastCart:
-                    testing and print("Last cart remaining hasn't moved yet.")
-                    return str(cart[1]) + ',' + str(cart[0])
+            if cart not in seen.keys():
+                seen[cart] = '@'
             r,c = cart
             direction, turn = cartState[cart]
             
@@ -315,26 +308,36 @@ def solution2():
             #If the cart crashes into another cart that hasn't taken it's turn yet
             if nextPos in cartState.keys():
                 if nextPos[0] > r or (nextPos[0] == r and nextPos[1] > c):
-                    testing and print("Collision with cart that hasn't taken their turn at", nextPos[1], nextPos[0])
+                    testing or print("\tCollision with cart that hasn't taken their turn at", nextPos[1], nextPos[0])
                     #Ignoring this cart's next position and removing the collided cart before it can move
                     removedCarts.append(nextPos)
-                    if len(removedCarts) + len(nextState.keys()) == len(cartState.keys())-1:
-                        print("======= ONE CART REMAINS")
+                    seen[nextPos] = 'X'
             #If this position is already occupied by another cart for the next state, we have our first collision
             elif nextPos in nextState.keys():
-                testing and print("Collision with cart that's already moved at", nextPos[1], nextPos[0])
+                testing or print("\tCollision with cart that's already moved at", nextPos[1], nextPos[0])
                 #Ignoring this cart's next position and removing the cart it collided with
                 nextState.pop(nextPos)
+                seen[nextPos] = 'X'
             else:
                 nextState[nextPos] = [nextDir, nextTurn]
         
         cartState = nextState
+        print("- State:", cartState)
         if len(cartState.keys()) == 1:
+            for s in seen.keys():
+                r,c = s
+                rails[r] = rails[r][:c] + seen[s] + rails[r][c+1:]
+            for row in rails:
+                print(row)
+
             for k in cartState.keys():
-                return str(nextPos[1]) + ',' + str(nextPos[0])
+                print("Last cart:", k, "=", cartState[k])
+                return str(k[1]) + ',' + str(k[0])
     return
 
 
 print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 1:", solution1())
 print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 2:", solution2())
 #92,87 incorrect
+#36,59 incorrect
+#36,60 incorrect
