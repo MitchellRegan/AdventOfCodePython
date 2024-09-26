@@ -1,26 +1,28 @@
+import re
 aocDate = [__file__.split('\\')[-2][4:], __file__.split('\\')[-1][3:-3]]
 inFile = ""
 testing = 1
 if testing:
     inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_test.txt"
 else:
-    inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_real.txt"
+    inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputRealFiles/d" + aocDate[1] + "_real.txt"
 
 
 def getInput():
-    inpt = []
+    inpt = ""
 
     with open(inFile, 'r') as f:
         for line in f:
             line = line.replace('\n', '')
-
+            inpt = line
     return inpt
             
 
 def solution1():
     inpt = getInput()
     
-    
+    print("USE REGEX (or at least try to...)")
+    print(inpt)
 
     return
 
