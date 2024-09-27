@@ -57,9 +57,50 @@ def solution1():
 
 
 def solution2():
-    inpt = getInput()
+    inpt = ','.join([str(x) for x in getInput()])
+    inpt = [ord(c) for c in inpt]
+    inpt.extend([17, 31, 73, 47, 23])
     
-    return
+    currIndex = 0
+    skipSize = 0
+    numberRope = [x for x in range(256)]
+        
+    #Looping 64 times
+    for loop in range(64):
+        for ropeLen in inpt:
+            #If the length of rope is 1, there's no point in reversing the numbers because it's the same
+            if ropeLen != 1:
+                revNums = []
+                if currIndex + ropeLen >= len(numberRope):
+                    revNums = numberRope[currIndex:]
+                    revNums.extend(numberRope[:currIndex+ropeLen-len(numberRope)])
+                else:
+                    revNums = numberRope[currIndex:currIndex+ropeLen]
+                    
+                revNums.reverse()
+        
+                for i in range(ropeLen):
+                    if currIndex + i >= len(numberRope):
+                        numberRope[currIndex+i-len(numberRope)] = revNums[i]
+                    else:
+                        numberRope[currIndex+i] = revNums[i]
+                
+            currIndex += ropeLen + skipSize
+            while currIndex >= len(numberRope):
+                currIndex -= len(numberRope)
+            skipSize += 1
+            
+    hashStr = ""
+    curVal = None
+    for i in range(len(numberRope)):
+        if i % 16 == 0:
+            curVal = numberRope[i]
+        else:
+            #Performing a bitwise XOR
+            curVal = curVal ^ numberRope[i]
+            if i % 16 == 15:
+                hashStr = hashStr + hex(curVal)[2:]
+    return hashStr
 
 
 print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 1:", solution1())
