@@ -1,3 +1,8 @@
+# To import these classes from another file in a different directory, include the following:
+# import sys
+# sys.path.append("..")
+# from HelperFunctions.linkedList import LLNode
+
 import warnings
 
 class LLNode:
