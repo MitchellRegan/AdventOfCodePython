@@ -24,20 +24,13 @@ def getInput():
 
 def solution1():
     genA, genB = getInput()
-    numLoops = 40000000
     
     ans = 0
-    for i in range(numLoops):
-        if testing and i % 1000000 == 0:
-            print("Loop", i, "/ 40,000,000")
+    for i in range(40000000):
         genA = (genA * 16807) % 2147483647
         genB = (genB * 48271) % 2147483647
-        #testing and print("Loop", i, "    GenA:", genA, "    GenB:", genB)
-        binA = f'{genA:08b}'[-16:]
-        binB = f'{genB:08b}'[-16:]
-        #testing and print(binA)
-        #testing and print(binB, "\n")
-        if binA == binB:
+        
+        if genA % 65536 == genB % 65536:
             ans += 1
 
     return ans
@@ -45,10 +38,9 @@ def solution1():
 
 def solution2():
     genA, genB = getInput()
-    numLoops = 5000000
 
     ans = 0
-    for i in range(numLoops):
+    for i in range(5000000):
         genA = (genA * 16807) % 2147483647
         while genA % 4 != 0:
             genA = (genA * 16807) % 2147483647
@@ -56,10 +48,7 @@ def solution2():
         while genB % 8 != 0:
             genB = (genB * 48271) % 2147483647
             
-        binA = f'{genA:08b}'[-16:]
-        binB = f'{genB:08b}'[-16:]
-        
-        if binA == binB:
+        if genA % 65536 == genB % 65536:
             ans += 1
 
     return ans

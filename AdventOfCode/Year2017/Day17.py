@@ -35,19 +35,16 @@ def solution1():
 def solution2():
     inpt = getInput()
     
-    numChain = {0:0}
-    curVal = 0
+    valAfter0 = None
+    ptr = 0
     for i in range(1, 50000001):
-        if i % 100000 == 0:
-            print(i, "Value after 0:", numChain[0])
+        ptr = ((ptr + inpt) % i) + 1
+        if ptr == 0:
+            ptr = i
+        if ptr == 1:
+            valAfter0 = i
             
-        for x in range(inpt % i):
-            curVal = numChain[curVal]
-        numChain[i] = numChain[curVal]
-        numChain[curVal] = i
-        curVal = i
-        
-    return numChain[0]
+    return valAfter0    
 
 
 print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 1:", solution1())
