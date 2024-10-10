@@ -1,6 +1,6 @@
 aocDate = [__file__.split('\\')[-2][4:], __file__.split('\\')[-1][3:-3]]
 inFile = ""
-testing = 0
+testing = 1
 if testing:
     inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_test.txt"
 else:
@@ -55,7 +55,7 @@ def solution1():
     return bestpNum
 
 
-def solution2():
+def solution2_v2():
     inpt = getInput()
     
     t = 0
@@ -89,7 +89,7 @@ def solution2():
     return len(inpt.keys())
 
 
-def solution2_v1():
+def solution2():
     inpt = getInput()
     
     def getCollisionTime(a_, b_, c_):
