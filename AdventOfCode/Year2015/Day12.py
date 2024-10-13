@@ -1,18 +1,19 @@
+import json
 aocDate = [__file__.split('\\')[-2][4:], __file__.split('\\')[-1][3:-3]]
 inFile = ""
 testing = 1
 if testing:
     inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_test.txt"
 else:
-    inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_real.txt"
+    inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputRealFiles/d" + aocDate[1] + "_real.txt"
 
 
 def getInput():
-    inpt = []
+    inpt = ""
 
     with open(inFile, 'r') as f:
         for line in f:
-            line = line.replace('\n', '')
+            inpt = line.replace('\n', '')
 
     return inpt
             
@@ -20,7 +21,9 @@ def getInput():
 def solution1():
     inpt = getInput()
     
-    
+    js = json.loads(inpt)
+    for k in js.keys():
+        print("\t", k, ":", type(js[k]))
 
     return
 

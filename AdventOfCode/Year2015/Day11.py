@@ -4,7 +4,7 @@ testing = 1
 if testing:
     inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_test.txt"
 else:
-    inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_real.txt"
+    inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputRealFiles/d" + aocDate[1] + "_real.txt"
 
 
 def getInput():
@@ -20,7 +20,17 @@ def getInput():
 def solution1():
     inpt = getInput()
     
+    print("Try converting the string into a list of ascii code values using ord() for faster incrimenting and comparisson")
+    def req1(pw_:str)->bool:
+        
+    def req2(pw_:str)->bool:
+        '''Can't have letters i, o, or l.'''
+        if 'i' in pw_ or 'o' in pw_ or 'l' in pw_:
+            return False
+        return True
     
+    def req3(pw_:str)->bool:
+        '''Must have 2 different, non-overlapping pairs of the same letter.'''
 
     return
 
