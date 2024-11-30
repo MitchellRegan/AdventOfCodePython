@@ -51,6 +51,34 @@
     <Compile Include="HelperFunctions\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Year2024\Day1.py" />
+    <Compile Include="Year2024\Day10.py" />
+    <Compile Include="Year2024\Day11.py" />
+    <Compile Include="Year2024\Day12.py" />
+    <Compile Include="Year2024\Day13.py" />
+    <Compile Include="Year2024\Day14.py" />
+    <Compile Include="Year2024\Day15.py" />
+    <Compile Include="Year2024\Day16.py" />
+    <Compile Include="Year2024\Day17.py" />
+    <Compile Include="Year2024\Day18.py" />
+    <Compile Include="Year2024\Day19.py" />
+    <Compile Include="Year2024\Day2.py" />
+    <Compile Include="Year2024\Day20.py" />
+    <Compile Include="Year2024\Day21.py" />
+    <Compile Include="Year2024\Day22.py" />
+    <Compile Include="Year2024\Day23.py" />
+    <Compile Include="Year2024\Day24.py" />
+    <Compile Include="Year2024\Day25.py" />
+    <Compile Include="Year2024\Day3.py" />
+    <Compile Include="Year2024\Day4.py" />
+    <Compile Include="Year2024\Day5.py" />
+    <Compile Include="Year2024\Day6.py" />
+    <Compile Include="Year2024\Day7.py" />
+    <Compile Include="Year2024\Day8.py" />
+    <Compile Include="Year2024\Day9.py" />
+    <Compile Include="Year2024\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Year2015\Day1.py" />
     <Compile Include="Year2015\Day10.py" />
     <Compile Include="Year2015\Day11.py" />
@@ -200,6 +228,7 @@
     <Compile Include="Year2019\Day7.py" />
     <Compile Include="Year2019\Day8.py" />
     <Compile Include="Year2019\Day9.py" />
+    <Compile Include="Year2019\IntcodeComputer.py" />
     <Compile Include="Year2019\__init__.py">
       <SubType>Code</SubType>
     </Compile>
@@ -410,6 +439,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="HelperFunctions\" />
+    <Folder Include="Year2024\" />
+    <Folder Include="Year2024\InputRealFiles\" />
+    <Folder Include="Year2024\InputTestFiles\" />
     <Folder Include="Year2015\InputRealFiles\" />
     <Folder Include="Year2015\InputTestFiles\" />
     <Folder Include="Year2017\InputRealFiles\" />
@@ -443,6 +475,56 @@
     <InterpreterReference Include="Global|PythonCore|3.6" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Year2024\InputRealFiles\d10_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d11_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d12_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d13_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d14_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d15_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d16_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d17_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d18_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d19_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d1_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d20_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d21_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d22_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d23_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d24_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d25_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d2_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d3_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d4_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d5_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d6_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d7_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d8_real.txt" />
+    <Content Include="Year2024\InputRealFiles\d9_real.txt" />
+    <Content Include="Year2024\InputTestFiles\d10_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d11_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d12_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d13_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d14_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d15_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d16_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d17_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d18_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d19_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d1_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d20_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d21_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d22_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d23_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d24_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d25_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d2_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d3_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d4_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d5_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d6_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d7_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d8_test.txt" />
+    <Content Include="Year2024\InputTestFiles\d9_test.txt" />
     <Content Include="Year2015\InputRealFiles\d10_real.txt" />
     <Content Include="Year2015\InputRealFiles\d11_real.txt" />
     <Content Include="Year2015\InputRealFiles\d12_real.txt" />
