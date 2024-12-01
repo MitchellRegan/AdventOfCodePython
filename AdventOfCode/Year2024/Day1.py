@@ -8,29 +8,38 @@ else:
 
 
 def getInput():
-    inpt = ""
+    list1 = []
+    list2 = []
 
     with open(inFile, 'r') as f:
         for line in f:
-            inpt = line.replace('\n', '')
+            line = line.replace('\n', '').split(' ')
+            list1.append(int(line[0]))
+            list2.append(int(line[-1]))
 
-    return inpt
+    return list1, list2
             
 
 def solution1():
-    inpt = getInput()
+    list1, list2 = getInput()
+    list1.sort()
+    list2.sort()
     
+    ans = 0
+    for i in range(len(list1)):
+        ans += abs(list1[i] - list2[i])
 
-
-    return
+    return ans
 
 
 def solution2():
-    inpt = getInput()
+    list1, list2 = getInput()
 
+    ans = 0
+    for i in list1:
+        ans += list2.count(i) * i
 
-
-    return
+    return ans
 
 
 print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 1:", solution1())
