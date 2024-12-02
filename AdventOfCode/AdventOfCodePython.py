@@ -22,6 +22,8 @@ def main():
         import Year2022
     elif y == '2023':
         import Year2023
+    elif y == '2024':
+        import Year2024
     elif y == '0':
         createNewYear()
     else:
