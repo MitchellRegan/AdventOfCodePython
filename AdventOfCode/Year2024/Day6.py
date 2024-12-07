@@ -66,13 +66,13 @@ def solution1():
 
 
 def solution2():
-    inpt, sr,sc = getInput()
+    inpt, startRow, startCol = getInput()
     guardDir = '^'
 
     #Getting every location the guard travels in a normal path
     visitedPos = {}
-    r = sr
-    c = sc
+    r = startRow
+    c = startCol
     while r > -1 and r < len(inpt) and c > -1 and c < len(inpt[0]):
         if guardDir == '^':
             if r == 0:
@@ -107,75 +107,57 @@ def solution2():
                 r += 1
                 visitedPos[(r,c)] = True
 
-    validPos = 0
     #Looping through all possible locations that an obstacle can be placed along the guard's path
-    #vp = [x for x in visitedPos.keys()]
+    validPos = 0
     for p in visitedPos.keys():
-        y,x = p
-        testing and print("Checking row", y, "col", x)
-        inpt[y][x] = '#'
+        #Putting a blocked space on the current path position
+        inpt[p[0]][p[1]] = '#'
+
         #Resetting the vars for this loop
-        r = sr
-        c = sc
+        r = startRow
+        c = startCol
+        rowMove = -1
+        colMove = 0
         guardDir = '^'
         hitPos = {}
 
-        while r > -1 and r < len(inpt) and c > -1 and c < len(inpt[0]):
-            if guardDir == '^':
-                if r > 0 and inpt[r-1][c] == '#':
-                    if (r,c) in hitPos.keys() and guardDir in hitPos[(r,c)]:
-                        validPos += 1
-                        testing and print("\tValid pos found at", y,x)
-                        break
-                    else:
-                        if (r,c) not in hitPos.keys():
-                            hitPos[(r,c)] = []
-                        hitPos[(r,c)].append(guardDir)
+        while r + rowMove > -1 and r + rowMove < len(inpt) and c + colMove > -1 and c + colMove < len(inpt[0]):
+            if inpt[r+rowMove][c+colMove] == '#':
+                curPos = (r,c)
+                #If this blockage has been hit in the same spot at the same direction, a loop has happened
+                if curPos in hitPos.keys() and guardDir in hitPos[curPos]:
+                    validPos += 1
+                    break
+                #Otherwise this blockage hasn't been hit in this way before so we mark it for future collisions
+                else:
+                    if curPos not in hitPos.keys():
+                        hitPos[curPos] = []
+                    hitPos[curPos].append(guardDir)
+
+                #Rotating the guard's facing direction 90 degrees clockwise
+                if guardDir == '^':
                     guardDir = '>'
-                else:
-                    r -= 1
-            elif guardDir == '>':
-                if c < len(inpt[0])-1 and inpt[r][c+1] == '#':
-                    if (r,c) in hitPos.keys() and guardDir in hitPos[(r,c)]:
-                        validPos += 1
-                        testing and print("\tValid pos found at", y,x)
-                        break
-                    else:
-                        if (r,c) not in hitPos.keys():
-                            hitPos[(r,c)] = []
-                        hitPos[(r,c)].append(guardDir)
+                    rowMove = 0
+                    colMove = 1
+                elif guardDir == '>':
                     guardDir = 'v'
-                else:
-                    c += 1
-            elif guardDir == '<':
-                if c > 0 and inpt[r][c-1] == '#':
-                    if (r,c) in hitPos.keys() and guardDir in hitPos[(r,c)]:
-                        validPos += 1
-                        testing and print("\tValid pos found at", y,x)
-                        break
-                    else:
-                        if (r,c) not in hitPos.keys():
-                            hitPos[(r,c)] = []
-                        hitPos[(r,c)].append(guardDir)
-                    guardDir = '^'
-                else:
-                    c -= 1
-            else:
-                if r < len(inpt)-1 and inpt[r+1][c] == '#':
-                    if (r,c) in hitPos.keys() and guardDir in hitPos[(r,c)]:
-                        validPos += 1
-                        testing and print("\tValid pos found at", y,x)
-                        break
-                    else:
-                        if (r,c) not in hitPos.keys():
-                            hitPos[(r,c)] = []
-                        hitPos[(r,c)].append(guardDir)
+                    rowMove = 1
+                    colMove = 0
+                elif guardDir == 'v':
                     guardDir = '<'
-                else:
-                    r += 1
+                    rowMove = 0
+                    colMove = -1
+                elif guardDir == '<':
+                    guardDir = '^'
+                    rowMove = -1
+                    colMove = 0
+            #If no obstruction, keep moving forward
+            else:
+                r += rowMove
+                c += colMove
 
         #Removing the added obstacle and replacing it with an open space again
-        inpt[y][x] = '.'
+        inpt[p[0]][p[1]] = '.'
 
     return validPos
 
