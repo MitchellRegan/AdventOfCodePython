@@ -1,34 +1,40 @@
-#https://adventofcode.com/2019/day/9
-#https://adventofcode.com/2019/day/9#part2
-
-import os
-inFileDir = os.path.dirname(__file__)
+import sys
+sys.path.append(".")
+from Year2019.IntcodeComputer import IntcodeReader
+aocDate = [__file__.split('\\')[-2][4:], __file__.split('\\')[-1][3:-3]]
 inFile = ""
 testing = 1
 if testing:
-    inFile = os.path.join(inFileDir, "InputTestFiles/d9_test.txt")
+    inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_test.txt"
 else:
-    inFile = os.path.join(inFileDir, "InputRealFiles/d9_real.txt")
+    inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputRealFiles/d" + aocDate[1] + "_real.txt"
 
 
 def getInput():
-    layers = []
+    inpt = []
 
     with open(inFile, 'r') as f:
         for line in f:
-            line = line.replace('\n', '')
+            line = line.replace('\n', '').split(',')
+            inpt = [int(x) for x in line]
 
-    return layers
-            
+    return inpt
+
 
 def solution1():
-    return
+    inpt = getInput()
+    
+    print(inpt)
+    ans = IntcodeReader(inpt, 1, True)
+
+    return ans
 
 
 def solution2():
+    inpt = getInput()
     
     return
 
 
-print("Year 2019, Day 9 solution part 1:", solution1())
-print("Year 2019, Day 9 solution part 2:", solution2())
+print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 1:", solution1())
+print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 2:", solution2())

@@ -31,12 +31,13 @@ class IntcodeReader_v3:
     '''
     
     def __init__(self, intcodeList_:list, inputVal_:int, phase_:int, debugMode_:bool=False):
-        self.intcodeList = intcodeList_
+        self.intcodeList = [x for x in intcodeList_]
         self.inputVal = inputVal_
         self.phase = phase_
         self.index = 0
         self.debugMode = debugMode_
         self.outVal = 0
+        self.modes = [0,0,0]
         
 
     def setInputVal(self, newInputVal_:int):
@@ -48,18 +49,18 @@ class IntcodeReader_v3:
             self.index = newIndex_
 
 
-    def add(self, modes_:list):
+    def add(self):
         '''Opcode 1: Adds the 2 values following the current index, and sets the sum to the position of the current index + 3.'''
         sumIndex = self.intcodeList[self.index + 3]
         
         val1 = 0
-        if modes_[0] == 0: #position mode
+        if self.modes[0] == 0: #position mode
             val1 = self.intcodeList[self.intcodeList[self.index+1]]
         else: #immediate mode
             val1 = self.intcodeList[self.index+1]
             
         val2 = 0
-        if modes_[1] == 0: #position mode
+        if self.modes[1] == 0: #position mode
             val2 = self.intcodeList[self.intcodeList[self.index+2]]
         else: #immediate mode
             val2 = self.intcodeList[self.index+2]
@@ -67,24 +68,24 @@ class IntcodeReader_v3:
         self.intcodeList[sumIndex] = val1 + val2
         
         if self.debugMode:
-            print("\tADD:", self.intcodeList[self.index : self.index+4], "modes:", modes_)
-            print("\t", val1, "+", val2)
-            print("\tNew value at index", sumIndex, ":", self.intcodeList[sumIndex])
+            print("\tInd:", self.index, "   ADD:", self.intcodeList[self.index : self.index+4], "modes:", self.modes)
+            print("\t  ", val1, "+", val2)
+            print("\t  New value at index", sumIndex, ":", self.intcodeList[sumIndex])
         self.index += 4
         
 
-    def mult(self, modes_:list):
+    def mult(self):
         '''Opcode 2: Multiplies the 2 values following the current index, and sets the product to the position of the current index + 3.'''
         prodIndex = self.intcodeList[self.index + 3]
         
         val1 = 0
-        if modes_[0] == 0: #position mode
+        if self.modes[0] == 0: #position mode
             val1 = self.intcodeList[self.intcodeList[self.index+1]]
         else: #immediate mode
             val1 = self.intcodeList[self.index+1]
             
         val2 = 0
-        if modes_[1] == 0: #position mode
+        if self.modes[1] == 0: #position mode
             val2 = self.intcodeList[self.intcodeList[self.index+2]]
         else: #immediate mode
             val2 = self.intcodeList[self.index+2]
@@ -92,9 +93,9 @@ class IntcodeReader_v3:
         self.intcodeList[prodIndex] = val1 * val2
         
         if self.debugMode:
-            print("\tMULT:", self.intcodeList[self.index : self.index+4], "modes:", modes_)
-            print("\t", val1, "*", val2)
-            print("\tNew value at index", prodIndex, ":", self.intcodeList[prodIndex])
+            print("\tInd:", self.index, "   MULT:", self.intcodeList[self.index : self.index+4], "modes:", self.modes)
+            print("\t  ", val1, "*", val2)
+            print("\t  New value at index", prodIndex, ":", self.intcodeList[prodIndex])
         self.index += 4
         
 
@@ -107,8 +108,8 @@ class IntcodeReader_v3:
             self.phase = self.inputVal
         
         if self.debugMode:
-            print("\tINPUT:", self.intcodeList[self.index : self.index+2], self.inputVal)
-            print("\tNew value at index", inputIndex, ":", self.intcodeList[inputIndex])
+            print("\tInd:", self.index, "   INPUT:", self.intcodeList[self.index : self.index+2], self.inputVal)
+            print("\t  New value at index", inputIndex, ":", self.intcodeList[inputIndex])
             
         self.index += 2
 
@@ -119,69 +120,69 @@ class IntcodeReader_v3:
         self.outVal = self.intcodeList[outIndex]
         
         if self.debugMode:
-            print("\tOUTPUT:", self.intcodeList[self.index : self.index+2])
-            print("\tValue at index", outIndex, ":", self.intcodeList[outIndex])
+            print("\tInd:", self.index, "   OUTPUT:", self.intcodeList[self.index : self.index+2])
+            print("\t  Value at index", outIndex, ":", self.intcodeList[outIndex])
         self.index += 2
         
 
-    def jumpIfTrue(self, modes_:list):
+    def jumpIfTrue(self):
         '''Opcode 5: If the input value is non-zero, current index jumps to the value of current index + 1. Otherwise does nothing'''
         val = 0
-        if modes_[0] == 0: #position mode
+        if self.modes[0] == 0: #position mode
             val = self.intcodeList[self.intcodeList[self.index+1]]
         else: #immediate mode
             val = self.intcodeList[self.index+1]
             
         newIndex = self.index + 3
         if val != 0:
-            if modes_[1] == 0: #position mode
+            if self.modes[1] == 0: #position mode
                 newIndex = self.intcodeList[self.intcodeList[self.index+2]]
             else: #immediate mode
                 newIndex = self.intcodeList[self.index+2]
         
         if self.debugMode:
-            print("\tJUMP IF TRUE:", self.intcodeList[self.index : self.index+3], "modes:", modes_)
-            print("\t", val, "!= 0 ?")
-            print("\tValue:", val, "   New index:", newIndex)
+            print("\tInd:", self.index, "   JUMP IF TRUE:", self.intcodeList[self.index : self.index+3], "modes:", self.modes)
+            print("\t  ", val, "!= 0 ?")
+            print("\t  Value:", val, "   New index:", newIndex)
             
         self.index = newIndex
         
 
-    def jumpIfFalse(self, modes_:list):
+    def jumpIfFalse(self):
         '''Opcode 6: If the following index is zero, current index jumps to the value of current index + 1. Otherwise does nothing'''
         val = 0
-        if modes_[0] == 0: #position mode
+        if self.modes[0] == 0: #position mode
             val = self.intcodeList[self.intcodeList[self.index+1]]
         else: #immediate mode
             val = self.intcodeList[self.index+1]
             
         newIndex = self.index + 3
         if val == 0:
-            if modes_[1] == 0: #position mode
+            if self.modes[1] == 0: #position mode
                 newIndex = self.intcodeList[self.intcodeList[self.index+2]]
             else: #immediate mode
                 newIndex = self.intcodeList[self.index+2]
         
         if self.debugMode:
-            print("\tJUMP IF FALSE:", self.intcodeList[self.index : self.index+3], "modes:", modes_)
-            print("\t", val, "== 0 ?")
-            print("\tValue:", val, "   New index:", newIndex)
+            print("\tInd:", self.index, "   JUMP IF FALSE:", self.intcodeList[self.index : self.index+3], "modes:", self.modes)
+            print("\t  ", val, "== 0 ?")
+            print("\t  Value:", val, "   New index:", newIndex)
             
         self.index = newIndex
         
 
-    def lessThan(self, modes_:list):
+    def lessThan(self):
         '''Opcode 7: If value of index+1 < value of index+2, the value 1 is stored in the position of index+3. Otherwise the value 0 is stored in position of index+3'''
         resultIndex = self.intcodeList[self.index + 3]
         
         val1 = 0
-        if modes_[0] == 0: #position mode
+        if self.modes[0] == 0: #position mode
             val1 = self.intcodeList[self.intcodeList[self.index+1]]
         else: #immediate mode
             val1 = self.intcodeList[self.index+1]
             
         val2 = 0
-        if modes_[1] == 0: #position mode
+        if self.modes[1] == 0: #position mode
             val2 = self.intcodeList[self.intcodeList[self.index+2]]
         else: #immediate mode
             val2 = self.intcodeList[self.index+2]
@@ -192,24 +193,24 @@ class IntcodeReader_v3:
             self.intcodeList[resultIndex] = 0
             
         if self.debugMode:
-            print("\tLESS THAN:", self.intcodeList[self.index : self.index+4], "modes:", modes_)
-            print("\t", val1, "<", val2, "?")
-            print("\tNew value at index", resultIndex, ":", self.intcodeList[resultIndex])
+            print("\tInd:", self.index, "   LESS THAN:", self.intcodeList[self.index : self.index+4], "modes:", self.modes)
+            print("\t  ", val1, "<", val2, "?")
+            print("\t  New value at index", resultIndex, ":", self.intcodeList[resultIndex])
         self.index += 4
 
 
-    def equals(self, modes_:list):
+    def equals(self):
         '''Opcode 8: If value of index+1 == value of index+2, the value 1 is stored in the position of index+3. Otherwise the value 0 is stored in position of index+3'''
         resultIndex = self.intcodeList[self.index + 3]
         
         val1 = 0
-        if modes_[0] == 0: #position mode
+        if self.modes[0] == 0: #position mode
             val1 = self.intcodeList[self.intcodeList[self.index+1]]
         else: #immediate mode
             val1 = self.intcodeList[self.index+1]
             
         val2 = 0
-        if modes_[1] == 0: #position mode
+        if self.modes[1] == 0: #position mode
             val2 = self.intcodeList[self.intcodeList[self.index+2]]
         else: #immediate mode
             val2 = self.intcodeList[self.index+2]
@@ -220,48 +221,48 @@ class IntcodeReader_v3:
             self.intcodeList[resultIndex] = 0
             
         if self.debugMode:
-            print("\tEQUALS:", self.intcodeList[self.index : self.index+4], "modes:", modes_)
-            print("\t", val1, "==", val2, "?")
-            print("\tNew value at index", resultIndex, ":", self.intcodeList[resultIndex])
+            print("\tInd:", self.index, "   EQUALS:", self.intcodeList[self.index : self.index+4], "modes:", self.modes)
+            print("\t  ", val1, "==", val2, "?")
+            print("\t  New value at index", resultIndex, ":", self.intcodeList[resultIndex])
         self.index += 4
 
 
-    def process(self):
-        '''Reads through each instruction in the given intcode list and performs each instruction sequentially.'''
-        while self.index < len(self.intcodeList):
+    def process(self)->int:
+        '''Reads through every instruction in this program's intcode list and performs each instruction sequentially.
+        Returns the final output value stored once all instructions have been performed.'''
+        while self.index < len(self.intcodeList) and self.index > -1:
             code = self.intcodeList[self.index]
-            modes = [0,0,0]
 
             #If the code is triple-digit, it indicates different input modes
             if code > 99:
-                modes[0] = (code // 100) % 10
-                modes[1] = (code // 1000) % 10
-                modes[2] = (code // 10000) % 10
+                self.modes[0] = (code // 100) % 10
+                self.modes[1] = (code // 1000) % 10
+                self.modes[2] = (code // 10000) % 10
                 code = code % 100
             
-            if self.debugMode:
-                print("Index:", self.index, "    Code:", code, "    Modes:", modes)
+            #if self.debugMode:
+            #    print("Index:", self.index, "    Code:", code, "    Modes:", modes)
                 
             if code == 99:
-                if True: #self.debugMode:
+                if self.debugMode:
                     print("\tTERMINATION at instruction", self.index)
                 return self.outVal
             elif code == 1:
-                self.add(modes)
+                self.add()
             elif code == 2:
-                self.mult(modes)
+                self.mult()
             elif code == 3:
                 self.inputParam()
             elif code == 4:
                 self.output()
             elif code == 5:
-                self.jumpIfTrue(modes)
+                self.jumpIfTrue()
             elif code == 6:
-                self.jumpIfFalse(modes)
+                self.jumpIfFalse()
             elif code == 7:
-                self.lessThan(modes)
+                self.lessThan()
             elif code == 8:
-                self.equals(modes)
+                self.equals()
             else:
                 print("Invalid code:", code, "at index", self.index)
                 return
@@ -269,45 +270,6 @@ class IntcodeReader_v3:
         print("\tEND OF INTCODE")
         return self.outVal
     
-
-    def processStep(self):
-        '''Processes a single step using the currently-stored index and input value.'''
-        code = self.intcodeList[self.index]
-        modes = [0,0,0]
-
-        #If the code is triple-digit, it indicates different input modes
-        if code > 99:
-            modes[0] = (code // 100) % 10
-            modes[1] = (code // 1000) % 10
-            modes[2] = (code // 10000) % 10
-            code = code % 100
-            
-        if self.debugMode:
-            print("Index:", self.index, "    Code:", code, "    Modes:", modes)
-                
-        if code == 99:
-            if True: #self.debugMode:
-                print("\tTERMINATION at instruction", self.index)
-            return self.outVal
-        elif code == 1:
-            self.add(modes)
-        elif code == 2:
-            self.mult(modes)
-        elif code == 3:
-            self.inputParam()
-        elif code == 4:
-            self.output()
-        elif code == 5:
-            self.jumpIfTrue(modes)
-        elif code == 6:
-            self.jumpIfFalse(modes)
-        elif code == 7:
-            self.lessThan(modes)
-        elif code == 8:
-            self.equals(modes)
-        else:
-            print("Invalid code:", code, "at index", self.index)
-            
 
 def solution1():
     intcode = getInput()
@@ -335,23 +297,40 @@ def solution2():
     highestOutput = 0
     bestPhase = None
     for p in phasePermutations:
-        print("Permutation", p)
-        currInput = -1
-        nextInput = 0
-        for i in range(5):
-            currInput = nextInput
-            print(currInput)
-            ampA = IntcodeReader_v3(intcode, currInput, p[0], False).process()
-            print("Amp A:", ampA)
-            ampB = IntcodeReader_v3(intcode, ampA, p[1], False).process()
-            print("Amp B:", ampB)
-            ampC = IntcodeReader_v3(intcode, ampB, p[2], False).process()
-            print("Amp C:", ampC)
-            ampD = IntcodeReader_v3(intcode, ampC, p[3], False).process()
-            print("Amp D:", ampD)
-            ampE = IntcodeReader_v3(intcode, ampD, p[4], False).process()
-            print("Amp E:", ampE)
-            nextInput = ampE
+        p = [9,8,7,6,5]
+        print("Permutation", p, "=====================================================")
+        #Initializing each amplifier for this permutation
+        doingDebug = False
+        ampA = IntcodeReader_v3(intcode, 0, p[0], doingDebug)
+        ampB = IntcodeReader_v3(intcode, 0, p[1], doingDebug)
+        ampC = IntcodeReader_v3(intcode, 0, p[2], doingDebug)
+        ampD = IntcodeReader_v3(intcode, 0, p[3], doingDebug)
+        ampE = IntcodeReader_v3(intcode, 0, p[4], doingDebug)
+        
+        currInput = 0
+        while True:
+            print("----Input:", currInput)
+            ampA.setInputVal(currInput)
+            currInput = ampA.process()
+            print("----Amp A:", currInput)
+            
+            ampB.setInputVal(currInput)
+            currInput = ampB.process()
+            print("----Amp B:", currInput)
+            
+            ampC.setInputVal(currInput)
+            currInput = ampC.process()
+            print("----Amp C:", currInput)
+            
+            ampD.setInputVal(currInput)
+            currInput = ampD.process()
+            print("----Amp D:", currInput)
+            
+            ampE.setInputVal(currInput)
+            currInput = ampE.process()
+            print("----Amp E:", currInput)
+            #testing and print("Amp States: A", ampA.getIsFinished(), "  B", ampB.getIsFinished(), "  C", ampC.getIsFinished(), "  D", ampD.getIsFinished(), "  E", ampE.getIsFinished())
+            input()
             
         if currInput > highestOutput:
             highestOutput = currInput
@@ -360,5 +339,5 @@ def solution2():
     return highestOutput, bestPhase
 
 
-print("Year 2019, Day 7 solution part 1:", solution1())
+#print("Year 2019, Day 7 solution part 1:", solution1())
 print("Year 2019, Day 7 solution part 2:", solution2())

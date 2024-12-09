@@ -115,7 +115,7 @@ def solution1():
 
 
 def solution2():
-    input = getInput()
+    inpt = getInput()
     vertLines = []
     horizLines = []
     row = 0
@@ -125,18 +125,23 @@ def solution2():
     colRange = [0,0]
 
     #Finding the size of the grid to make, and identifying which (row,col) positions need to be hollowed out
-    for line in input:
+    for i in range(len(inpt)):
         rOffset = 0
         cOffset = 0
 
-        hexValue = int('0x'+line[2][1:-1], 16)
-        print(line, "    Hex:", hexValue)
-        if line[2][-1] == '0': cOffset = 1
-        elif line[2][-1] == '1': rOffset = 1
-        elif line[2][-1] == '2': cOffset = -1
-        elif line[2][-1] == '3': rOffset = -1
-        line[2] = hexValue
-        print("\t", line)
+        if i == len(inpt)-1:
+            inpt[i][1] = inpt[0][0]
+        else:
+            inpt[i][1] = inpt[i+1][0]
+
+        hexValue = int('0x'+inpt[i][2][1:-1], 16)
+        print(inpt[i], "    Hex:", hexValue)
+        if inpt[i][2][-1] == '0': cOffset = 1
+        elif inpt[i][2][-1] == '1': rOffset = 1
+        elif inpt[i][2][-1] == '2': cOffset = -1
+        elif inpt[i][2][-1] == '3': rOffset = -1
+        inpt[i][2] = hexValue
+        print("\t", inpt[i])
 
         newRow = row + (hexValue * rOffset)
         newCol = col + (hexValue * cOffset)

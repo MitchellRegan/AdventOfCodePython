@@ -1,10 +1,11 @@
+from IntcodeComputer import IntcodeReader
 aocDate = [__file__.split('\\')[-2][4:], __file__.split('\\')[-1][3:-3]]
 inFile = ""
-testing = 1
+testing = 0
 if testing:
     inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_test.txt"
 else:
-    inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_real.txt"
+    inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputRealFiles/d" + aocDate[1] + "_real.txt"
 
 
 def getInput():
@@ -12,10 +13,11 @@ def getInput():
 
     with open(inFile, 'r') as f:
         for line in f:
-            line = line.replace('\n', '')
+            line = line.replace('\n', '').split(',')
+            inpt = [int(x) for x in line]
 
     return inpt
-            
+
 
 def solution1():
     inpt = getInput()

@@ -39,7 +39,7 @@ def solution1():
             print(line)
             
     #For each turn, every living unit gets to move and attack. Looping until one faction is gone
-    turnNum = 0
+    turnNum = 1
     while numElf > 0 and numGob > 0:
         testing and print("Turn", turnNum, "================================")
         #Sorting all remaining units based on ascending row, then ascending col
@@ -126,7 +126,8 @@ def solution1():
                 print(line)
             print('\n')
             
-        turnNum += 1
+        if numElf > 0 and numGob > 0:
+            turnNum += 1
 
 
     #Answer is the sum of all remaining units' HP multiplied by the number of FULL TURNS that passed (last turn doesn't count)
@@ -145,4 +146,5 @@ def solution2():
 
 
 print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 1:", solution1())
+#245861 too high
 print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 2:", solution2())

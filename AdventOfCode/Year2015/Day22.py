@@ -65,17 +65,17 @@ def solution1():
         if mana_ < spells[0][1]:
             return manaUsed_
         #Iterating through every spell option the player can cast
-        for spell in spells:
-            if spell[1] <= mana_:
-                if spell[0] == "Magic Missile":
-                    
-                elif spell[0] == "Drain":
-                    
-                elif spell[0] == "Shield":
-                    
-                elif spell[0] == "Poison":
-                    
-                elif spell[0] == "Recharge":
+        #for spell in spells:
+            #if spell[1] <= mana_:
+            #    if spell[0] == "Magic Missile":
+            #        
+            ##    elif spell[0] == "Drain":
+            #        
+            #    elif spell[0] == "Shield":
+            #        
+            #    elif spell[0] == "Poison":
+            #        
+            #    elif spell[0] == "Recharge":
 
     return runCombat()
 

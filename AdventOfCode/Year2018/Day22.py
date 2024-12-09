@@ -64,7 +64,7 @@ def solution1():
             #Based on this next tile's type, our held tool might need to be changed, increasing the travel distance
             travelDist = 1
             nextTool = tool
-            if tool == 'T' and tileType[nt] == 1: #Torch can't be used on wet tiles
+            #if tool == 'T' and tileType[nt] == 1: #Torch can't be used on wet tiles
                 
 
     return
