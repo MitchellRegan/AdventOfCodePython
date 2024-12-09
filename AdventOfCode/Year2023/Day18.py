@@ -130,10 +130,13 @@ def solution2():
         cOffset = 0
 
         hexValue = int('0x'+line[2][1:-1], 16)
+        print(line, "    Hex:", hexValue)
         if line[2][-1] == '0': cOffset = 1
         elif line[2][-1] == '1': rOffset = 1
         elif line[2][-1] == '2': cOffset = -1
         elif line[2][-1] == '3': rOffset = -1
+        line[2] = hexValue
+        print("\t", line)
 
         newRow = row + (hexValue * rOffset)
         newCol = col + (hexValue * cOffset)
@@ -153,7 +156,7 @@ def solution2():
     vertLines.sort(key=lambda v: v[0][1])
     horizLines.sort(key=lambda h: h[0][0])
 
-    print("Row Range:", rowRange)
+    print("\nRow Range:", rowRange)
     print("Col Range:", colRange)
     print("Vertical Edges:")
     for ve in vertLines:
