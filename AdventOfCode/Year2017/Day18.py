@@ -1,6 +1,6 @@
 aocDate = [__file__.split('\\')[-2][4:], __file__.split('\\')[-1][3:-3]]
 inFile = ""
-testing = 1
+testing = 0
 if testing:
     inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_test.txt"
 else:
@@ -14,8 +14,10 @@ def getInput():
     with open(inFile, 'r') as f:
         for line in f:
             line = line.replace('\n', '').split(' ')
-            
-            if line[1] not in regs.keys():
+
+            if line[1].isdigit():
+                line[1] = int(line[1])
+            elif line[1] not in regs.keys():
                 regs[line[1]] = 0
                 
             if len(line) > 2:
@@ -78,101 +80,100 @@ def solution1():
     return soundFreq
 
 
+class Prog():
+    '''Class to handle the programs described in y2017d18p2. Handles its own list of instructions,
+    instruction pointer, registers, queue, and sending instructions to/from the other program.'''
+    def __init__(self, id_:int, instructions_:list, registers_:dict):
+        self.id = id_
+        self.inpt = instructions_
+        self.regs = registers_
+        self.iptr = 0
+        self.q = []
+        self.otherProg = None
+        self.isWaiting = False
+        self.numTimesSentVal = 0
+
+
+    def __str__(self):
+        return "Prog" + str(self.id) + ":    iPtr = " + str(self.iptr) + " -> " + str(self.inpt[self.iptr]) + "\n\tRegs: " + str(self.regs) + "\n\tQue:  " + str(self.q) + "\n\tIs waiting: " + str(self.isWaiting) + "\n"
+
+
+    def update(self):
+        '''Performs this program's next instruction at its instruction pointer, unless waiting for input.'''
+        if self.isWaiting:
+            if len(self.q) > 0:
+                self.isWaiting = False
+            else:
+                return
+
+        #Temp vars for the instruction and values at our iptr's input (for readability)
+        ins = self.inpt[self.iptr][0]
+        val1 = self.inpt[self.iptr][1]
+        val2 = 0
+        if len(self.inpt[self.iptr]) > 2:
+            val2 = self.inpt[self.iptr][2]
+            if type(val2) is not int:
+                val2 = self.regs[val2]
+
+        if ins == "snd": #send value to other program
+            if type(val1) is int:
+                self.otherProg.q.append(val1)
+            else:
+                self.otherProg.q.append(self.regs[val1])
+            self.numTimesSentVal += 1
+            self.iptr += 1
+        elif ins == "set": #sets value of register
+            self.regs[val1] = val2
+            self.iptr += 1
+        elif ins == "add": #adds value to register
+            self.regs[val1] += val2
+            self.iptr += 1
+        elif ins == "mul": #multiplies value of register
+            self.regs[val1] *= val2
+            self.iptr += 1
+        elif ins == "mod": #modulo value of reg
+            self.regs[val1] = self.regs[val1] % val2
+            self.iptr += 1
+        elif ins == "rcv": #recieves the last value sent from program 1
+            if len(self.q) > 0:
+                self.regs[val1] = self.q.pop(0)
+                self.iptr += 1
+            else:
+                self.isWaiting = True
+        elif ins == "jgz": #jumps if greater than zero
+            if (type(val1) is int and val1 > 0) or (type(val1) is not int and self.regs[val1] > 0):
+                self.iptr += val2
+            else:
+                self.iptr += 1
+        return
+
+
 def solution2():
     inpt, regs0 = getInput()
+    #Setting initial register values denoted by the instructions
     regs1 = {}
     for k in regs0.keys():
         regs1[k] = 0
-        
-    #Setting initial register values denoted by the instructions
     regs0['p'] = 0
     regs1['p'] = 1
 
-    #Vars for the instruction index pointers for both programs
-    iptr_0 = 0
-    iptr_1 = 0
-    #Vars for the queues that store values sent to each-other
-    q0 = []
-    q1 = []
+    #Creating Prog class instances for each program
+    prog0 = Prog(0, inpt, regs0)
+    prog1 = Prog(1, inpt, regs1)
+    prog0.otherProg = prog1
+    prog1.otherProg = prog0
+
+    #Looping until both programs are stuck waiting for instructions from each other
     ans = 0
     while True:
-        i0 = inpt[iptr_0]
-        i1 = inpt[iptr_1]
-        testing and print("\nI_0:", i0, "    I_1:", i1)
-        
-        #If both programs are trying to recieve values and none remain, terminate
-        if i0[0] == "rcv" and i1[0] == "rcv" and len(q0) == 0 and len(q1) == 0:
-            return ans
-        
-        #Handling program 0
-        val2 = 0
-        if len(i0) > 2:
-            val2 = i0[2]
-            if type(val2) is not int:
-                val2 = regs0[val2]
-        
-        if i0[0] == "snd": #send value to program 1
-            q1.append(regs0[i0[1]])
-            iptr_0 += 1
-        elif i0[0] == "set": #sets value of register
-            regs0[i0[1]] = val2
-            iptr_0 += 1
-        elif i0[0] == "add": #adds value to register
-            regs0[i0[1]] += val2
-            iptr_0 += 1
-        elif i0[0] == "mul": #multiplies value of register
-            regs0[i0[1]] *= val2
-            iptr_0 += 1
-        elif i0[0] == "mod": #modulo value of reg
-            regs0[i0[1]] = regs0[i0[1]] % val2
-            iptr_0 += 1
-        elif i0[0] == "rcv": #recieves the last value sent from program 1
-            if len(q0) > 0:
-                regs0[i0[1]] = q0.pop(0)
-                iptr_0 += 1
-        elif i0[0] == "jgz": #jumps if greater than zero
-            if regs0[i0[1]] > 0:
-                iptr_0 += val2
-            else:
-                iptr_0 += 1
-        
-        #Handling program 1
-        val2 = 0
-        if len(i1) > 2:
-            val2 = i1[2]
-            if type(val2) is not int:
-                val2 = regs1[val2]
-        
-        if i1[0] == "snd": #send value to program 0
-            q0.append(regs1[i1[1]])
-            iptr_1 += 1
-            ans += 1
-        elif i1[0] == "set": #sets value of register
-            regs1[i1[1]] = val2
-            iptr_1 += 1
-        elif i1[0] == "add": #adds value to register
-            regs1[i1[1]] += val2
-            iptr_1 += 1
-        elif i1[0] == "mul": #multiplies value of register
-            regs1[i1[1]] *= val2
-            iptr_1 += 1
-        elif i1[0] == "mod": #modulo value of reg
-            regs1[i1[1]] = regs1[i1[1]] % val2
-            iptr_1 += 1
-        elif i1[0] == "rcv": #recieves the last value sent from program 0
-            if len(q1) > 0:
-                regs1[i1[1]] = q1.pop(0)
-                iptr_1 += 1
-        elif i1[0] == "jgz": #jumps if greater than zero
-            if regs1[i1[1]] > 0:
-                iptr_1 += val2
-            else:
-                iptr_1 += 1
-                
-        testing and print("\tRegs0:", regs0, "\n\tQue0: ", q0, "\n\tRegs1:", regs1, "\n\tQue1: ", q1)
+        testing and print("=======================================================================================\n", prog0, "\n", prog1)
+        prog0.update()
+        prog1.update()
+        if prog0.isWaiting and prog1.isWaiting:
+            break
     
-    return
+    return prog1.numTimesSentVal
 
 
-#print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 1:", solution1())
+print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 1:", solution1())
 print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 2:", solution2())

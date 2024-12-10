@@ -1,5 +1,5 @@
-snd p
-snd p
+snd 1
+snd 2
 snd p
 rcv a
 rcv b
