@@ -1,16 +1,12 @@
 aocDate = [__file__.split('\\')[-2][4:], __file__.split('\\')[-1][3:-3]]
 inFile = ""
-testing = 1
+testing = 0
 if testing:
     inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_test.txt"
 else:
     inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputRealFiles/d" + aocDate[1] + "_real.txt"
 
 import math
-import sys
-sys.path.append("..")
-from HelperFunctions.linkedList import LLNode
-
 
 def getInput():
     inpt = []
@@ -57,50 +53,6 @@ def solution1():
 def solution2():
     stones = getInput()
 
-    #Converting the initial list of stones to a linked list
-    head = LLNode(stones[0])
-    p = head
-    for i in range(1, len(stones)):
-        newNode = LLNode(stones[i])
-        p.setNext(newNode)
-        p = newNode
-
-    ans = len(stones)
-        
-    print("Blink", 0, "    num stones:", ans)
-    blinkNum = 75
-    if testing:
-        blinkNum = 15
-    for blink in range(blinkNum):
-        testing and print("\nBlink #", blink)
-        ptr = head
-        while ptr is not None:
-            if ptr.data == 0:
-                ptr.data = 1
-                testing and print(ptr.data, '', end='')
-                ptr = ptr.getNext()
-
-            elif getNumDigits(ptr.data) % 2 == 0:
-                numDigits = getNumDigits(ptr.data)//2
-                s1 = int(str(ptr.data)[:numDigits])
-                s2 = int(str(ptr.data)[numDigits:])
-                ptr.data = s1
-                newNode = LLNode(s2)
-                newNode.setNext(ptr.getNext())
-                ptr.setNext(newNode)
-                testing and print(ptr.data, ptr.getNext().data, '', end='')
-                ptr = newNode.getNext()
-                ans += 1
-
-            else:
-                ptr.data = ptr.data * 2024
-                testing and print(ptr.data, '', end='')
-                ptr = ptr.getNext()
-
-        testing and print()
-        print("Blink", blink+1, "    num stones:", ans)
-
-
     #Pattern problem where numbers seem to be breaking down into reoccurring, smaller numbers
     #   Ex: 0 -> 1 -> 2024 -> 2,0,2,4 which then contains another 0
     #Each individual number can be evaluated on its own and then added to the final sum, since they don't interact together
@@ -112,9 +64,48 @@ def solution2():
     #           more child than key (0,1), so if the value of (0,1) isn't known yet, we can figure it out later.
     # Then make a recursive function to figure out these (element, t) values. Each value found speeds up future recursions
         
+    shortcut = {}#key = (stone value, t), value = number of children spawned by this stone value
+    def decayStone(s_:int, t_:int)->int:
+        '''Recursive function to decay each stone until the end of the time limit and count how many there are.'''
+        
+        #Recursion break when time is up
+        if t_ == 0:
+            testing and print("Decay", s_, "t =", t_)
+            return 1
 
+        if (s_,t_) in shortcut.keys():
+            testing and print("Decay", s_, "t =", t_, "  ", shortcut[(s_,t_)], "children")
+            return shortcut[(s_,t_)]
+
+        #Stones with a value of 0 decay to a value of 1
+        if s_ == 0:
+            numChildren = decayStone(1, t_-1)
+            shortcut[(0,t_)] = numChildren
+            return numChildren
+
+        #Stones with an even number of digits split into 2 stones with even number of digits
+        if getNumDigits(s_) % 2 == 0:
+            numDigits = getNumDigits(s_)//2
+            s1 = int(str(s_)[:numDigits])
+            s2 = int(str(s_)[numDigits:])
+
+            numChildren = decayStone(s1,t_-1) + decayStone(s2,t_-1)
+            shortcut[(s_,t_)] = numChildren
+            return numChildren
+
+        #Stones that don't match the other criteria are multiplied by 2024
+        numChildren = decayStone(s_*2024, t_-1)
+        shortcut[(s_,t_)] = numChildren
+        return numChildren
+
+    ans = 0
+    numBlinks = 75
+    if testing:
+        numBlinks = 25
+    for stone in stones:
+        ans += decayStone(stone, numBlinks)
     return ans
 
 
-#print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 1:", solution1())
+print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 1:", solution1())
 print("Year " + aocDate[0] + " Day " + aocDate[1] + " solution part 2:", solution2())
