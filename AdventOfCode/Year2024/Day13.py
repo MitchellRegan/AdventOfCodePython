@@ -97,8 +97,6 @@ def solution1():
 
 def solution2():
     inpt = getInput()
-    costA = 3
-    costB = 1
     
     ans = 0
     for i in range(len(inpt)):
@@ -111,7 +109,7 @@ def solution2():
         # Following formula derived from these steps:
         #       Equation 1: Prize_X = (A_X * num A presses) + (B_X * num B presses)
         #           Solve for "num of A presses" in terms of "num of B presses"
-        #           num A presses = ((-1 * B_X) + Prize_X) / A_X
+        #           num A presses = ((-1 * B_X * num B presses) - Prize_X) / (-1 * A_X)
         #       Equation 2: Prize_Y = (A_Y * num A presses) + (B_Y * num B presses)
         #           Replace "num A presses" with equation
         #           Re-arrange equation to be in the format of "num B presses = ..."
@@ -126,7 +124,7 @@ def solution2():
         numB = round((((Ay * Px) / Ax) - Py) / (((Ay * Bx) / Ax) - By))
         if (Px - (numB * Bx)) % Ax == 0 and (Py - (numB * By)) % Ay == 0 and (Px - (numB * Bx)) // Ax == (Py - (numB * By)) // Ay:
             numA = (Px - (numB * Bx)) // Ax
-            cost1 = (numA * costA) + (numB * costB)
+            cost1 = (numA * 3) + numB
 
         #Same equation as before but with vars for A and B swapped. This is because the previous equation could come
         #up with an invalid solution where this one is valid, or vice-versa, so we run both
@@ -134,7 +132,7 @@ def solution2():
         numA = round((((By * Px) / Bx) - Py) / (((By * Ax) / Bx) - Ay))
         if (Px - (numA * Ax)) % Bx == 0 and (Py - (numA * Ay)) % By == 0 and (Px - (numA * Ax)) // Bx == (Py - (numA * Ay)) // By:
             numA = (Px - (numB * Bx)) // Ax
-            cost2 = (numA * costA) + (numB * costB)
+            cost2 = (numA * 3) + numB
 
         #If at least one of the cost values found is valid (i.e. not -1), we take the smaller cost
         if cost1 != -1 and cost2 != -1:
