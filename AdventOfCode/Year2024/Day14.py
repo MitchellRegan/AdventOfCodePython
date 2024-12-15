@@ -63,13 +63,10 @@ def solution2():
     #Defining the rectangular grid that the robots will occupy, starting at (0,0)
     gridWidth = 101
     gridHeight = 103
-    
-    firstTreeConfig = None
+
     #Looping until no robot overlaps with the position of another robot
     t = 1
     while True:
-        #if t % 1000 == 0:
-        #    print("t =", t)
         isValid = True
         seen = {} #Dict where key = (x,y) pos of robot, value = True. This is just to quickly track positions without a grid
         for robot in range(len(inpt)):
@@ -82,49 +79,25 @@ def solution2():
             endX = (x + (xVel * t)) % gridWidth
             endY = (y + (yVel * t)) % gridHeight
 
+            #Tracking every location a robot has been seen
             if (endX,endY) not in seen.keys():
-                seen[(endX,endY)] = 1
+                seen[(endX,endY)] = True
+            #If any robot overlaps with another robot at this value of t, it's not the one we're looking for
             else:
-                #isValid = False
-                #break
-                seen[(endX,endY)] += 1
+                isValid = False
+                break
 
-        #If there's at least one spot where two robots overlap, we increase time by 1sec and try again
-        if not isValid:
-            t += 1
-        #Otherwise we've found the right value for t
+        if isValid:
+            #grid = []
+            #for r in range(gridHeight):
+            #    newRow = ['.'] * gridWidth
+            #    grid.append(newRow)
+            #for k in seen.keys():
+            #    grid[k[1]][k[0]] = '#'
+            #for r in range(len(grid)):
+            #    print(''.join(grid[r]))
+            break
         else:
-            #print("\tConvergence at t =", t)
-            #if (t - 6870) % 10403 == 0:
-            #    print("\t\tChristmas Tree")
-            #    t += 1
-
-            displayGrid = []
-            for r in range(gridHeight - 27 - 43):
-                newRow = ['.'] * (gridWidth - 32 - 38)
-                displayGrid.append(newRow)
-
-            for k in [bot for bot in seen.keys()]:
-                if k[1] > 26 and k[1] < gridHeight - 43 and k[0] < gridWidth - 32 and k[0] > 37:
-                    displayGrid[k[1]-27][k[0]-38] = '#'
-                else:
-                    seen.pop(k)
-
-            if firstTreeConfig is None:
-                firstTreeConfig = seen
-            else:
-                if firstTreeConfig == seen:
-                    print("Tree config seen before.")
-                    return
-
-            for line in displayGrid:
-                print(''.join(line))
-
-            print("t =", t)
-            #yn = input("Easter Egg? Type y/n: ")
-            #if yn == 'y' or yn == 'Y':
-            #    break
-            #else:
             t += 1
 
     return t
