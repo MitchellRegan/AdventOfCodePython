@@ -72,10 +72,11 @@ def solution2():
                 end += 1
 
             #Each decompressor string indicates the number of chars to decompress, and the amount of times the chars are copied
-            #numChar = int(inpt[i+1:x])
-            #amt = int(inpt[x+1:end])
-            #instructionStack.append((numChar,amt))
-            instructionStack.append(inpt[i:end+1])
+            originalLen = len(inpt[i:end+1])
+            numChar = int(inpt[i+1:x])
+            amt = int(inpt[x+1:end])
+            instructionStack.append([originalLen, numChar, amt])
+            #instructionStack.append(inpt[i:end+1])
             i = end+1
         #When we find a char in a normal string, we add it to the current group of chars
         else:
@@ -101,6 +102,30 @@ def solution2():
         #Decompressor strings recursively duplicate some strings in front of them (including other decompressors)
         else:
             testing and print("\t\tPerforming recursive decompression")
+            originalLen, numChar, amt = ins
+            testing and print("\t\t- Original Length:", originalLen, "\n\t\t- Num Char:", numChar, "\n\t\t- Amt:", amt)
+
+            subQue = deque()
+            while numChar > 0:
+                nextIns = instructionStack.popleft()
+                if type(nextIns) is int:
+                    if nextIns <= numChar:
+                        numChar -= nextIns
+                        subQue.append(nextIns)
+                    else:
+                        nextIns -= numChar
+                        subQue.append(numChar)
+                        numChar = 0
+                        instructionStack.appendleft(nextIns)
+                else:
+                    numChar -= nextIns[0]
+                    nextIns[2] = nextIns[2] * amt
+                    subQue.append(nextIns)
+            testing and print("\t\t- Sub Que:", subQue)
+            
+            for i in range(len(subQue)-1, -1, -1):
+                instructionStack.appendleft(subQue[i])
+            testing and print("\t\t\t", instructionStack)
     return ans
 
 
