@@ -5,7 +5,7 @@ if testing:
     inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_test.txt"
 else:
     inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputRealFiles/d" + aocDate[1] + "_real.txt"
-
+from collections import deque
 
 def getInput():
     grid = []
@@ -80,7 +80,47 @@ def solution1():
     return
 
 
-from collections import deque
+def bfsIntersectionMap(startPos:tuple, endPos:tuple, intersections:dict, removed:list=[]):
+    '''Performs a BFS through our map of connected intersection nodes.
+    
+    Returns
+    ----------
+        deque for the shortest path to the end position.
+        int for the minimal score of the path found. If no path is found, returns None
+    '''
+    shortestPath = deque()
+    minimalScore = None
+    q = deque()
+    q.append(startPos)
+    seen = {startPos:(0, None)} #Key = (r,c) pos of intersections found, Value = (score from start, prev intersection)
+    while len(q) > 0:
+        head = q.popleft()
+        #testing and print("Checking", head)
+
+        if head == endPos:
+            minimalScore = seen[head][0]
+            while head is not None:
+                shortestPath.appendleft(head)
+                head = seen[head][1]
+            break
+
+        for adj in intersections[head]:
+            #testing and print("\tAdj:", adj)
+            if adj not in seen.keys():
+                d = abs(adj[0] - head[0]) + abs(adj[1] - head[1])
+                #Checking to see if any 90 degree turns would be made between the adjacent pos, the head pos, and the head's previous pos
+                if seen[head][1] is not None:
+                    rdiff = seen[head][1][0] - adj[0]
+                    cdiff = seen[head][1][1] - adj[1]
+                    if rdiff != 0 and cdiff != 0:
+                        d += 1000
+                #Since the starting direction is '>' if the tile is adjacent to the start and above it, it counts as a turn
+                elif head == startPos and head[0] > adj[0]:
+                    d += 1000
+                seen[adj] = (d+seen[head][0], head)
+                q.append(adj)
+
+
 def solution2():
     grid, startPos, endPos = getInput()
     
@@ -94,7 +134,8 @@ def solution2():
                 if adj != 2 or (adj == 2 and grid[row+1][col] != grid[row-1][col] and grid[row][col+1] != grid[row][col-1]):
                     grid[row][col] = 'I'
                     intersections[(row,col)] = []
-        testing and print(''.join(grid[row]).replace('#', ' '))
+        testing and print('\t', ''.join(grid[row]).replace('.', ' '))
+    testing and print()
 
     #Performing a bfs from each intersection point to get the distances between connected intersections
     dists = {}#Key = (pair of (r,c) pos for connected intersections), Value = int for distance between them
@@ -119,46 +160,49 @@ def solution2():
                         seen[adj] = seen[i]+1
                         q.append(adj)
 
-    for k in intersections.keys():
-        print(k, ":", intersections[k])
-
-    return
-    
+    #Finding the most optimal path to the end point using dijkstra's algorithm
+    shortestPath = deque()
+    minimalScore = None
     q = deque()
-    q.append((startPos, startPos)) #Each element is ((row,col) position, and (row,col) position of previous intersection visited)
-    seen = {} #Key = (row,col) pos, Value = ((row,col) for previous intersection seen, int for distance from intersection)
-
+    q.append(startPos)
+    seen = {startPos:(0, None)} #Key = (r,c) pos of intersections found, Value = (score from start, prev intersection)
     while len(q) > 0:
-        pos, prevInt = q.popleft()
-        r,c = pos
-        testing and print(r, c)
+        head = q.popleft()
+        #testing and print("Checking", head)
 
-        #If this tile is at an intersection, corner, or dead-end, we track it
-        isIntersection = False
-        if grid[r-1][c] != grid[r+1][c] and grid[r][c-1] != grid[r][c+1]:
-            isIntersection = True
-            testing and print("\tIs intersection")
-            if pos not in intersections.keys():
-                intersections[pos] = [(prevInt, seen[pos][1])]
-            else:
-                intersections[pos].append((prevInt, seen[pos][1]))
+        if head == endPos:
+            minimalScore = seen[head][0]
+            while head is not None:
+                shortestPath.appendleft(head)
+                head = seen[head][1]
+            break
 
-        #Checking adjacent tiles for BFS
-        for a in [(r-1,c), (r+1,c), (r,c-1), (r,c+1)]:
-            if grid[a[0]][a[1]] != '#':
-                openSpaces += 1
-                if a not in seen.keys():
-                    if isIntersection:
-                        q.append((a, pos))
-                    else:
-                        q.append((a, prevInt))
+        for adj in intersections[head]:
+            #testing and print("\tAdj:", adj)
+            if adj not in seen.keys():
+                d = abs(adj[0] - head[0]) + abs(adj[1] - head[1])
+                #Checking to see if any 90 degree turns would be made between the adjacent pos, the head pos, and the head's previous pos
+                if seen[head][1] is not None:
+                    rdiff = seen[head][1][0] - adj[0]
+                    cdiff = seen[head][1][1] - adj[1]
+                    if rdiff != 0 and cdiff != 0:
+                        d += 1000
+                #Since the starting direction is '>' if the tile is adjacent to the start and above it, it counts as a turn
+                elif head == startPos and head[0] > adj[0]:
+                    d += 1000
+                seen[adj] = (d+seen[head][0], head)
+                q.append(adj)
 
-        if isIntersection:
-            seen[pos] = (pos, 0)
-        else:
-            seen[pos] = (prevInt, seen[prevInt][2])
-
-
+    print("Minimal Score:", minimalScore)
+    print("Shortest Path:", shortestPath)
+    for x in range(len(shortestPath)-1):
+        d = abs(shortestPath[x][0] - shortestPath[x+1][0]) + abs(shortestPath[x][1] - shortestPath[x+1][1])
+        if x > 0:
+            rdiff = shortestPath[x-1][0] - shortestPath[x+1][0]
+            cdiff = shortestPath[x-1][1] - shortestPath[x+1][1]
+            if rdiff != 0 and cdiff != 0:
+                d += 1000
+        print("\t", shortestPath[x], "->", shortestPath[x+1], "   Distance:", d)
     return
 
 
