@@ -1,6 +1,6 @@
 aocDate = [__file__.split('\\')[-2][4:], __file__.split('\\')[-1][3:-3]]
 inFile = ""
-testing = 0
+testing = 1
 if testing:
     inFile = '/'.join(__file__.split('\\')[:-1]) + "/InputTestFiles/d" + aocDate[1] + "_test.txt"
 else:
@@ -119,12 +119,32 @@ def solution2():
     #Sorting so that largest color names come first (easier to weed them out by being too large rather than do tons of recursion first)
     for c in colorDict.keys():
         colorDict[c].sort(key=lambda x: len(x), reverse=True)
-    
-    if testing:
-        print("Colors:", colors, "\nDesigns:")
-        for x in designs:
-            print("\t", x)
 
+    subColors = {}
+    def subdivideColor(c_:str, i_:int, curCombo_:list=[])->None:
+        '''Recursively finds every way that a color can be broken down into combinations of smaller colors.'''
+        if i_ == len(c_):
+            if c_ not in subColors.keys():
+                subColors[c_] = [curCombo_]
+            else:
+                subColors[c_].append(curCombo_)
+            return
+        
+        if c_[i_] in colorDict.keys():
+            for col in colorDict[c_[i_]]:
+                if col != c_ and len(col) <= len(c_) - i_ and col == c_[i_:i_+len(col)]:
+                    newCombo = [x for x in curCombo_]
+                    newCombo.append(col)
+                    subdivideColor(c_, i_+len(col), newCombo)
+        return
+
+    for c in colors:
+        subColors[c] = []
+        subdivideColor(c, 0, [])
+        print("Subdivision of color:", c)
+        for sdc in subColors[c]:
+            print("\t", sdc)
+    return
 
     def isDesignPossible(d_:str, i_:int)->bool:
         '''Recursively checks if the given design (d_) is possible to be made with at least 1 combination of the colors available.'''
